@@ -128,5 +128,65 @@ void main() {
       );
       expect(decision.evFormatted, startsWith('-'));
     });
+
+    // ---- Edge-case tests --------------------------------------------------
+
+    test('free check (costToCall=0) never recommends Fold', () {
+      // Even with very low equity, a free check should never be Fold.
+      for (final equity in [0.05, 0.10, 0.20, 0.30, 0.50, 0.80]) {
+        final decision = DecisionEngine.decide(
+          equity: equity,
+          pot: 100,
+          costToCall: 0,
+        );
+        expect(
+          decision.action,
+          isNot(PlayerAction.fold),
+          reason: 'equity=$equity should not fold on a free check',
+        );
+      }
+    });
+
+    test('very large pot with small bet recommends Call or Raise', () {
+      // pot=1000, call=10 → pot odds ≈ 1%, any decent hand beats this
+      final decision = DecisionEngine.decide(
+        equity: 0.30,
+        pot: 1000,
+        costToCall: 10,
+      );
+      expect(decision.action, isNot(PlayerAction.fold));
+    });
+
+    test('very small pot with large bet recommends Fold with weak hand', () {
+      // pot=10, call=200 → pot odds ≈ 95%; need ~95% equity to call
+      final decision = DecisionEngine.decide(
+        equity: 0.30,
+        pot: 10,
+        costToCall: 200,
+      );
+      expect(decision.action, PlayerAction.fold);
+    });
+
+    test('equity exactly at pot odds threshold recommends Call not Fold', () {
+      // pot=100, call=50 → pot odds = 33.3%
+      // equity exactly = 33.3% → marginally profitable → Call
+      final potOdds = 50 / (100 + 50); // ≈ 0.3333
+      final decision = DecisionEngine.decide(
+        equity: potOdds,
+        pot: 100,
+        costToCall: 50,
+      );
+      expect(decision.action, isNot(PlayerAction.fold));
+    });
+
+    test('all-in extreme pot odds — enormous pot, tiny call → always profitable', () {
+      // pot=10000, call=1 → pot odds ≈ 0.01%; any equity > 0.01% → Call/Raise
+      final decision = DecisionEngine.decide(
+        equity: 0.50,
+        pot: 10000,
+        costToCall: 1,
+      );
+      expect(decision.action, PlayerAction.raise);
+    });
   });
 }
