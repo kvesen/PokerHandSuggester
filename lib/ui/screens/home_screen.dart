@@ -3,6 +3,7 @@ library;
 
 import 'package:flutter/material.dart';
 
+import 'camera_screen.dart';
 import 'manual_input_screen.dart';
 
 /// The main landing screen of the Poker Hand Suggester.
@@ -95,35 +96,41 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 48),
 
-                  // Primary CTA button
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      icon: const Icon(Icons.edit_note, size: 22),
-                      label: const Text(
-                        'Enter Cards Manually',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: const Color(0xFF1B5E20),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                  // Primary action buttons (equal prominence)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _ActionCard(
+                          emoji: '📸',
+                          title: 'Scan Table',
+                          description: 'Take a photo to\nauto-detect cards',
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => const CameraScreen(),
+                            ),
+                          ),
                         ),
                       ),
-                      onPressed: () => Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => const ManualInputScreen(),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _ActionCard(
+                          emoji: '✍️',
+                          title: 'Manual Input',
+                          description: 'Select cards\nfrom the grid',
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => const ManualInputScreen(),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
                   const SizedBox(height: 32),
 
                   // Version / footer
                   Text(
-                    'Texas Hold\'em · Phase 1',
+                    'Texas Hold\'em · Phase 2',
                     style: TextStyle(
                       color: Colors.white.withAlpha(120),
                       fontSize: 13,
@@ -165,6 +172,67 @@ class _FeatureChip extends StatelessWidget {
             style: const TextStyle(color: Colors.white, fontSize: 13),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// A tappable card tile used for the two main action buttons on the home screen.
+class _ActionCard extends StatelessWidget {
+  const _ActionCard({
+    required this.emoji,
+    required this.title,
+    required this.description,
+    required this.onTap,
+  });
+
+  final String emoji;
+  final String title;
+  final String description;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 8,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 36)),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF1B5E20),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              description,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.black54,
+                height: 1.4,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

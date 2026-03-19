@@ -15,7 +15,17 @@ import 'results_screen.dart';
 
 /// Screen where the user selects their cards and enters game details.
 class ManualInputScreen extends StatefulWidget {
-  const ManualInputScreen({super.key});
+  const ManualInputScreen({
+    super.key,
+    this.preSelectedHoleCards,
+    this.preSelectedCommunityCards,
+  });
+
+  /// Optional hole cards pre-populated from the camera/detection flow.
+  final List<PokerCard>? preSelectedHoleCards;
+
+  /// Optional community cards pre-populated from the camera/detection flow.
+  final List<PokerCard>? preSelectedCommunityCards;
 
   @override
   State<ManualInputScreen> createState() => _ManualInputScreenState();
@@ -23,8 +33,8 @@ class ManualInputScreen extends StatefulWidget {
 
 class _ManualInputScreenState extends State<ManualInputScreen>
     with SingleTickerProviderStateMixin {
-  final List<PokerCard> _holeCards = [];
-  final List<PokerCard> _communityCards = [];
+  late final List<PokerCard> _holeCards;
+  late final List<PokerCard> _communityCards;
 
   final _potController = TextEditingController(text: '100');
   final _betController = TextEditingController(text: '20');
@@ -41,6 +51,9 @@ class _ManualInputScreenState extends State<ManualInputScreen>
   @override
   void initState() {
     super.initState();
+    _holeCards = List<PokerCard>.from(widget.preSelectedHoleCards ?? []);
+    _communityCards =
+        List<PokerCard>.from(widget.preSelectedCommunityCards ?? []);
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
