@@ -163,157 +163,216 @@ class _ManualInputScreenState extends State<ManualInputScreen>
       ),
       body: Form(
         key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            // ----------------------------------------------------------------
-            // Selected cards preview
-            // ----------------------------------------------------------------
-            _SectionHeader(title: 'Your Hand', subtitle: '${_holeCards.length}/2 cards'),
-            const SizedBox(height: 8),
-            _CardPreviewRow(cards: _holeCards, emptySlots: kMaxHoleCards - _holeCards.length),
-            const SizedBox(height: 16),
-
-            _SectionHeader(
-              title: 'Community Cards',
-              subtitle: '${_communityCards.length}/5 cards',
-            ),
-            const SizedBox(height: 8),
-            _CardPreviewRow(
-              cards: _communityCards,
-              emptySlots: kMaxCommunityCards - _communityCards.length,
-            ),
-            const SizedBox(height: 24),
-
-            // ----------------------------------------------------------------
-            // Card selector
-            // ----------------------------------------------------------------
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: const [
-                  BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
-                ],
-              ),
-              child: Column(
-                children: [
-                  TabBar(
-                    controller: _tabController,
-                    labelColor: const Color(0xFF1B5E20),
-                    unselectedLabelColor: Colors.grey,
-                    indicatorColor: const Color(0xFF1B5E20),
-                    tabs: const [
-                      Tab(text: 'Hole Cards (2)'),
-                      Tab(text: 'Community (0–5)'),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: CardSelector(
-                      selectedCards: _activeSection == 0
-                          ? _holeCards
-                          : _communityCards,
-                      onCardToggled: _onCardToggled,
-                      disabledCards: _activeSection == 0
-                          ? _communityCards
-                          : _holeCards,
-                      maxSelectable: _activeSection == 0
-                          ? kMaxHoleCards
-                          : kMaxCommunityCards,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // ----------------------------------------------------------------
-            // Game info inputs
-            // ----------------------------------------------------------------
-            const Text(
-              'Game Info',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-
-            Row(
-              children: [
-                Expanded(
-                  child: _NumericField(
-                    controller: _potController,
-                    label: 'Pot Size',
-                    hint: '100',
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _NumericField(
-                    controller: _betController,
-                    label: 'Bet to Call',
-                    hint: '20',
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // Opponent stepper
-            Row(
-              children: [
-                const Text('Opponents:', style: TextStyle(fontSize: 16)),
-                const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.remove_circle_outline),
-                  onPressed: _opponents > 1
-                      ? () => setState(() => _opponents--)
-                      : null,
-                ),
-                Text(
-                  '$_opponents',
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add_circle_outline),
-                  onPressed: _opponents < 8
-                      ? () => setState(() => _opponents++)
-                      : null,
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-
-            // ----------------------------------------------------------------
-            // Calculate button
-            // ----------------------------------------------------------------
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                icon: _isCalculating
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        ),
-                      )
-                    : const Icon(Icons.calculate),
-                label: Text(_isCalculating ? 'Calculating…' : 'Calculate Best Move'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFF1B5E20),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  textStyle: const TextStyle(fontSize: 18),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                onPressed: _isCalculating ? null : _calculate,
-              ),
-            ),
-            const SizedBox(height: 24),
-          ],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth > 600) {
+              return _buildWideLayout();
+            }
+            return _buildNarrowLayout();
+          },
         ),
+      ),
+    );
+  }
+
+  // Wide (tablet/desktop) layout: card selector on left, game info on right.
+  Widget _buildWideLayout() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Left column: card previews + selector
+        Expanded(
+          flex: 3,
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              _SectionHeader(
+                  title: 'Your Hand',
+                  subtitle: '${_holeCards.length}/2 cards'),
+              const SizedBox(height: 8),
+              _CardPreviewRow(
+                  cards: _holeCards,
+                  emptySlots: kMaxHoleCards - _holeCards.length),
+              const SizedBox(height: 16),
+              _SectionHeader(
+                title: 'Community Cards',
+                subtitle: '${_communityCards.length}/5 cards',
+              ),
+              const SizedBox(height: 8),
+              _CardPreviewRow(
+                cards: _communityCards,
+                emptySlots: kMaxCommunityCards - _communityCards.length,
+              ),
+              const SizedBox(height: 24),
+              _buildCardSelectorBox(),
+            ],
+          ),
+        ),
+        // Right column: game info + calculate button
+        Expanded(
+          flex: 2,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(8, 16, 16, 16),
+            children: [
+              ..._buildGameInfoWidgets(),
+              const SizedBox(height: 32),
+              _buildCalculateButton(),
+              const SizedBox(height: 24),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Narrow (phone) layout: single column.
+  Widget _buildNarrowLayout() {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        _SectionHeader(
+            title: 'Your Hand',
+            subtitle: '${_holeCards.length}/2 cards'),
+        const SizedBox(height: 8),
+        _CardPreviewRow(
+            cards: _holeCards,
+            emptySlots: kMaxHoleCards - _holeCards.length),
+        const SizedBox(height: 16),
+        _SectionHeader(
+          title: 'Community Cards',
+          subtitle: '${_communityCards.length}/5 cards',
+        ),
+        const SizedBox(height: 8),
+        _CardPreviewRow(
+          cards: _communityCards,
+          emptySlots: kMaxCommunityCards - _communityCards.length,
+        ),
+        const SizedBox(height: 24),
+        _buildCardSelectorBox(),
+        const SizedBox(height: 24),
+        ..._buildGameInfoWidgets(),
+        const SizedBox(height: 32),
+        _buildCalculateButton(),
+        const SizedBox(height: 24),
+      ],
+    );
+  }
+
+  Widget _buildCardSelectorBox() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(
+              color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
+        ],
+      ),
+      child: Column(
+        children: [
+          TabBar(
+            controller: _tabController,
+            labelColor: const Color(0xFF1B5E20),
+            unselectedLabelColor: Colors.grey,
+            indicatorColor: const Color(0xFF1B5E20),
+            tabs: const [
+              Tab(text: 'Hole Cards (2)'),
+              Tab(text: 'Community (0–5)'),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: CardSelector(
+              selectedCards:
+                  _activeSection == 0 ? _holeCards : _communityCards,
+              onCardToggled: _onCardToggled,
+              disabledCards:
+                  _activeSection == 0 ? _communityCards : _holeCards,
+              maxSelectable:
+                  _activeSection == 0 ? kMaxHoleCards : kMaxCommunityCards,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildGameInfoWidgets() {
+    return [
+      const Text(
+        'Game Info',
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+      const SizedBox(height: 12),
+      Row(
+        children: [
+          Expanded(
+            child: _NumericField(
+              controller: _potController,
+              label: 'Pot Size',
+              hint: '100',
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: _NumericField(
+              controller: _betController,
+              label: 'Bet to Call',
+              hint: '20',
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 16),
+      Row(
+        children: [
+          const Text('Opponents:', style: TextStyle(fontSize: 16)),
+          const Spacer(),
+          IconButton(
+            icon: const Icon(Icons.remove_circle_outline),
+            onPressed:
+                _opponents > 1 ? () => setState(() => _opponents--) : null,
+          ),
+          Text(
+            '$_opponents',
+            style: const TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline),
+            onPressed:
+                _opponents < 8 ? () => setState(() => _opponents++) : null,
+          ),
+        ],
+      ),
+    ];
+  }
+
+  Widget _buildCalculateButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: FilledButton.icon(
+        icon: _isCalculating
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : const Icon(Icons.calculate),
+        label:
+            Text(_isCalculating ? 'Calculating…' : 'Calculate Best Move'),
+        style: FilledButton.styleFrom(
+          backgroundColor: const Color(0xFF1B5E20),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          textStyle: const TextStyle(fontSize: 18),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        onPressed: _isCalculating ? null : _calculate,
       ),
     );
   }

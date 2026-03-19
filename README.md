@@ -13,7 +13,16 @@ A Flutter mobile app (Android & iOS) that calculates the **mathematically optima
 - 🎯 **Decision engine** — clear Fold / Call / Raise recommendation with explanation
 - 🟢🟡🔴 **Color-coded badge** — green = RAISE, amber = CALL, red = FOLD
 
-### Phase 2 — Camera Integration & Card Detection ✅
+### Phase 3 — UI Polish, Hand History & Theming ✅
+- 🎨 **Dark / Light mode toggle** — persisted via `SharedPreferences`
+- 🃏 **Poker table visualization** — oval felt table with player seat, community cards, opponent indicators, and pot display
+- 📜 **Hand history** — every analyzed hand is automatically saved; browse, delete, or clear all entries from the History screen
+- 🔔 **Animated decision badge** — bounce-in elastic scale animation on the FOLD/CALL/RAISE badge
+- 📊 **Staggered results animation** — each result section fades and slides in sequentially
+- 📱 **Responsive Manual Input** — two-column layout on screens wider than 600px (tablet/desktop)
+- 🕐 **Recent Activity** — home screen shows the last 3 analyzed hands at a glance
+
+
 - 📸 **Scan Table** — take a photo (or pick from gallery) and have cards automatically detected
 - 🔍 **On-device ML** — Google ML Kit text recognition runs entirely on device (no server required)
 - 🃏 **Multi-format parsing** — detects cards in unicode (`A♠`), letter (`Ks`), and full-name (`Ace of Spades`) notation
@@ -26,11 +35,13 @@ A Flutter mobile app (Android & iOS) that calculates the **mathematically optima
 | Layer | Technology |
 |---|---|
 | Framework | Flutter (Dart 3) |
-| State | `StatefulWidget` (local state) |
+| State | `StatefulWidget` + `ChangeNotifier` |
 | Poker math | Custom Dart engine (hand evaluator + Monte Carlo) |
 | Card recognition | Google ML Kit Text Recognition |
 | Camera | `camera` plugin |
 | Image processing | `image` package |
+| Persistence | `shared_preferences` |
+| Date formatting | `intl` |
 | Permissions | `permission_handler` |
 | UI | Material Design 3 |
 | Tests | `flutter_test` |
@@ -39,11 +50,12 @@ A Flutter mobile app (Android & iOS) that calculates the **mathematically optima
 
 ```
 lib/
-├── main.dart                           # App entry point
+├── main.dart                           # App entry point (ThemeService init)
 ├── models/
 │   ├── card.dart                       # PokerCard, Suit, Rank
 │   ├── hand.dart                       # Hand (hole + community cards)
-│   └── game_state.dart                 # Table state
+│   ├── game_state.dart                 # Table state
+│   └── hand_record.dart                # Persisted analyzed hand
 ├── engine/
 │   ├── hand_evaluator.dart             # Best 5-card hand from up to 7 cards
 │   ├── equity_calculator.dart          # Monte Carlo equity simulation
@@ -53,27 +65,37 @@ lib/
 │   ├── card_detector.dart              # ML Kit OCR → PokerCard list
 │   └── image_processor.dart            # Grayscale, contrast, crop, rotate
 ├── services/
-│   └── camera_service.dart             # Camera lifecycle & permissions
+│   ├── camera_service.dart             # Camera lifecycle & permissions
+│   ├── history_service.dart            # Hand history persistence
+│   └── theme_service.dart              # Theme mode persistence
 ├── ui/
 │   ├── screens/
-│   │   ├── home_screen.dart            # Landing screen (Scan + Manual buttons)
+│   │   ├── home_screen.dart            # Landing screen (Scan + Manual + history)
 │   │   ├── camera_screen.dart          # Live preview, capture, gallery pick
 │   │   ├── detection_review_screen.dart# Review & assign detected cards
-│   │   ├── manual_input_screen.dart    # Card selection + game info
-│   │   └── results_screen.dart         # Decision + stats display
+│   │   ├── history_screen.dart         # Hand history browser
+│   │   ├── manual_input_screen.dart    # Card selection + game info (responsive)
+│   │   └── results_screen.dart         # Decision + stats + table visualization
+│   ├── utils/
+│   │   └── page_transitions.dart       # Slide-up / fade route helpers
 │   └── widgets/
 │       ├── card_widget.dart            # Visual playing card
 │       ├── card_selector.dart          # 52-card interactive grid
-│       └── decision_badge.dart         # FOLD/CALL/RAISE badge
+│       ├── decision_badge.dart         # Animated FOLD/CALL/RAISE badge
+│       └── table_widget.dart           # Oval poker table visualization
 └── utils/
     └── constants.dart                  # Suit symbols, rank labels, defaults
 test/
-├── models/card_test.dart
+├── models/
+│   ├── card_test.dart
+│   └── hand_record_test.dart
 ├── engine/
 │   ├── hand_evaluator_test.dart
 │   ├── equity_calculator_test.dart
 │   ├── pot_odds_test.dart
 │   └── decision_engine_test.dart
+├── services/
+│   └── history_service_test.dart
 └── recognition/
     └── card_detector_test.dart         # Text-parsing logic tests
 ```
@@ -158,6 +180,6 @@ The required usage descriptions are already present in `ios/Runner/Info.plist`:
 
 - **Phase 1** ✅ Poker math engine + manual input UI
 - **Phase 2** ✅ Camera integration + ML card detection + detection review
-- **Phase 3** 🔜 UI polish — table visualization, hand history, theming
+- **Phase 3** ✅ UI polish — table visualization, hand history, dark/light theming, responsive layout
 - **Phase 4** 🔜 Edge case testing + performance optimization
 - **Phase 5** 🔜 App Store / Google Play deployment
