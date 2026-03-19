@@ -13,7 +13,15 @@ A Flutter mobile app (Android & iOS) that calculates the **mathematically optima
 - 🎯 **Decision engine** — clear Fold / Call / Raise recommendation with explanation
 - 🟢🟡🔴 **Color-coded badge** — green = RAISE, amber = CALL, red = FOLD
 
-### Phase 4 — Edge Case Testing & Performance Optimization ✅
+### Phase 5 — Table Position Awareness ✅
+- 🪑 **9-seat position model** — UTG, UTG+1, MP, MP+1, HJ, CO, BTN, SB, BB with individual multipliers
+- 🎯 **Position-adjusted thresholds** — Button plays looser (1.15×), UTG plays tighter (0.80×); raise and free-check thresholds scale with your seat
+- 🗺️ **Visual position selector** — oval poker table UI with 9 tappable seats; tap to select your seat, tap again to deselect
+- 📋 **Collapsible input** — the position picker is tucked in an `ExpansionTile` labelled "Table Position (optional) — Improves accuracy" so it never clutters the UI
+- 🏷️ **Position shown in results** — hero seat abbreviation (e.g. BTN, CO) appears in the game-info summary and in the explanation text
+- 🔄 **Fully backward compatible** — all position fields are optional/nullable; existing flows work unchanged
+
+
 - ⚡ **Background isolate computation** — Monte Carlo simulation runs in a separate `Isolate` via `Isolate.run()`, keeping the UI fully responsive during calculation
 - 🛡️ **Input validation hardening** — pot size must be > 0; bet to call must be ≥ 0; community cards must be 0, 3, 4, or 5 (no invalid board states); opponents 1–9
 - 🧪 **Comprehensive edge case tests** — straight flush vs. four-of-a-kind ranking, ace-low straight ordering, full house tie-breaking, pocket aces equity, river determinism, multi-opponent equity scaling, free-check never folds, extreme pot-odds scenarios, and more
@@ -59,7 +67,8 @@ lib/
 ├── models/
 │   ├── card.dart                       # PokerCard, Suit, Rank
 │   ├── hand.dart                       # Hand (hole + community cards)
-│   ├── game_state.dart                 # Table state
+│   ├── game_state.dart                 # Table state (+ heroPosition)
+│   ├── position.dart                   # TablePosition enum + multiplier helpers
 │   └── hand_record.dart                # Persisted analyzed hand
 ├── engine/
 │   ├── hand_evaluator.dart             # Best 5-card hand from up to 7 cards
@@ -87,6 +96,7 @@ lib/
 │       ├── card_widget.dart            # Visual playing card
 │       ├── card_selector.dart          # 52-card interactive grid
 │       ├── decision_badge.dart         # Animated FOLD/CALL/RAISE badge
+│       ├── position_selector.dart      # Oval table with 9 tappable seats
 │       └── table_widget.dart           # Oval poker table visualization
 └── utils/
     └── constants.dart                  # Suit symbols, rank labels, defaults
@@ -98,7 +108,8 @@ test/
 │   ├── hand_evaluator_test.dart
 │   ├── equity_calculator_test.dart
 │   ├── pot_odds_test.dart
-│   └── decision_engine_test.dart
+│   ├── decision_engine_test.dart
+│   └── decision_engine_position_test.dart
 ├── services/
 │   └── history_service_test.dart
 └── recognition/
@@ -178,8 +189,10 @@ The required usage descriptions are already present in `ios/Runner/Info.plist`:
 | Condition | Action |
 |---|---|
 | `equity < pot_odds_required` | **FOLD** (negative EV) |
-| `pot_odds_required ≤ equity < pot_odds_required × 1.5` | **CALL** (marginally profitable) |
-| `equity ≥ pot_odds_required × 1.5` | **RAISE** (strong edge) |
+| `pot_odds_required ≤ equity < pot_odds_required × (1.5 / pos_mult)` | **CALL** (marginally profitable) |
+| `equity ≥ pot_odds_required × (1.5 / pos_mult)` | **RAISE** (strong edge) |
+
+`pos_mult` is 1.0 when no position is provided. On the Button it is 1.15 (easier to raise); UTG it is 0.80 (must be stronger to raise).
 
 ## Roadmap
 
@@ -187,4 +200,5 @@ The required usage descriptions are already present in `ios/Runner/Info.plist`:
 - **Phase 2** ✅ Camera integration + ML card detection + detection review
 - **Phase 3** ✅ UI polish — table visualization, hand history, dark/light theming, responsive layout
 - **Phase 4** ✅ Edge case testing + performance optimization
-- **Phase 5** 🔜 App Store / Google Play deployment
+- **Phase 5** ✅ Table position awareness — position-adjusted decision thresholds + visual seat selector
+- **Phase 6** 🔜 App Store / Google Play deployment
