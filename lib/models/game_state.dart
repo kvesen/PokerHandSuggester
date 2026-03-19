@@ -2,6 +2,7 @@
 library;
 
 import 'card.dart';
+import 'position.dart';
 
 /// The current state of the poker table used as input to the decision engine.
 class GameState {
@@ -11,6 +12,8 @@ class GameState {
     required this.potSize,
     required this.betToCall,
     required this.numberOfOpponents,
+    this.heroPosition,
+    this.villainPositions,
   });
 
   /// The player's two private hole cards.
@@ -28,13 +31,26 @@ class GameState {
   /// Number of active opponents (excluding the player).
   final int numberOfOpponents;
 
+  /// The hero's table position (optional).
+  final TablePosition? heroPosition;
+
+  /// The villain seats (optional).
+  final List<TablePosition>? villainPositions;
+
   /// Creates a copy with optional overrides.
+  ///
+  /// To explicitly clear [heroPosition] or [villainPositions], pass
+  /// `clearHeroPosition: true` / `clearVillainPositions: true`.
   GameState copyWith({
     List<PokerCard>? holeCards,
     List<PokerCard>? communityCards,
     double? potSize,
     double? betToCall,
     int? numberOfOpponents,
+    TablePosition? heroPosition,
+    List<TablePosition>? villainPositions,
+    bool clearHeroPosition = false,
+    bool clearVillainPositions = false,
   }) {
     return GameState(
       holeCards: holeCards ?? this.holeCards,
@@ -42,6 +58,11 @@ class GameState {
       potSize: potSize ?? this.potSize,
       betToCall: betToCall ?? this.betToCall,
       numberOfOpponents: numberOfOpponents ?? this.numberOfOpponents,
+      heroPosition:
+          clearHeroPosition ? null : (heroPosition ?? this.heroPosition),
+      villainPositions: clearVillainPositions
+          ? null
+          : (villainPositions ?? this.villainPositions),
     );
   }
 }

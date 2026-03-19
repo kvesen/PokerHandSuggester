@@ -10,9 +10,11 @@ import '../../engine/decision_engine.dart';
 import '../../engine/equity_isolate.dart';
 import '../../models/card.dart';
 import '../../models/game_state.dart';
+import '../../models/position.dart';
 import '../../utils/constants.dart';
 import '../widgets/card_selector.dart';
 import '../widgets/card_widget.dart';
+import '../widgets/position_selector.dart';
 import 'results_screen.dart';
 
 /// Screen where the user selects their cards and enters game details.
@@ -44,6 +46,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
 
   int _opponents = 2;
   bool _isCalculating = false;
+  TablePosition? _heroPosition;
 
   // Which section is the selector currently filling? 0 = hole, 1 = community.
   int _activeSection = 0;
@@ -128,6 +131,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         equity: equityResult.equity,
         pot: pot,
         costToCall: bet,
+        heroPosition: _heroPosition,
       );
 
       final gameState = GameState(
@@ -136,6 +140,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         potSize: pot,
         betToCall: bet,
         numberOfOpponents: _opponents,
+        heroPosition: _heroPosition,
       );
 
       if (!mounted) return;
@@ -354,6 +359,43 @@ class _ManualInputScreenState extends State<ManualInputScreen>
             icon: const Icon(Icons.add_circle_outline),
             onPressed:
                 _opponents < 9 ? () => setState(() => _opponents++) : null,
+          ),
+        ],
+      ),
+      const SizedBox(height: 8),
+      // Position selector — collapsible so it doesn't clutter the UI.
+      ExpansionTile(
+        title: const Text(
+          'Table Position (optional)',
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+        ),
+        subtitle: Text(
+          _heroPosition != null
+              ? 'Selected: ${positionLabel(_heroPosition!)} — ${positionDescription(_heroPosition!)}'
+              : 'Improves accuracy',
+          style: TextStyle(
+            fontSize: 12,
+            color: _heroPosition != null
+                ? const Color(0xFF2E7D32)
+                : Colors.grey,
+          ),
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(color: Colors.grey.shade200),
+        ),
+        collapsedShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+          side: BorderSide(color: Colors.grey.shade200),
+        ),
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(8, 4, 8, 12),
+            child: PositionSelector(
+              selectedPosition: _heroPosition,
+              onPositionChanged: (pos) =>
+                  setState(() => _heroPosition = pos),
+            ),
           ),
         ],
       ),

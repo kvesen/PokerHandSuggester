@@ -6,6 +6,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../models/card.dart';
+import '../../models/position.dart';
 import 'card_widget.dart';
 
 /// Renders an oval poker table with hole cards, community cards, pot display,
@@ -17,12 +18,17 @@ class PokerTableWidget extends StatelessWidget {
     required this.communityCards,
     required this.numberOfOpponents,
     required this.potSize,
+    this.heroPosition,
   });
 
   final List<PokerCard> holeCards;
   final List<PokerCard> communityCards;
   final int numberOfOpponents;
   final double potSize;
+
+  /// Optional hero position — when provided, shows the position label on the
+  /// player's seat.
+  final TablePosition? heroPosition;
 
   @override
   Widget build(BuildContext context) {
@@ -178,9 +184,11 @@ class PokerTableWidget extends StatelessWidget {
                     .toList(),
           ),
           const SizedBox(height: 2),
-          const Text(
-            'You',
-            style: TextStyle(
+          Text(
+            heroPosition != null
+                ? 'You · ${positionLabel(heroPosition!)}'
+                : 'You',
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 10,
               fontWeight: FontWeight.bold,

@@ -7,6 +7,7 @@ import '../../engine/decision_engine.dart';
 import '../../engine/equity_calculator.dart';
 import '../../models/game_state.dart';
 import '../../models/hand_record.dart';
+import '../../models/position.dart';
 import '../../services/history_service.dart';
 import '../widgets/card_widget.dart';
 import '../widgets/decision_badge.dart';
@@ -190,6 +191,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                   communityCards: widget.gameState.communityCards,
                   numberOfOpponents: widget.gameState.numberOfOpponents,
                   potSize: widget.gameState.potSize,
+                  heroPosition: widget.gameState.heroPosition,
                 ),
               ),
             ),
@@ -473,6 +475,11 @@ class _GameInfoSummary extends StatelessWidget {
             label: 'Opponents',
             value: '${gameState.numberOfOpponents}',
           ),
+          if (gameState.heroPosition != null)
+            _InfoItem(
+              label: 'Position',
+              value: positionLabel(gameState.heroPosition!),
+            ),
         ],
       ),
     );
