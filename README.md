@@ -13,7 +13,12 @@ A Flutter mobile app (Android & iOS) that calculates the **mathematically optima
 - 🎯 **Decision engine** — clear Fold / Call / Raise recommendation with explanation
 - 🟢🟡🔴 **Color-coded badge** — green = RAISE, amber = CALL, red = FOLD
 
-### Phase 3 — UI Polish, Hand History & Theming ✅
+### Phase 4 — Edge Case Testing & Performance Optimization ✅
+- ⚡ **Background isolate computation** — Monte Carlo simulation runs in a separate `Isolate` via `Isolate.run()`, keeping the UI fully responsive during calculation
+- 🛡️ **Input validation hardening** — pot size must be > 0; bet to call must be ≥ 0; community cards must be 0, 3, 4, or 5 (no invalid board states); opponents 1–9
+- 🧪 **Comprehensive edge case tests** — straight flush vs. four-of-a-kind ranking, ace-low straight ordering, full house tie-breaking, pocket aces equity, river determinism, multi-opponent equity scaling, free-check never folds, extreme pot-odds scenarios, and more
+
+
 - 🎨 **Dark / Light mode toggle** — persisted via `SharedPreferences`
 - 🃏 **Poker table visualization** — oval felt table with player seat, community cards, opponent indicators, and pot display
 - 📜 **Hand history** — every analyzed hand is automatically saved; browse, delete, or clear all entries from the History screen
@@ -181,5 +186,5 @@ The required usage descriptions are already present in `ios/Runner/Info.plist`:
 - **Phase 1** ✅ Poker math engine + manual input UI
 - **Phase 2** ✅ Camera integration + ML card detection + detection review
 - **Phase 3** ✅ UI polish — table visualization, hand history, dark/light theming, responsive layout
-- **Phase 4** 🔜 Edge case testing + performance optimization
+- **Phase 4** ✅ Edge case testing + performance optimization
 - **Phase 5** 🔜 App Store / Google Play deployment

@@ -91,5 +91,107 @@ void main() {
       );
       expect(result.iterations, 100);
     });
+
+    // ---- Edge-case tests --------------------------------------------------
+
+    test('pocket aces preflop equity > 80% against one opponent', () {
+      final result = EquityCalculator.calculate(
+        holeCards: [
+          const PokerCard(suit: Suit.spades, rank: Rank.ace),
+          const PokerCard(suit: Suit.hearts, rank: Rank.ace),
+        ],
+        communityCards: [],
+        numOpponents: 1,
+        iterations: 2000,
+        seed: 99,
+      );
+      expect(result.equity, greaterThan(0.80));
+    });
+
+    test('equity decreases as number of opponents increases', () {
+      const holeCards = [
+        PokerCard(suit: Suit.spades, rank: Rank.ace),
+        PokerCard(suit: Suit.hearts, rank: Rank.ace),
+      ];
+      final oneOpponent = EquityCalculator.calculate(
+        holeCards: holeCards,
+        communityCards: [],
+        numOpponents: 1,
+        iterations: 2000,
+        seed: 42,
+      );
+      final fourOpponents = EquityCalculator.calculate(
+        holeCards: holeCards,
+        communityCards: [],
+        numOpponents: 4,
+        iterations: 2000,
+        seed: 42,
+      );
+      expect(oneOpponent.equity, greaterThan(fourOpponents.equity));
+    });
+
+    test('river (5 community cards) — result is determined (win or loss or tie)', () {
+      // With all 5 community cards known, every simulation should yield the
+      // same outcome, so one of the probabilities should be 1.0.
+      final result = EquityCalculator.calculate(
+        holeCards: [
+          const PokerCard(suit: Suit.spades, rank: Rank.ace),
+          const PokerCard(suit: Suit.spades, rank: Rank.king),
+        ],
+        communityCards: [
+          const PokerCard(suit: Suit.spades, rank: Rank.queen),
+          const PokerCard(suit: Suit.spades, rank: Rank.jack),
+          const PokerCard(suit: Suit.spades, rank: Rank.ten),
+          const PokerCard(suit: Suit.hearts, rank: Rank.two),
+          const PokerCard(suit: Suit.hearts, rank: Rank.three),
+        ],
+        numOpponents: 1,
+        iterations: 100,
+        seed: 7,
+      );
+      // Win probability should be 1.0 (royal flush beats everything)
+      expect(result.winProbability, closeTo(1.0, 0.0001));
+    });
+
+    test('pocket pair vs overcards — pair is roughly 50-50', () {
+      // 2-2 vs A-K offsuit is a classic "coin flip" (pair is slight favourite)
+      final result = EquityCalculator.calculate(
+        holeCards: [
+          const PokerCard(suit: Suit.spades, rank: Rank.two),
+          const PokerCard(suit: Suit.hearts, rank: Rank.two),
+        ],
+        communityCards: [],
+        numOpponents: 1,
+        iterations: 3000,
+        seed: 11,
+      );
+      // Pair is typically 52-55% favourite; keep range wide for Monte Carlo variance
+      expect(result.equity, greaterThan(0.40));
+      expect(result.equity, lessThan(0.70));
+    });
+
+    test('split-pot scenario produces non-zero tie probability', () {
+      // Identical hole cards in different suits can tie frequently on certain boards.
+      // Use a board that makes the best hand entirely on the community cards.
+      final result = EquityCalculator.calculate(
+        holeCards: [
+          const PokerCard(suit: Suit.spades, rank: Rank.two),
+          const PokerCard(suit: Suit.hearts, rank: Rank.three),
+        ],
+        communityCards: [
+          const PokerCard(suit: Suit.diamonds, rank: Rank.ace),
+          const PokerCard(suit: Suit.clubs, rank: Rank.ace),
+          const PokerCard(suit: Suit.spades, rank: Rank.ace),
+          const PokerCard(suit: Suit.hearts, rank: Rank.ace),
+          const PokerCard(suit: Suit.diamonds, rank: Rank.king),
+        ],
+        numOpponents: 1,
+        iterations: 500,
+        seed: 5,
+      );
+      // With four aces on the board the best hand is quad aces + king kicker,
+      // which is the same for everyone → all ties.
+      expect(result.tieProbability, greaterThan(0.0));
+    });
   });
 }

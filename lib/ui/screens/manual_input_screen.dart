@@ -1,11 +1,13 @@
 /// Manual input screen: card selection, pot/bet inputs, calculate button.
 library;
 
+import 'dart:isolate';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../engine/decision_engine.dart';
-import '../../engine/equity_calculator.dart';
+import '../../engine/equity_isolate.dart';
 import '../../models/card.dart';
 import '../../models/game_state.dart';
 import '../../utils/constants.dart';
@@ -100,6 +102,12 @@ class _ManualInputScreenState extends State<ManualInputScreen>
       _showError('Please select exactly 2 hole cards.');
       return;
     }
+    final communityCount = _communityCards.length;
+    if (communityCount == 1 || communityCount == 2) {
+      _showError(
+          'Community cards must be 0, 3, 4, or 5 — not $communityCount.');
+      return;
+    }
 
     setState(() => _isCalculating = true);
 
@@ -107,11 +115,14 @@ class _ManualInputScreenState extends State<ManualInputScreen>
       final pot = double.parse(_potController.text);
       final bet = double.parse(_betController.text);
 
-      final equityResult = await Future(() => EquityCalculator.calculate(
-            holeCards: _holeCards,
-            communityCards: _communityCards,
-            numOpponents: _opponents,
-          ));
+      final params = EquityIsolateParams(
+        holeCards: List<PokerCard>.from(_holeCards),
+        communityCards: List<PokerCard>.from(_communityCards),
+        numOpponents: _opponents,
+      );
+
+      final equityResult =
+          await Isolate.run(() => runEquityCalculation(params));
 
       final decision = DecisionEngine.decide(
         equity: equityResult.equity,
@@ -311,6 +322,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
               controller: _potController,
               label: 'Pot Size',
               hint: '100',
+              mustBePositive: true,
             ),
           ),
           const SizedBox(width: 12),
@@ -341,7 +353,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
           IconButton(
             icon: const Icon(Icons.add_circle_outline),
             onPressed:
-                _opponents < 8 ? () => setState(() => _opponents++) : null,
+                _opponents < 9 ? () => setState(() => _opponents++) : null,
           ),
         ],
       ),
@@ -445,11 +457,19 @@ class _NumericField extends StatelessWidget {
     required this.controller,
     required this.label,
     required this.hint,
+    this.minValue = 0,
+    this.mustBePositive = false,
   });
 
   final TextEditingController controller;
   final String label;
   final String hint;
+
+  /// Minimum allowed value (inclusive). Defaults to 0.
+  final double minValue;
+
+  /// When true the value must be strictly greater than [minValue].
+  final bool mustBePositive;
 
   @override
   Widget build(BuildContext context) {
@@ -469,7 +489,13 @@ class _NumericField extends StatelessWidget {
       validator: (value) {
         if (value == null || value.isEmpty) return 'Required';
         final n = double.tryParse(value);
-        if (n == null || n < 0) return 'Enter a valid number';
+        if (n == null) return 'Enter a valid number';
+        if (mustBePositive && n <= minValue) {
+          return 'Must be greater than ${minValue.toStringAsFixed(0)}';
+        }
+        if (!mustBePositive && n < minValue) {
+          return 'Must be ≥ ${minValue.toStringAsFixed(0)}';
+        }
         return null;
       },
     );

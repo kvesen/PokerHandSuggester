@@ -55,5 +55,24 @@ void main() {
         closeTo(0.25, 0.0001),
       );
     });
+
+    // ---- Edge-case tests --------------------------------------------------
+
+    test('betToCall=0 returns exactly 0.0', () {
+      expect(PotOdds.calculate(pot: 500, costToCall: 0), 0.0);
+      expect(PotOdds.requiredEquity(pot: 500, costToCall: 0), 0.0);
+    });
+
+    test('large pot / small bet → very low pot odds', () {
+      // pot=990, call=10 → 10/1000 = 1%
+      final odds = PotOdds.calculate(pot: 990, costToCall: 10);
+      expect(odds, closeTo(0.01, 0.0001));
+    });
+
+    test('small pot / large bet → very high pot odds', () {
+      // pot=10, call=990 → 990/1000 = 99%
+      final odds = PotOdds.calculate(pot: 10, costToCall: 990);
+      expect(odds, closeTo(0.99, 0.0001));
+    });
   });
 }
