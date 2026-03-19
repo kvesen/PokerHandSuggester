@@ -99,6 +99,24 @@ class _ManualInputScreenState extends State<ManualInputScreen>
     });
   }
 
+  /// Runs the equity calculation in a separate isolate.
+  ///
+  /// This must be a [static] method so the [Isolate.run] closure does not
+  /// capture [this] (which contains unsendable Flutter framework objects like
+  /// [TabController], [TextEditingController], etc.).
+  static Future<EquityResult> _runInIsolate(
+    List<PokerCard> holeCards,
+    List<PokerCard> communityCards,
+    int numOpponents,
+  ) {
+    final params = EquityIsolateParams(
+      holeCards: holeCards,
+      communityCards: communityCards,
+      numOpponents: numOpponents,
+    );
+    return Isolate.run(() => runEquityCalculation(params));
+  }
+
   Future<void> _calculate() async {
     if (!_formKey.currentState!.validate()) return;
     if (_holeCards.length < kMaxHoleCards) {
@@ -118,14 +136,14 @@ class _ManualInputScreenState extends State<ManualInputScreen>
       final pot = double.parse(_potController.text);
       final bet = double.parse(_betController.text);
 
-      final params = EquityIsolateParams(
-        holeCards: List<PokerCard>.from(_holeCards),
-        communityCards: List<PokerCard>.from(_communityCards),
-        numOpponents: _opponents,
-      );
+      // Copy instance fields into local variables before crossing the isolate
+      // boundary so that _runInIsolate receives only plain Dart objects.
+      final holeCardsCopy = List<PokerCard>.from(_holeCards);
+      final communityCardsCopy = List<PokerCard>.from(_communityCards);
+      final opponentsCopy = _opponents;
 
       final equityResult =
-          await Isolate.run(() => runEquityCalculation(params));
+          await _runInIsolate(holeCardsCopy, communityCardsCopy, opponentsCopy);
 
       final decision = DecisionEngine.decide(
         equity: equityResult.equity,
