@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../engine/decision_engine.dart';
+import '../../engine/equity_calculator.dart';
 import '../../engine/equity_isolate.dart';
 import '../../models/card.dart';
 import '../../models/game_state.dart';
@@ -35,25 +36,7 @@ class ManualInputScreen extends StatefulWidget {
   State<ManualInputScreen> createState() => _ManualInputScreenState();
 }
 
-class _ManualInputScreenState extends State<ManualInputScreen>
-    with SingleTickerProviderStateMixin {
-  late final List<PokerCard> _holeCards;
-  late final List<PokerCard> _communityCards;
-
-  final _potController = TextEditingController(text: '100');
-  final _betController = TextEditingController(text: '20');
-  final _formKey = GlobalKey<FormState>();
-
-  int _opponents = 2;
-  bool _isCalculating = false;
-  TablePosition? _heroPosition;
-
-  // Which section is the selector currently filling? 0 = hole, 1 = community.
-  int _activeSection = 0;
-
-  late final TabController _tabController;
-
-  @override
+class _ManualInputScreenState extends State<ManualInputScreen>\n    with SingleTickerProviderStateMixin {\n  late final List<PokerCard> _holeCards;\n  late final List<PokerCard> _communityCards;\n  final _potController = TextEditingController(text: '100');\n  final _betController = TextEditingController(text: '20');\n  final _formKey = GlobalKey<FormState>();\n  int _opponents = 2;\n  bool _isCalculating = false;\n  TablePosition? _heroPosition;\n  // Which section is the selector currently filling? 0 = hole, 1 = community.\n  int _activeSection = 0;\n  late final TabController _tabController;\n  @override
   void initState() {
     super.initState();
     _holeCards = List<PokerCard>.from(widget.preSelectedHoleCards ?? []);
@@ -75,10 +58,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
     super.dispose();
   }
 
-  // ---------------------------------------------------------------------------
-  // Helpers
-  // ---------------------------------------------------------------------------
-
+  // ---------------------------------------------------------------------------  // Helpers  // ---------------------------------------------------------------------------
   void _onCardToggled(PokerCard card) {
     setState(() {
       if (_activeSection == 0) {
@@ -182,10 +162,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Build
-  // ---------------------------------------------------------------------------
-
+  // ---------------------------------------------------------------------------  // Build  // ---------------------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -450,10 +427,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
   }
 }
 
-// ---------------------------------------------------------------------------
-// Private helper widgets
-// ---------------------------------------------------------------------------
-
+// ---------------------------------------------------------------------------  // Private helper widgets  // ---------------------------------------------------------------------------
 class _SectionHeader extends StatelessWidget {
   const _SectionHeader({required this.title, required this.subtitle});
 
@@ -537,8 +511,7 @@ class _NumericField extends StatelessWidget {
       controller: controller,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
-      ],
+        FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),\n      ],
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
