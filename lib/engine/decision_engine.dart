@@ -49,15 +49,18 @@ class Decision {
 class DecisionEngine {
   /// Evaluates the current game state and returns a [Decision].
   ///
-  /// [equity]       – estimated win probability (0–1) from equity calculator.
-  /// [pot]          – total chips currently in the pot.
-  /// [costToCall]   – chips required to stay in the hand.
-  /// [heroPosition] – optional table position; adjusts raise/call thresholds.
+  /// [equity]          – estimated win probability (0–1) from equity calculator.
+  /// [pot]             – total chips currently in the pot.
+  /// [costToCall]      – chips required to stay in the hand.
+  /// [heroPosition]    – optional table position; adjusts raise/call thresholds.
+  /// [villainPositions] – optional opponent positions; applies range-pressure
+  ///                      adjustment to the pot-odds threshold.
   static Decision decide({
     required double equity,
     required double pot,
     required double costToCall,
     TablePosition? heroPosition,
+    List<TablePosition>? villainPositions,
   }) {
     final potOddsRequired =
         PotOdds.requiredEquity(pot: pot, costToCall: costToCall);
@@ -67,6 +70,20 @@ class DecisionEngine {
     // < 1.0 → play tighter (e.g. UTG).
     final double multiplier =
         heroPosition != null ? positionMultiplier(heroPosition) : 1.0;
+
+    // Villain range-pressure: average opponentRangePressure across all
+    // villain positions. > 1.0 means tighter opponent range (need more equity);
+    // < 1.0 means wider opponent range (can continue lighter).
+    double villainPressure = 1.0;
+    if (villainPositions != null && villainPositions.isNotEmpty) {
+      villainPressure = villainPositions
+              .map(opponentRangePressure)
+              .reduce((a, b) => a + b) /
+          villainPositions.length;
+    }
+
+    // Adjust pot-odds threshold by villain range pressure.
+    final double adjustedPotOddsRequired = potOddsRequired * villainPressure;
 
     // Raise threshold is position-adjusted: easier to raise from the button,
     // harder from early position.
@@ -90,37 +107,42 @@ class DecisionEngine {
         baseExplanation =
             'No bet to call. Check and see the next card for free.';
       }
-    } else if (equity < potOddsRequired) {
+    } else if (equity < adjustedPotOddsRequired) {
       action = PlayerAction.fold;
       baseExplanation =
           'Your equity (${(equity * 100).toStringAsFixed(1)}%) is less than '
-          'the pot odds required (${(potOddsRequired * 100).toStringAsFixed(1)}%). '
+          'the pot odds required (${(adjustedPotOddsRequired * 100).toStringAsFixed(1)}%). '
           'Calling has negative expected value (EV = $ev). Fold.';
-    } else if (equity < potOddsRequired * raiseThreshold) {
+    } else if (equity < adjustedPotOddsRequired * raiseThreshold) {
       action = PlayerAction.call;
       baseExplanation =
           'Your equity (${(equity * 100).toStringAsFixed(1)}%) meets but does not '
-          'greatly exceed pot odds (${(potOddsRequired * 100).toStringAsFixed(1)}%). '
+          'greatly exceed pot odds (${(adjustedPotOddsRequired * 100).toStringAsFixed(1)}%). '
           'Calling is marginally profitable (EV = ${ev.toStringAsFixed(1)}).';
     } else {
       action = PlayerAction.raise;
       baseExplanation =
           'Your equity (${(equity * 100).toStringAsFixed(1)}%) significantly exceeds '
-          'pot odds (${(potOddsRequired * 100).toStringAsFixed(1)}%). '
+          'pot odds (${(adjustedPotOddsRequired * 100).toStringAsFixed(1)}%). '
           'You have a strong edge — raise to extract value (EV = ${ev.toStringAsFixed(1)}).';
     }
 
-    // Append position note when a position is provided.
-    final String explanation = heroPosition != null
-        ? '$baseExplanation ${_positionNote(heroPosition)}'
-        : baseExplanation;
+    // Append position note when a hero position is provided.
+    final String heroNote =
+        heroPosition != null ? ' ${_positionNote(heroPosition)}' : '';
+
+    // Append villain position note when villain positions are provided.
+    final String villainNote =
+        (villainPositions != null && villainPositions.isNotEmpty)
+            ? ' ${_villainPositionNote(villainPositions)}'
+            : '';
 
     return Decision(
       action: action,
       equity: equity,
-      potOdds: potOddsRequired,
+      potOdds: adjustedPotOddsRequired,
       expectedValue: ev,
-      explanation: explanation,
+      explanation: '$baseExplanation$heroNote$villainNote',
     );
   }
 
@@ -154,6 +176,30 @@ class DecisionEngine {
       case TablePosition.bigBlind:
         return 'Your ${positionLabel(pos)} position is out of position postflop, '
             'but you already have chips invested in the pot.';
+    }
+  }
+
+  /// Returns a human-readable note about the villain's opening position.
+  static String _villainPositionNote(List<TablePosition> positions) {
+    // Use the first (or only) villain position for the narrative note.
+    final pos = positions.first;
+    final label = positionLabel(pos);
+    switch (pos) {
+      case TablePosition.utg:
+      case TablePosition.utg1:
+      case TablePosition.mp:
+      case TablePosition.mp1:
+        return 'Opponent opened from $label — a tight range. '
+            'You need stronger equity to continue.';
+      case TablePosition.cutoff:
+      case TablePosition.button:
+        return 'Opponent opened from $label — a wide range. '
+            'You can call lighter here.';
+      case TablePosition.hijack:
+        return 'Opponent opened from $label — a neutral range.';
+      case TablePosition.smallBlind:
+      case TablePosition.bigBlind:
+        return 'Opponent opened from $label — a mixed/defend range.';
     }
   }
 }

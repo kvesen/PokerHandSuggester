@@ -9,18 +9,36 @@ import '../../models/position.dart';
 ///
 /// Tapping a seat selects it as the hero position (highlighted in green).
 /// Tapping the already-selected seat deselects it (clears the position).
+///
+/// When [onVillainPositionsChanged] is provided, additional seats can be
+/// marked as villain seats (shown in red/orange with an "OPP" label).
+/// At most [maxVillains] villain seats can be selected at once.
+/// A seat cannot be both hero and villain simultaneously.
 class PositionSelector extends StatelessWidget {
   const PositionSelector({
     super.key,
     required this.onPositionChanged,
     this.selectedPosition,
+    this.villainPositions = const [],
+    this.onVillainPositionsChanged,
+    this.maxVillains = 1,
   });
 
-  /// Callback invoked when the user selects or clears a position.
+  /// Callback invoked when the user selects or clears the hero position.
   final ValueChanged<TablePosition?> onPositionChanged;
 
-  /// The currently selected position (null = none selected).
+  /// The currently selected hero position (null = none selected).
   final TablePosition? selectedPosition;
+
+  /// The currently selected villain seats.
+  final List<TablePosition> villainPositions;
+
+  /// Callback invoked when villain seats change.
+  /// If null, villain selection is disabled.
+  final ValueChanged<List<TablePosition>>? onVillainPositionsChanged;
+
+  /// Maximum number of villain seats that can be selected.
+  final int maxVillains;
 
   // Seats arranged clockwise from the Button (standard poker table order:
   // BTN → SB → BB → UTG → UTG+1 → MP → MP+1 → HJ → CO → back to BTN).
@@ -63,31 +81,57 @@ class PositionSelector extends StatelessWidget {
 
   Widget _buildSeat(TablePosition pos, double cx, double cy) {
     const seatSize = 46.0;
-    final isSelected = selectedPosition == pos;
+    final isHero = selectedPosition == pos;
+    final isVillain = villainPositions.contains(pos);
 
     return Positioned(
       left: cx - seatSize / 2,
       top: cy - seatSize / 2,
       child: GestureDetector(
         onTap: () {
-          // Tap selected seat again → deselect
-          onPositionChanged(isSelected ? null : pos);
+          if (isHero) {
+            // Tap selected hero seat → deselect hero
+            onPositionChanged(null);
+          } else if (isVillain) {
+            // Tap villain seat → remove it from villain list
+            if (onVillainPositionsChanged != null) {
+              final updated = List<TablePosition>.from(villainPositions)
+                ..remove(pos);
+              onVillainPositionsChanged!(updated);
+            }
+          } else {
+            // Empty seat: set as hero first, then fill villain slots.
+            if (selectedPosition == null) {
+              onPositionChanged(pos);
+            } else if (onVillainPositionsChanged != null &&
+                villainPositions.length < maxVillains) {
+              final updated = List<TablePosition>.from(villainPositions)
+                ..add(pos);
+              onVillainPositionsChanged!(updated);
+            } else if (onVillainPositionsChanged == null) {
+              onPositionChanged(pos);
+            }
+          }
         },
         child: Container(
           width: seatSize,
           height: seatSize,
           decoration: BoxDecoration(
-            color: isSelected
+            color: isHero
                 ? const Color(0xFF2E7D32)
-                : Colors.grey.shade300,
+                : isVillain
+                    ? const Color(0xFFEF5350)
+                    : Colors.grey.shade300,
             shape: BoxShape.circle,
             border: Border.all(
-              color: isSelected
+              color: isHero
                   ? const Color(0xFF1B5E20)
-                  : Colors.grey.shade400,
-              width: isSelected ? 2.5 : 1.5,
+                  : isVillain
+                      ? const Color(0xFFB71C1C)
+                      : Colors.grey.shade400,
+              width: (isHero || isVillain) ? 2.5 : 1.5,
             ),
-            boxShadow: isSelected
+            boxShadow: isHero
                 ? const [
                     BoxShadow(
                       color: Color(0x552E7D32),
@@ -95,14 +139,31 @@ class PositionSelector extends StatelessWidget {
                       spreadRadius: 1,
                     )
                   ]
-                : null,
+                : isVillain
+                    ? const [
+                        BoxShadow(
+                          color: Color(0x55EF5350),
+                          blurRadius: 6,
+                          spreadRadius: 1,
+                        )
+                      ]
+                    : null,
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (isSelected)
+              if (isHero)
                 const Text(
                   'YOU',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 8,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              else if (isVillain)
+                const Text(
+                  'OPP',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 8,
@@ -112,8 +173,10 @@ class PositionSelector extends StatelessWidget {
               Text(
                 positionLabel(pos),
                 style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.grey.shade700,
-                  fontSize: isSelected ? 9 : 10,
+                  color: (isHero || isVillain)
+                      ? Colors.white
+                      : Colors.grey.shade700,
+                  fontSize: (isHero || isVillain) ? 9 : 10,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,

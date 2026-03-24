@@ -47,6 +47,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
   int _opponents = 2;
   bool _isCalculating = false;
   TablePosition? _heroPosition;
+  List<TablePosition> _villainPositions = [];
 
   // Which section is the selector currently filling? 0 = hole, 1 = community.
   int _activeSection = 0;
@@ -150,6 +151,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         pot: pot,
         costToCall: bet,
         heroPosition: _heroPosition,
+        villainPositions: _villainPositions.isNotEmpty ? _villainPositions : null,
       );
 
       final gameState = GameState(
@@ -159,6 +161,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         betToCall: bet,
         numberOfOpponents: _opponents,
         heroPosition: _heroPosition,
+        villainPositions: _villainPositions.isNotEmpty ? List.unmodifiable(_villainPositions) : null,
       );
 
       if (!mounted) return;
@@ -180,6 +183,22 @@ class _ManualInputScreenState extends State<ManualInputScreen>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.red),
     );
+  }
+
+  String _buildPositionSubtitle() {
+    final heroPart = _heroPosition != null
+        ? 'You: ${positionLabel(_heroPosition!)}'
+        : null;
+    final villainPart = _villainPositions.isNotEmpty
+        ? 'Opp: ${_villainPositions.map(positionLabel).join(', ')}'
+        : null;
+
+    if (heroPart != null && villainPart != null) {
+      return '$heroPart  |  $villainPart';
+    }
+    if (heroPart != null) return heroPart;
+    if (villainPart != null) return villainPart;
+    return 'Improves accuracy';
   }
 
   // ---------------------------------------------------------------------------
@@ -365,8 +384,16 @@ class _ManualInputScreenState extends State<ManualInputScreen>
           const Spacer(),
           IconButton(
             icon: const Icon(Icons.remove_circle_outline),
-            onPressed:
-                _opponents > 1 ? () => setState(() => _opponents--) : null,
+            onPressed: _opponents > 1
+                ? () => setState(() {
+                      _opponents--;
+                      // Clamp villain positions to the new opponent count.
+                      if (_villainPositions.length > _opponents) {
+                        _villainPositions =
+                            _villainPositions.sublist(0, _opponents);
+                      }
+                    })
+                : null,
           ),
           Text(
             '$_opponents',
@@ -388,12 +415,10 @@ class _ManualInputScreenState extends State<ManualInputScreen>
           style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
         ),
         subtitle: Text(
-          _heroPosition != null
-              ? 'Selected: ${positionLabel(_heroPosition!)} — ${positionDescription(_heroPosition!)}'
-              : 'Improves accuracy',
+          _buildPositionSubtitle(),
           style: TextStyle(
             fontSize: 12,
-            color: _heroPosition != null
+            color: (_heroPosition != null || _villainPositions.isNotEmpty)
                 ? const Color(0xFF2E7D32)
                 : Colors.grey,
           ),
@@ -408,11 +433,24 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         ),
         children: [
           Padding(
+            padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+            child: Text(
+              'Tap a seat to mark your position (green). '
+              'Tap other seats to mark opponents (red).',
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          Padding(
             padding: const EdgeInsets.fromLTRB(8, 4, 8, 12),
             child: PositionSelector(
               selectedPosition: _heroPosition,
               onPositionChanged: (pos) =>
                   setState(() => _heroPosition = pos),
+              villainPositions: _villainPositions,
+              onVillainPositionsChanged: (positions) =>
+                  setState(() => _villainPositions = positions),
+              maxVillains: _opponents,
             ),
           ),
         ],
