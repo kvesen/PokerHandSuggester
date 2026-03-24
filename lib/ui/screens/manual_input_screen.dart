@@ -5,7 +5,7 @@ import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import '../../engine/equity_calculator.dart';
 import '../../engine/decision_engine.dart';
 import '../../engine/equity_isolate.dart';
 import '../../models/card.dart';
