@@ -2,6 +2,7 @@
 library;
 
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -32,6 +33,8 @@ class PokerTableWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return AspectRatio(
       aspectRatio: 3 / 2,
       child: LayoutBuilder(
@@ -42,12 +45,12 @@ class PokerTableWidget extends StatelessWidget {
             children: [
               CustomPaint(
                 size: Size(w, h),
-                painter: _TablePainter(),
+                painter: _TablePainter(isDark: isDark),
               ),
-              ..._buildOpponentSeats(w, h),
-              _buildCommunityCards(w, h),
-              _buildPotDisplay(w, h),
-              _buildPlayerSeat(w, h),
+              ..._buildOpponentSeats(w, h, isDark),
+              _buildCommunityCards(w, h, isDark),
+              _buildPotDisplay(w, h, isDark),
+              _buildPlayerSeat(w, h, isDark),
             ],
           );
         },
@@ -55,7 +58,7 @@ class PokerTableWidget extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildOpponentSeats(double w, double h) {
+  List<Widget> _buildOpponentSeats(double w, double h, bool isDark) {
     if (numberOfOpponents <= 0) return [];
     final seats = <Widget>[];
     const startAngle = 200.0 * math.pi / 180.0;
@@ -78,16 +81,16 @@ class PokerTableWidget extends StatelessWidget {
         Positioned(
           left: sx - 18,
           top: sy - 18,
-          child: _OpponentSeat(number: i + 1),
+          child: _OpponentSeat(number: i + 1, isDark: isDark),
         ),
       );
     }
     return seats;
   }
 
-  Widget _buildCommunityCards(double w, double h) {
-    const cardW = 32.0;
-    const cardH = 46.0;
+  Widget _buildCommunityCards(double w, double h, bool isDark) {
+    const cardW = 34.0;
+    const cardH = 48.0;
     const spacing = 4.0;
     final totalWidth = cardW * 5 + spacing * 4;
     final left = (w - totalWidth) / 2;
@@ -107,58 +110,58 @@ class PokerTableWidget extends StatelessWidget {
           }
           return Padding(
             padding: const EdgeInsets.only(right: spacing),
-            child: Container(
-              width: cardW,
-              height: cardH,
-              decoration: BoxDecoration(
-                color: Colors.white.withAlpha(30),
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(color: Colors.white.withAlpha(60), width: 1),
-              ),
-            ),
+            child: _EmptyCardSlot(isDark: isDark),
           );
         }),
       ),
     );
   }
 
-  Widget _buildPotDisplay(double w, double h) {
+  Widget _buildPotDisplay(double w, double h, bool isDark) {
     return Positioned(
       left: 0,
       right: 0,
-      top: h * 0.52,
+      top: h * 0.55,
       child: Center(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-          decoration: BoxDecoration(
-            color: Colors.black.withAlpha(100),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.toll, color: Colors.amber, size: 14),
-              const SizedBox(width: 4),
-              Text(
-                potSize > 0 ? potSize.toStringAsFixed(0) : '0',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.white.withOpacity(0.1)),
               ),
-            ],
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.toll_rounded, color: Color(0xFFFFC107), size: 16),
+                  const SizedBox(width: 6),
+                  Text(
+                    potSize > 0 ? potSize.toStringAsFixed(0) : '0',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildPlayerSeat(double w, double h) {
+  Widget _buildPlayerSeat(double w, double h, bool isDark) {
     const cardSpacing = 4.0;
-    const cardW = 32.0;
+    const cardW = 34.0;
     final totalCardsWidth = cardW * 2 + cardSpacing;
-    final left = (w - totalCardsWidth) / 2 - 8;
+    final left = (w - totalCardsWidth) / 2;
 
     return Positioned(
       left: left,
@@ -170,9 +173,9 @@ class PokerTableWidget extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: holeCards.isEmpty
                 ? [
-                    _EmptyCardSlot(),
+                    _EmptyCardSlot(isDark: isDark),
                     const SizedBox(width: cardSpacing),
-                    _EmptyCardSlot(),
+                    _EmptyCardSlot(isDark: isDark),
                   ]
                 : holeCards
                     .map(
@@ -183,16 +186,24 @@ class PokerTableWidget extends StatelessWidget {
                     )
                     .toList(),
           ),
-          const SizedBox(height: 2),
-          Text(
-            heroPosition != null
-                ? 'You · ${positionLabel(heroPosition!)}'
-                : 'You',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 10,
-              fontWeight: FontWeight.bold,
-              shadows: [Shadow(color: Colors.black54, blurRadius: 4)],
+          const SizedBox(height: 6),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.white.withOpacity(0.1)),
+            ),
+            child: Text(
+              heroPosition != null
+                  ? 'You · ${positionLabel(heroPosition!)}'
+                  : 'You',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.5,
+              ),
             ),
           ),
         ],
@@ -206,27 +217,43 @@ class PokerTableWidget extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 class _OpponentSeat extends StatelessWidget {
-  const _OpponentSeat({required this.number});
+  const _OpponentSeat({required this.number, required this.isDark});
 
   final int number;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 36,
-      height: 36,
-      decoration: BoxDecoration(
-        color: Colors.white.withAlpha(40),
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white.withAlpha(120), width: 1.5),
-      ),
-      child: Center(
-        child: Text(
-          '$number',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(18),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+        child: Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.4),
+            shape: BoxShape.circle,
+            border: Border.all(color: const Color(0xFFEF4444).withOpacity(0.6), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFFEF4444).withOpacity(0.2),
+                blurRadius: 8,
+                spreadRadius: 1,
+              ),
+            ],
+          ),
+          child: Center(
+            child: Text(
+              'OPP\n$number',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 8,
+                fontWeight: FontWeight.w900,
+                height: 1.1,
+              ),
+            ),
           ),
         ),
       ),
@@ -235,15 +262,23 @@ class _OpponentSeat extends StatelessWidget {
 }
 
 class _EmptyCardSlot extends StatelessWidget {
+  const _EmptyCardSlot({required this.isDark});
+  
+  final bool isDark;
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 32,
-      height: 46,
+      width: 34,
+      height: 48,
       decoration: BoxDecoration(
-        color: Colors.white.withAlpha(20),
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: Colors.white.withAlpha(60), width: 1),
+        color: (isDark ? Colors.black : Colors.white).withOpacity(0.15),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: (isDark ? Colors.white : Colors.black).withOpacity(0.2), 
+          width: 1.5,
+          style: BorderStyle.solid,
+        ),
       ),
     );
   }
@@ -254,6 +289,9 @@ class _EmptyCardSlot extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 class _TablePainter extends CustomPainter {
+  final bool isDark;
+  _TablePainter({required this.isDark});
+
   @override
   void paint(Canvas canvas, Size size) {
     final w = size.width;
@@ -265,36 +303,48 @@ class _TablePainter extends CustomPainter {
       height: h * 0.86,
     );
 
-    // Border / rail
-    final borderPaint = Paint()
-      ..color = const Color(0xFF3E1F00)
+    // Glowing Outer ring
+    final outerGlowPaint = Paint()
+      ..color = const Color(0xFF10B981).withOpacity(isDark ? 0.3 : 0.15)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = w * 0.03;
-    canvas.drawOval(tableRect, borderPaint);
+      ..strokeWidth = w * 0.04
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
+    canvas.drawOval(tableRect, outerGlowPaint);
 
-    // Felt fill
+    // Deep Felt fill
     final feltPaint = Paint()
       ..shader = RadialGradient(
-        colors: const [Color(0xFF2E7D32), Color(0xFF1B5E20)],
+        colors: isDark 
+            ? [const Color(0xFF1B3B2B), const Color(0xFF0D1C15)] 
+            : [const Color(0xFFE8F5E9), const Color(0xFFC8E6C9)],
         center: Alignment.center,
         radius: 0.8,
       ).createShader(tableRect)
       ..style = PaintingStyle.fill;
     canvas.drawOval(tableRect, feltPaint);
 
-    // Inner highlight ring
+    // Hard Edge rail
+    final borderPaint = Paint()
+      ..color = isDark ? const Color(0xFF234B36) : const Color(0xFFA5D6A7)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = w * 0.025;
+    canvas.drawOval(tableRect, borderPaint);
+
+    // Subtle inner felt ring
     final innerRect = Rect.fromCenter(
       center: center,
-      width: w * 0.84,
-      height: h * 0.78,
+      width: w * 0.82,
+      height: h * 0.76,
     );
     final innerPaint = Paint()
-      ..color = const Color(0xFF388E3C).withAlpha(80)
+      ..color = (isDark ? Colors.white : Colors.black).withOpacity(0.08)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
     canvas.drawOval(innerRect, innerPaint);
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _TablePainter oldDelegate) {
+    return oldDelegate.isDark != isDark;
+  }
 }
