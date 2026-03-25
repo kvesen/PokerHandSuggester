@@ -43,6 +43,8 @@ class _ResultsScreenState extends State<ResultsScreen>
   late final List<Animation<double>> _fadeAnims;
   late final List<Animation<Offset>> _slideAnims;
 
+  HistoryService? _historyService;
+
   static const _sectionCount = 6;
   static const _staggerMs = 100;
 
@@ -77,7 +79,11 @@ class _ResultsScreenState extends State<ResultsScreen>
     _startStaggeredAnimations();
 
     if (widget.isSaved) {
-      _saveToHistory();
+      HistoryService.create().then((s) {
+        if (!mounted) return;
+        _historyService = s;
+        _saveToHistory();
+      });
     }
   }
 
@@ -90,7 +96,8 @@ class _ResultsScreenState extends State<ResultsScreen>
 
   Future<void> _saveToHistory() async {
     try {
-      final service = await HistoryService.create();
+      final service = _historyService;
+      if (service == null) return;
       final record = HandRecord(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         timestamp: DateTime.now(),
@@ -101,6 +108,8 @@ class _ResultsScreenState extends State<ResultsScreen>
         numberOfOpponents: widget.gameState.numberOfOpponents,
         action: widget.decision.action,
         equity: widget.decision.equity,
+        winProbability: widget.equityResult.winProbability,
+        tieProbability: widget.equityResult.tieProbability,
         potOdds: widget.decision.potOdds,
         expectedValue: widget.decision.expectedValue,
         explanation: widget.decision.explanation,

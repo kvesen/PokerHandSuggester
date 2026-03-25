@@ -22,6 +22,8 @@ void main() {
     numberOfOpponents: 3,
     action: PlayerAction.raise,
     equity: 0.72,
+    winProbability: 0.68,
+    tieProbability: 0.08,
     potOdds: 0.167,
     expectedValue: 113.6,
     explanation: 'Royal flush draw.',
@@ -45,6 +47,8 @@ void main() {
       expect(restored.timestamp, sample.timestamp);
       expect(restored.action, sample.action);
       expect(restored.equity, sample.equity);
+      expect(restored.winProbability, sample.winProbability);
+      expect(restored.tieProbability, sample.tieProbability);
       expect(restored.potOdds, sample.potOdds);
       expect(restored.expectedValue, sample.expectedValue);
       expect(restored.explanation, sample.explanation);
@@ -74,6 +78,15 @@ void main() {
       final restored = HandRecord.fromJson(sample.toJson());
       expect(restored.communityCards.length, 3);
       expect(restored.communityCards[0].rank, Rank.ten);
+    });
+
+    test('backward-compat: old JSON without winProbability falls back to equity', () {
+      final json = sample.toJson()
+        ..remove('winProbability')
+        ..remove('tieProbability');
+      final restored = HandRecord.fromJson(json);
+      expect(restored.winProbability, sample.equity);
+      expect(restored.tieProbability, 0.0);
     });
   });
 

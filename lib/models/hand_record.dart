@@ -18,6 +18,8 @@ class HandRecord {
     required this.numberOfOpponents,
     required this.action,
     required this.equity,
+    required this.winProbability,
+    required this.tieProbability,
     required this.potOdds,
     required this.expectedValue,
     required this.explanation,
@@ -50,6 +52,12 @@ class HandRecord {
   /// Win probability (0–1).
   final double equity;
 
+  /// Outright win probability (0–1), stored separately from ties.
+  final double winProbability;
+
+  /// Tie probability (0–1).
+  final double tieProbability;
+
   /// Pot odds required to break even (0–1).
   final double potOdds;
 
@@ -74,6 +82,8 @@ class HandRecord {
       'numberOfOpponents': numberOfOpponents,
       'action': action.name,
       'equity': equity,
+      'winProbability': winProbability,
+      'tieProbability': tieProbability,
       'potOdds': potOdds,
       'expectedValue': expectedValue,
       'explanation': explanation,
@@ -97,6 +107,8 @@ class HandRecord {
         (a) => a.name == json['action'] as String,
       ),
       equity: (json['equity'] as num).toDouble(),
+      winProbability: (json['winProbability'] as num?)?.toDouble() ?? (json['equity'] as num).toDouble(),
+      tieProbability: (json['tieProbability'] as num?)?.toDouble() ?? 0.0,
       potOdds: (json['potOdds'] as num).toDouble(),
       expectedValue: (json['expectedValue'] as num).toDouble(),
       explanation: json['explanation'] as String,

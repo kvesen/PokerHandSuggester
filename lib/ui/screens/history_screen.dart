@@ -93,9 +93,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
       numberOfOpponents: record.numberOfOpponents,
     );
     final equityResult = EquityResult(
-      winProbability: record.equity,
-      tieProbability: 0,
-      lossProbability: 1 - record.equity,
+      winProbability: record.winProbability,
+      tieProbability: record.tieProbability,
+      lossProbability: (1 - record.winProbability - record.tieProbability).clamp(0.0, 1.0),
       iterations: 0,
     );
     final decision = Decision(
