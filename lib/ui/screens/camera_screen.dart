@@ -2,6 +2,7 @@
 library;
 
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -97,8 +98,9 @@ class _CameraScreenState extends State<CameraScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Detection failed: $e'),
-          backgroundColor: Colors.red,
+          content: Text('Detection failed: $e', style: const TextStyle(fontWeight: FontWeight.bold)),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
           action: SnackBarAction(
             label: 'Manual Input',
             textColor: Colors.white,
@@ -128,14 +130,25 @@ class _CameraScreenState extends State<CameraScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Scan Table'),
-        backgroundColor: Colors.black,
+        title: const Text(
+          'Scan Table',
+          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: -0.5),
+        ),
+        backgroundColor: Colors.black.withOpacity(0.4),
+        flexibleSpace: ClipRRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(color: Colors.transparent),
+          ),
+        ),
         foregroundColor: Colors.white,
+        elevation: 0,
         actions: [
           if (_cameraService.status == CameraStatus.ready)
             IconButton(
-              icon: const Icon(Icons.flip_camera_ios),
+              icon: const Icon(Icons.flip_camera_ios_rounded),
               tooltip: 'Switch camera',
               onPressed: () async {
                 await _cameraService.switchCamera();
@@ -150,38 +163,68 @@ class _CameraScreenState extends State<CameraScreen> {
 
   Widget _buildBody() {
     if (_isInitializing) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(color: Colors.white),
-            SizedBox(height: 16),
-            Text('Initializing camera…',
-                style: TextStyle(color: Colors.white)),
+            CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
+            const SizedBox(height: 24),
+            const Text(
+              'Initializing camera…',
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.5,
+              ),
+            ),
           ],
         ),
       );
     }
 
     if (_isProcessing) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (_capturedImagePath != null)
-              Expanded(
-                child: Image.file(
-                  File(_capturedImagePath!),
-                  fit: BoxFit.contain,
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          if (_capturedImagePath != null)
+            Image.file(
+              File(_capturedImagePath!),
+              fit: BoxFit.cover,
+            ),
+          // Blur overlay during processing
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+              child: Container(color: Colors.black54),
+            ),
+          ),
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
                 ),
-              ),
-            const SizedBox(height: 24),
-            const CircularProgressIndicator(color: Colors.white),
-            const SizedBox(height: 16),
-            const Text('Detecting cards…',
-                style: TextStyle(color: Colors.white, fontSize: 16)),
-          ],
-        ),
+                const SizedBox(height: 24),
+                const Text(
+                  'Analyzing Cards…',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       );
     }
 
@@ -201,34 +244,36 @@ class _CameraScreenState extends State<CameraScreen> {
         // Bottom controls
         Container(
           color: Colors.black,
-          padding:
-              const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
+          padding: EdgeInsets.fromLTRB(32, 24, 32, MediaQuery.of(context).padding.bottom + 24),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               // Gallery button
               _CircleIconButton(
-                icon: Icons.photo_library,
-                size: 52,
+                icon: Icons.photo_library_rounded,
+                size: 56,
                 onTap: _pickFromGallery,
                 tooltip: 'Pick from Gallery',
               ),
 
-              // Shutter button
+              // Shutter button (Modernized)
               GestureDetector(
                 onTap: _capturePhoto,
                 child: Container(
-                  width: 72,
-                  height: 72,
+                  width: 80,
+                  height: 80,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white, width: 4),
+                    border: Border.all(color: Colors.white38, width: 4),
                   ),
-                  child: Container(
-                    margin: const EdgeInsets.all(6),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
+                  child: Center(
+                    child: Container(
+                      width: 64,
+                      height: 64,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   ),
                 ),
@@ -236,8 +281,8 @@ class _CameraScreenState extends State<CameraScreen> {
 
               // Manual input shortcut
               _CircleIconButton(
-                icon: Icons.edit_note,
-                size: 52,
+                icon: Icons.edit_note_rounded,
+                size: 56,
                 onTap: () => Navigator.of(context).pushReplacement(
                   MaterialPageRoute<void>(
                     builder: (_) => const ManualInputScreen(),
@@ -255,50 +300,96 @@ class _CameraScreenState extends State<CameraScreen> {
   Widget _buildErrorView() {
     final isPermanent =
         _cameraService.status == CameraStatus.permissionPermanentlyDenied;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.no_photography, color: Colors.white70, size: 64),
-            const SizedBox(height: 16),
-            Text(
-              _cameraService.lastError ?? 'Camera unavailable.',
-              style: const TextStyle(color: Colors.white, fontSize: 16),
-              textAlign: TextAlign.center,
+    
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(32),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF1E1E1E), Colors.black],
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.05),
+              shape: BoxShape.circle,
             ),
-            const SizedBox(height: 24),
-            if (isPermanent)
-              FilledButton.icon(
-                icon: const Icon(Icons.settings),
-                label: const Text('Open Settings'),
+            child: const Icon(Icons.no_photography_rounded, color: Colors.white54, size: 64),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            _cameraService.lastError ?? 'Camera unavailable',
+            style: const TextStyle(
+              color: Colors.white, 
+              fontSize: 20, 
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'We need camera access to scan your table and calculate odds automatically.',
+            style: TextStyle(color: Colors.white54, fontSize: 14, height: 1.5),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 48),
+          
+          if (isPermanent) ...[
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                icon: const Icon(Icons.settings_rounded, size: 20),
+                label: const Text('Open Settings', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ),
                 onPressed: openAppSettings,
               ),
-            const SizedBox(height: 12),
-            OutlinedButton.icon(
-              icon: const Icon(Icons.photo_library, color: Colors.white),
-              label: const Text('Pick from Gallery',
-                  style: TextStyle(color: Colors.white)),
+            ),
+            const SizedBox(height: 16),
+          ],
+          
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              icon: const Icon(Icons.photo_library_rounded, color: Colors.white, size: 20),
+              label: const Text('Pick from Gallery', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16)),
               style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.white)),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                side: BorderSide(color: Colors.white.withOpacity(0.2), width: 1.5),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
               onPressed: _pickFromGallery,
             ),
-            const SizedBox(height: 12),
-            OutlinedButton.icon(
-              icon: const Icon(Icons.edit_note, color: Colors.white),
-              label: const Text('Manual Input',
-                  style: TextStyle(color: Colors.white)),
+          ),
+          const SizedBox(height: 16),
+          
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              icon: const Icon(Icons.edit_note_rounded, color: Colors.white, size: 20),
+              label: const Text('Manual Input', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16)),
               style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.white)),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                side: BorderSide(color: Colors.white.withOpacity(0.2), width: 1.5),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              ),
               onPressed: () => Navigator.of(context).pushReplacement(
                 MaterialPageRoute<void>(
                   builder: (_) => const ManualInputScreen(),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -323,15 +414,21 @@ class _CircleIconButton extends StatelessWidget {
       message: tooltip,
       child: GestureDetector(
         onTap: onTap,
-        child: Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white.withAlpha(30),
-            border: Border.all(color: Colors.white54),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(size / 2),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.15),
+                border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
+              ),
+              child: Icon(icon, color: Colors.white, size: size * 0.45),
+            ),
           ),
-          child: Icon(icon, color: Colors.white, size: size * 0.46),
         ),
       ),
     );
