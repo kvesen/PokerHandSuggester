@@ -66,7 +66,7 @@ class CardSelector extends StatelessWidget {
                 child: CardWidget(
                   card: card,
                   selected: isSelected,
-                  size: CardSize.small,
+                  size: CardSize.tiny,
                   onTap: isDisabled ? null : () => onCardToggled(card),
                 ),
               ),
