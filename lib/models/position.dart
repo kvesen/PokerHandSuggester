@@ -65,6 +65,34 @@ String positionLabel(TablePosition pos) {
   }
 }
 
+/// Returns a range-pressure multiplier representing how strong an opener's
+/// range is from that position.
+///
+/// Values > 1.0 mean a tight opening range (need stronger hand to continue).
+/// Values < 1.0 mean a wide opening range (can continue lighter).
+double opponentRangePressure(TablePosition pos) {
+  switch (pos) {
+    case TablePosition.utg:
+      return 1.25;
+    case TablePosition.utg1:
+      return 1.18;
+    case TablePosition.mp:
+      return 1.12;
+    case TablePosition.mp1:
+      return 1.07;
+    case TablePosition.hijack:
+      return 1.00;
+    case TablePosition.cutoff:
+      return 0.93;
+    case TablePosition.button:
+      return 0.87;
+    case TablePosition.smallBlind:
+      return 1.05;
+    case TablePosition.bigBlind:
+      return 1.02;
+  }
+}
+
 /// Returns a brief description of the position.
 String positionDescription(TablePosition pos) {
   switch (pos) {
