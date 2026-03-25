@@ -26,7 +26,7 @@ class _DecisionBadgeState extends State<DecisionBadge>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 650),
     );
     _scale = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
@@ -42,41 +42,63 @@ class _DecisionBadgeState extends State<DecisionBadge>
 
   @override
   Widget build(BuildContext context) {
-    final (label, color, icon) = switch (widget.action) {
-      PlayerAction.fold => ('FOLD', const Color(0xFFD32F2F), Icons.close),
-      PlayerAction.call => ('CALL', const Color(0xFFF9A825), Icons.remove),
-      PlayerAction.raise =>
-        ('RAISE', const Color(0xFF388E3C), Icons.arrow_upward),
+    // Vibrant neon gradients
+    final (label, gradientColors, shadowColor, icon) = switch (widget.action) {
+      PlayerAction.fold => (
+          'FOLD',
+          [const Color(0xFFF43F5E), const Color(0xFFBE123C)],
+          const Color(0xFFE11D48),
+          Icons.close_rounded
+        ),
+      PlayerAction.call => (
+          'CALL',
+          [const Color(0xFFFBBF24), const Color(0xFFD97706)],
+          const Color(0xFFF59E0B),
+          Icons.drag_handle_rounded
+        ),
+      PlayerAction.raise => (
+          'RAISE',
+          [const Color(0xFF34D399), const Color(0xFF059669)],
+          const Color(0xFF10B981),
+          Icons.arrow_upward_rounded
+        ),
     };
 
     return ScaleTransition(
       scale: _scale,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 22),
+        padding: const EdgeInsets.symmetric(horizontal: 54, vertical: 24),
         decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withAlpha(60), width: 1.5),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: gradientColors,
+          ),
+          borderRadius: BorderRadius.circular(24),
+          // Inner glowing border effect
+          border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
           boxShadow: [
+            // Deep colored neon drop-shadow
             BoxShadow(
-              color: color.withAlpha(120),
-              blurRadius: 16,
-              offset: const Offset(0, 6),
+              color: shadowColor.withOpacity(0.6),
+              blurRadius: 24,
+              spreadRadius: 4,
+              offset: const Offset(0, 10),
             ),
           ],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: Colors.white, size: 38),
-            const SizedBox(width: 12),
+            Icon(icon, color: Colors.white, size: 40),
+            const SizedBox(width: 16),
             Text(
               label,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 38,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 3,
+                fontSize: 40,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 4,
               ),
             ),
           ],
