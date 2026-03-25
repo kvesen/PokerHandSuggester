@@ -7,10 +7,11 @@ import 'package:intl/intl.dart';
 
 import '../../engine/decision_engine.dart';
 import '../../engine/equity_calculator.dart';
+import '../../models/card.dart';
 import '../../models/game_state.dart';
 import '../../models/hand_record.dart';
 import '../../services/history_service.dart';
-import '../widgets/card_widget.dart';
+import '../../utils/constants.dart';
 import 'results_screen.dart';
 
 /// Displays the full list of analyzed hands with swipe-to-delete and
@@ -342,38 +343,34 @@ class _HistoryCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        physics: const BouncingScrollPhysics(),
-                        child: Row(
-                          children: [
-                            ...record.holeCards.map(
-                              (c) => Padding(
-                                padding: const EdgeInsets.only(right: 6),
-                                child: CardWidget(card: c, size: CardSize.small),
+                      Row(
+                        children: [
+                          ...record.holeCards.map(
+                            (c) => Padding(
+                              padding: const EdgeInsets.only(right: 6),
+                              child: _MiniCard(card: c),
+                            ),
+                          ),
+                          if (record.communityCards.isNotEmpty) ...[
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              child: Container(
+                                width: 2,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(1),
+                                ),
                               ),
                             ),
-                            if (record.communityCards.isNotEmpty) ...[
-                              Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 4),
-                                child: Container(
-                                  width: 2,
-                                  height: 36,
-                                  decoration: BoxDecoration(
-                                    color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(1),
-                                  ),
-                                ),
-                              ),
-                              ...record.communityCards.map(
-                                (c) => Padding(
-                                  padding: const EdgeInsets.only(right: 6),
-                                  child: CardWidget(card: c, size: CardSize.small),
-                                ),
-                              ),
-                            ],
+                            Wrap(
+                              spacing: 4,
+                              children: record.communityCards
+                                  .map((c) => _MiniCard(card: c))
+                                  .toList(),
+                            ),
                           ],
-                        ),
+                        ],
                       ),
                       const SizedBox(height: 16),
                       Container(
@@ -507,6 +504,45 @@ class _MiniStat extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _MiniCard extends StatelessWidget {
+  const _MiniCard({required this.card});
+
+  final PokerCard card;
+
+  @override
+  Widget build(BuildContext context) {
+    final isRed = card.suit == Suit.hearts || card.suit == Suit.diamonds;
+    final color = isRed ? const Color(0xFFEF4444) : const Color(0xFF1C1C1E);
+    final rank = kRankLabels[card.rank.name] ?? '';
+    final suit = kSuitSymbols[card.suit.name] ?? '';
+
+    return Container(
+      width: 28,
+      height: 36,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4),
+        boxShadow: const [
+          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            rank,
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: color, height: 1.1),
+          ),
+          Text(
+            suit,
+            style: TextStyle(fontSize: 9, color: color, height: 1.1),
+          ),
+        ],
+      ),
     );
   }
 }

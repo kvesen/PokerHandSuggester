@@ -38,9 +38,13 @@ class CardWidget extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
+    return Semantics(
+      label: '$rankLabel of ${card.suit.name}${selected ? ", selected" : ""}',
+      button: true,
+      enabled: onTap != null,
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOutCubic,
         width: cardWidth,
@@ -126,6 +130,7 @@ class CardWidget extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

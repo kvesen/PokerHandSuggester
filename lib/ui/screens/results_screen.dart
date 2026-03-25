@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 
 import '../../engine/decision_engine.dart';
 import '../../engine/equity_calculator.dart';
+import '../../engine/hand_evaluator.dart';
+import '../../models/card.dart';
 import '../../models/game_state.dart';
 import '../../models/hand_record.dart';
 import '../../models/position.dart';
@@ -224,16 +226,35 @@ class _ResultsScreenState extends State<ResultsScreen>
             ),
             const SizedBox(height: 20),
 
-            // Section 2 — Equity breakdown
+            // Animated equity bar (#13)
             _animated(
               2,
+              _EquityBar(equity: widget.decision.equity),
+            ),
+            const SizedBox(height: 12),
+
+            // Hand strength badge (#16)
+            if (widget.gameState.communityCards.isNotEmpty)
+              _animated(
+                2,
+                _HandStrengthBadge(
+                  holeCards: widget.gameState.holeCards,
+                  communityCards: widget.gameState.communityCards,
+                ),
+              ),
+            if (widget.gameState.communityCards.isNotEmpty)
+              const SizedBox(height: 12),
+
+            // Section 2 — Equity breakdown
+            _animated(
+              3,
               _EquityBreakdown(result: widget.equityResult),
             ),
             const SizedBox(height: 20),
 
             // Section 3 — Poker table visualization
             _animated(
-              3,
+              4,
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: PokerTableWidget(
@@ -249,7 +270,7 @@ class _ResultsScreenState extends State<ResultsScreen>
 
             // Section 4 — Explanation
             _animated(
-              4,
+              5,
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
@@ -633,3 +654,119 @@ class _InfoItem extends StatelessWidget {
   }
 }
 
+/// Maps a [HandRanking] enum value to a readable label.
+String _handRankLabel(HandRanking rank) => switch (rank) {
+      HandRanking.highCard => 'High Card',
+      HandRanking.onePair => 'One Pair',
+      HandRanking.twoPair => 'Two Pair',
+      HandRanking.threeOfAKind => 'Three of a Kind',
+      HandRanking.straight => 'Straight',
+      HandRanking.flush => 'Flush',
+      HandRanking.fullHouse => 'Full House',
+      HandRanking.fourOfAKind => 'Four of a Kind',
+      HandRanking.straightFlush => 'Straight Flush',
+      HandRanking.royalFlush => 'Royal Flush',
+    };
+
+/// Animated equity bar shown below the stats row.
+class _EquityBar extends StatelessWidget {
+  const _EquityBar({required this.equity});
+
+  final double equity;
+
+  @override
+  Widget build(BuildContext context) {
+    final equityPct = equity * 100;
+    final barColor = equity >= 0.5
+        ? const Color(0xFF22C55E)
+        : equity >= 0.3
+            ? const Color(0xFFF59E0B)
+            : const Color(0xFFEF4444);
+
+    return Semantics(
+      label: 'Equity ${equityPct.toStringAsFixed(1)} percent',
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(begin: 0, end: equity),
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeOutCubic,
+        builder: (context, value, _) {
+          final animatedPct = value * 100;
+          final animatedOppPct = (1 - value) * 100;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'You ${animatedPct.toStringAsFixed(1)}%',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: barColor,
+                    ),
+                  ),
+                  Text(
+                    '${animatedOppPct.toStringAsFixed(1)}% Opponents',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black45,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: LinearProgressIndicator(
+                  value: value,
+                  minHeight: 14,
+                  backgroundColor: Colors.black12,
+                  valueColor: AlwaysStoppedAnimation<Color>(barColor),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// Pill badge showing the best evaluated hand rank when community cards exist.
+class _HandStrengthBadge extends StatelessWidget {
+  const _HandStrengthBadge({
+    required this.holeCards,
+    required this.communityCards,
+  });
+
+  final List<PokerCard> holeCards;
+  final List<PokerCard> communityCards;
+
+  @override
+  Widget build(BuildContext context) {
+    final result = HandEvaluator.evaluate(holeCards + communityCards);
+    final label = _handRankLabel(result.ranking);
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        decoration: BoxDecoration(
+          color: colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: colorScheme.onPrimaryContainer,
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+}
