@@ -160,6 +160,14 @@ class _ResultsScreenState extends State<ResultsScreen>
         foregroundColor: Colors.white,
         elevation: 0,
       ),
+      floatingActionButton: FloatingActionButton.small(
+        backgroundColor: const Color(0xFF1B5E20),
+        foregroundColor: Colors.white,
+        tooltip: 'New Hand',
+        onPressed: _startNewHand,
+        child: const Icon(Icons.refresh),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
