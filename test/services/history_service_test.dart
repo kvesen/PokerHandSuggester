@@ -1,5 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:poker_hand_suggester/engine/decision_engine.dart';
 import 'package:poker_hand_suggester/models/card.dart';
@@ -33,8 +35,16 @@ HandRecord _makeRecord({
 }
 
 void main() {
-  setUp(() {
-    SharedPreferences.setMockInitialValues({});
+  late Directory tempDir;
+
+  setUp(() async {
+    tempDir = await Directory.systemTemp.createTemp('hive_test_');
+    Hive.init(tempDir.path);
+  });
+
+  tearDown(() async {
+    await Hive.close();
+    await tempDir.delete(recursive: true);
   });
 
   group('HistoryService', () {

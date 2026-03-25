@@ -1,77 +1,87 @@
-/// History service: persists hand records using SharedPreferences.
+/// History service: persists hand records using Hive.
 library;
 
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../models/hand_record.dart';
 
-const _kHistoryKey = 'hand_history';
+const _kBoxName = 'hand_history';
 const _kMaxHistory = 100;
 
-/// Persists and retrieves [HandRecord] objects using [SharedPreferences].
+/// Persists and retrieves [HandRecord] objects using Hive.
 class HistoryService {
-  HistoryService._();
+  HistoryService._(this._box);
+
+  final Box<String> _box;
 
   /// Creates and initialises a [HistoryService] instance.
   static Future<HistoryService> create() async {
-    return HistoryService._();
+    final box = await Hive.openBox<String>(_kBoxName);
+    return HistoryService._(box);
   }
 
   // -------------------------------------------------------------------------
   // Public API
   // -------------------------------------------------------------------------
 
-  /// Saves [record] to history. Auto-prunes oldest entries beyond 100.
+  /// Saves [record] to history. Auto-prunes oldest entries beyond [_kMaxHistory].
   Future<void> saveHand(HandRecord record) async {
-    final prefs = await SharedPreferences.getInstance();
-    final records = await _loadAll(prefs);
+    final records = _loadAll();
     records.insert(0, record);
     if (records.length > _kMaxHistory) {
       records.removeRange(_kMaxHistory, records.length);
     }
-    await _saveAll(prefs, records);
+    await _saveAll(records);
   }
 
   /// Returns all stored hand records, sorted newest first.
   Future<List<HandRecord>> getHistory() async {
-    final prefs = await SharedPreferences.getInstance();
-    return _loadAll(prefs);
+    return _loadAll();
   }
 
   /// Deletes all stored hand records.
   Future<void> clearHistory() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_kHistoryKey);
+    await _box.clear();
   }
 
   /// Deletes a specific hand record by [id].
   Future<void> deleteHand(String id) async {
-    final prefs = await SharedPreferences.getInstance();
-    final records = await _loadAll(prefs);
+    final records = _loadAll();
     records.removeWhere((r) => r.id == id);
-    await _saveAll(prefs, records);
+    await _saveAll(records);
   }
 
   // -------------------------------------------------------------------------
   // Helpers
   // -------------------------------------------------------------------------
 
-  Future<List<HandRecord>> _loadAll(SharedPreferences prefs) async {
-    final jsonStr = prefs.getString(_kHistoryKey);
-    if (jsonStr == null) return [];
-    final list = jsonDecode(jsonStr) as List<dynamic>;
-    return list
-        .map((e) => HandRecord.fromJson(e as Map<String, dynamic>))
-        .toList();
+  List<HandRecord> _loadAll() {
+    final entries = <HandRecord>[];
+    for (var i = 0; i < _box.length; i++) {
+      final jsonStr = _box.getAt(i);
+      if (jsonStr != null) {
+        try {
+          entries.add(HandRecord.fromJson(
+            jsonDecode(jsonStr) as Map<String, dynamic>,
+          ));
+        } catch (e, st) {
+          // Skip corrupted entries; this can occur if the serialisation format
+          // changes between app versions or the on-disk data is truncated.
+          assert(() {
+            debugPrint('HistoryService: skipping corrupted entry – $e\n$st');
+            return true;
+          }());
+        }
+      }
+    }
+    return entries;
   }
 
-  Future<void> _saveAll(
-    SharedPreferences prefs,
-    List<HandRecord> records,
-  ) async {
-    final list = records.map((r) => r.toJson()).toList();
-    await prefs.setString(_kHistoryKey, jsonEncode(list));
+  Future<void> _saveAll(List<HandRecord> records) async {
+    await _box.clear();
+    await _box.addAll(records.map((r) => jsonEncode(r.toJson())));
   }
 }
