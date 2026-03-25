@@ -23,6 +23,12 @@ class ManualInputScreen extends StatefulWidget {
     super.key,
     this.preSelectedHoleCards,
     this.preSelectedCommunityCards,
+    this.preFilledPot,
+    this.preFilledBet,
+    this.preSelectedHeroPosition,
+    this.preSelectedVillainPositions,
+    this.initialOpponents,
+    this.lockHoleCards = false,
   });
 
   /// Optional hole cards pre-populated from the camera/detection flow.
@@ -30,6 +36,25 @@ class ManualInputScreen extends StatefulWidget {
 
   /// Optional community cards pre-populated from the camera/detection flow.
   final List<PokerCard>? preSelectedCommunityCards;
+
+  /// Optional pre-filled pot size (for "Continue Hand" flow).
+  final double? preFilledPot;
+
+  /// Optional pre-filled bet to call (for "Continue Hand" flow).
+  final double? preFilledBet;
+
+  /// Optional pre-filled hero position (carried over from prior street).
+  final TablePosition? preSelectedHeroPosition;
+
+  /// Optional pre-filled villain positions (carried over from prior street).
+  final List<TablePosition>? preSelectedVillainPositions;
+
+  /// Optional pre-filled opponent count (carried over from prior street).
+  final int? initialOpponents;
+
+  /// When [true], the hole-cards tab is locked and cannot be edited.
+  /// Used when continuing a hand into a new street.
+  final bool lockHoleCards;
 
   @override
   State<ManualInputScreen> createState() => _ManualInputScreenState();
@@ -40,17 +65,17 @@ class _ManualInputScreenState extends State<ManualInputScreen>
   late final List<PokerCard> _holeCards;
   late final List<PokerCard> _communityCards;
 
-  final _potController = TextEditingController(text: '100');
-  final _betController = TextEditingController(text: '20');
+  late final TextEditingController _potController;
+  late final TextEditingController _betController;
   final _formKey = GlobalKey<FormState>();
 
-  int _opponents = 2;
+  late int _opponents;
   bool _isCalculating = false;
   TablePosition? _heroPosition;
-  List<TablePosition> _villainPositions = [];
+  late List<TablePosition> _villainPositions;
 
   // Which section is the selector currently filling? 0 = hole, 1 = community.
-  int _activeSection = 0;
+  late int _activeSection;
 
   late final TabController _tabController;
 
@@ -60,7 +85,23 @@ class _ManualInputScreenState extends State<ManualInputScreen>
     _holeCards = List<PokerCard>.from(widget.preSelectedHoleCards ?? []);
     _communityCards =
         List<PokerCard>.from(widget.preSelectedCommunityCards ?? []);
-    _tabController = TabController(length: 2, vsync: this);
+    _potController = TextEditingController(
+      text: widget.preFilledPot?.toStringAsFixed(0) ?? '100',
+    );
+    _betController = TextEditingController(
+      text: widget.preFilledBet?.toStringAsFixed(0) ?? '20',
+    );
+    _opponents = widget.initialOpponents ?? 2;
+    _heroPosition = widget.preSelectedHeroPosition;
+    _villainPositions =
+        List<TablePosition>.from(widget.preSelectedVillainPositions ?? []);
+    // When hole cards are locked, open directly on the community cards tab.
+    _activeSection = widget.lockHoleCards ? 1 : 0;
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: _activeSection,
+    );
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
         setState(() => _activeSection = _tabController.index);
@@ -202,6 +243,36 @@ class _ManualInputScreenState extends State<ManualInputScreen>
   }
 
   // ---------------------------------------------------------------------------
+  // Street helpers
+  // ---------------------------------------------------------------------------
+
+  /// Street info (title + color) derived from the number of community cards
+  /// that were pre-selected when this screen was opened.
+  ({String title, Color color}) get _streetInfo {
+    switch (widget.preSelectedCommunityCards?.length ?? 0) {
+      case 0:
+        return (title: 'Flop', color: Colors.blue.shade700);
+      case 3:
+        return (title: 'Turn', color: Colors.orange.shade700);
+      case 4:
+        return (title: 'River', color: Colors.red.shade700);
+      case 5:
+        return (title: 'Showdown', color: Colors.purple.shade700);
+      default:
+        return (title: 'Select Cards', color: Colors.grey.shade700);
+    }
+  }
+
+  /// Returns the title to display in the AppBar.
+  String get _streetTitle =>
+      widget.lockHoleCards ? _streetInfo.title : 'Select Cards';
+
+  /// A no-op card toggle handler used when hole-card editing is locked.
+  void _lockedCardToggle(PokerCard _) {
+    // Hole cards are locked — do nothing.
+  }
+
+  // ---------------------------------------------------------------------------
   // Build
   // ---------------------------------------------------------------------------
 
@@ -209,10 +280,31 @@ class _ManualInputScreenState extends State<ManualInputScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Cards'),
+        title: Text(_streetTitle),
         backgroundColor: const Color(0xFF1B5E20),
         foregroundColor: Colors.white,
         elevation: 0,
+        bottom: widget.lockHoleCards
+            ? PreferredSize(
+                preferredSize: const Size.fromHeight(32),
+                child: Container(
+                  width: double.infinity,
+                  color: _streetInfo.color,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+                  child: Text(
+                    _streetTitle.toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              )
+            : null,
       ),
       body: Form(
         key: _formKey,
@@ -328,9 +420,34 @@ class _ManualInputScreenState extends State<ManualInputScreen>
             labelColor: const Color(0xFF1B5E20),
             unselectedLabelColor: Colors.grey,
             indicatorColor: const Color(0xFF1B5E20),
-            tabs: const [
-              Tab(text: 'Hole Cards (2)'),
-              Tab(text: 'Community (0–5)'),
+            onTap: widget.lockHoleCards
+                ? (index) {
+                    // Prevent switching to the hole cards tab when locked.
+                    if (index == 0) {
+                      _tabController.animateTo(1);
+                    }
+                  }
+                : null,
+            tabs: [
+              Tab(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Hole Cards (2)',
+                      style: TextStyle(
+                        color: widget.lockHoleCards ? Colors.grey.shade400 : null,
+                      ),
+                    ),
+                    if (widget.lockHoleCards) ...[
+                      const SizedBox(width: 4),
+                      Icon(Icons.lock,
+                          size: 14, color: Colors.grey.shade400),
+                    ],
+                  ],
+                ),
+              ),
+              const Tab(text: 'Community (0–5)'),
             ],
           ),
           Padding(
@@ -338,7 +455,9 @@ class _ManualInputScreenState extends State<ManualInputScreen>
             child: CardSelector(
               selectedCards:
                   _activeSection == 0 ? _holeCards : _communityCards,
-              onCardToggled: _onCardToggled,
+              onCardToggled: _activeSection == 0 && widget.lockHoleCards
+                  ? _lockedCardToggle
+                  : _onCardToggled,
               disabledCards:
                   _activeSection == 0 ? _communityCards : _holeCards,
               maxSelectable:
