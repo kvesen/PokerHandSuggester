@@ -12,6 +12,7 @@ import '../../services/history_service.dart';
 import '../widgets/card_widget.dart';
 import '../widgets/decision_badge.dart';
 import '../widgets/table_widget.dart';
+import 'manual_input_screen.dart';
 
 /// Displays the recommendation from the decision engine.
 class ResultsScreen extends StatefulWidget {
@@ -107,6 +108,23 @@ class _ResultsScreenState extends State<ResultsScreen>
     } catch (_) {
       // History saving is best-effort; don't disrupt the UX.
     }
+  }
+
+  void _continueHand() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ManualInputScreen(
+          preSelectedHoleCards: widget.gameState.holeCards.toList(),
+          preSelectedCommunityCards: widget.gameState.communityCards.toList(),
+          preFilledPot: widget.gameState.potSize,
+          preFilledBet: 0,
+          initialOpponents: widget.gameState.numberOfOpponents,
+          preSelectedHeroPosition: widget.gameState.heroPosition,
+          preSelectedVillainPositions: widget.gameState.villainPositions?.toList(),
+          lockHoleCards: true,
+        ),
+      ),
+    );
   }
 
   @override
@@ -279,7 +297,26 @@ class _ResultsScreenState extends State<ResultsScreen>
             ),
             const SizedBox(height: 32),
 
-            // Back button
+            // Primary action — continue to next street
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                icon: const Icon(Icons.arrow_forward),
+                label: const Text('Continue Hand'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xFF1B5E20),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  textStyle: const TextStyle(fontSize: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: _continueHand,
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            // Secondary action — go back and re-edit same street
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
