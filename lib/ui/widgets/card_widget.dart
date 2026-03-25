@@ -68,7 +68,7 @@ class CardWidget extends StatelessWidget {
               )
             else
               BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.3 : 0.08),
+                color: theme.shadowColor.withOpacity(isDark ? 0.3 : 0.08),
                 blurRadius: 6,
                 offset: const Offset(1, 3),
               ),
