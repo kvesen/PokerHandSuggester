@@ -1,0 +1,11 @@
+# Run: dart run flutter_native_splash:create
+# See: https://pub.dev/packages/flutter_native_splash
+
+flutter_native_splash:
+  color: "#0F9D58"
+  color_dark: "#090B0F"
+  android_12:
+    color: "#0F9D58"
+    color_dark: "#090B0F"
+  ios: true
+  android: true
