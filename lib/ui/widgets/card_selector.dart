@@ -118,26 +118,79 @@ class _CardSelectorState extends State<CardSelector> {
   }
 
   void _submit() {
-    final card = _parseInput(_textController.text);
-    if (card == null) {
-      setState(() => _errorText = 'Invalid card — try Ah, Kd, 10s, 5c');
-      return;
+    final tokens = _textController.text
+        .split(',')
+        .map((t) => t.trim())
+        .where((t) => t.isNotEmpty)
+        .toList();
+
+    if (tokens.isEmpty) return;
+
+    final List<String> invalidTokens = [];
+    final List<String> alreadyUsedTokens = [];
+    final List<String> alreadySelectedTokens = [];
+    final List<String> duplicateTokens = [];
+    final List<String> maxReachedTokens = [];
+
+    // Cards successfully parsed and queued to add (ordered, deduped).
+    final List<PokerCard> toAdd = [];
+    final Set<PokerCard> seen = {};
+    int currentCount = widget.selectedCards.length;
+
+    for (final token in tokens) {
+      final card = _parseInput(token);
+      if (card == null) {
+        invalidTokens.add(token);
+        continue;
+      }
+      if (widget.disabledCards.contains(card)) {
+        alreadyUsedTokens.add(token);
+        continue;
+      }
+      if (widget.selectedCards.contains(card)) {
+        alreadySelectedTokens.add(token);
+        continue;
+      }
+      if (seen.contains(card)) {
+        duplicateTokens.add(token);
+        continue;
+      }
+      if (currentCount >= widget.maxSelectable) {
+        maxReachedTokens.add(token);
+        continue;
+      }
+      seen.add(card);
+      toAdd.add(card);
+      currentCount++;
     }
-    if (widget.disabledCards.contains(card)) {
-      setState(() => _errorText = 'Card already used elsewhere');
-      return;
+
+    for (final card in toAdd) {
+      widget.onCardToggled(card);
     }
-    if (widget.selectedCards.contains(card)) {
-      setState(() => _errorText = 'Card already selected');
-      return;
+
+    final List<String> errorParts = [];
+    if (invalidTokens.isNotEmpty) {
+      errorParts.add('Invalid: ${invalidTokens.join(', ')}');
     }
-    if (widget.selectedCards.length >= widget.maxSelectable) {
-      setState(() => _errorText = 'Maximum cards already selected');
-      return;
+    if (alreadyUsedTokens.isNotEmpty) {
+      errorParts.add('Already used: ${alreadyUsedTokens.join(', ')}');
     }
-    setState(() => _errorText = null);
-    _textController.clear();
-    widget.onCardToggled(card);
+    if (alreadySelectedTokens.isNotEmpty) {
+      errorParts.add('Already selected: ${alreadySelectedTokens.join(', ')}');
+    }
+    if (duplicateTokens.isNotEmpty) {
+      errorParts.add('Duplicate: ${duplicateTokens.join(', ')}');
+    }
+    if (maxReachedTokens.isNotEmpty) {
+      errorParts.add('Maximum reached: ${maxReachedTokens.join(', ')}');
+    }
+
+    if (errorParts.isEmpty) {
+      setState(() => _errorText = null);
+      _textController.clear();
+    } else {
+      setState(() => _errorText = errorParts.join(' — '));
+    }
   }
 
   @override
