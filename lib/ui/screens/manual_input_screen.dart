@@ -11,6 +11,7 @@ import '../../engine/equity_isolate.dart';
 import '../../models/card.dart';
 import '../../models/game_state.dart';
 import '../../models/position.dart';
+import '../../utils/app_colors.dart';
 import '../../utils/constants.dart';
 import '../widgets/card_selector.dart';
 import '../widgets/card_widget.dart';
@@ -287,9 +288,9 @@ class _ManualInputScreenState extends State<ManualInputScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(_streetTitle),
-        backgroundColor: const Color(0xFF1B5E20),
+        backgroundColor: kPrimaryGreen,
         foregroundColor: Colors.white,
-        elevation: 0,
+        elevation: 2,
         bottom: widget.lockHoleCards
             ? PreferredSize(
                 preferredSize: const Size.fromHeight(32),
@@ -314,21 +315,24 @@ class _ManualInputScreenState extends State<ManualInputScreen>
       ),
       floatingActionButton: FloatingActionButton.small(
         onPressed: _resetToNewHand,
-        backgroundColor: const Color(0xFF1B5E20),
+        backgroundColor: kPrimaryGreen,
         foregroundColor: Colors.white,
         tooltip: 'New Hand',
         child: const Icon(Icons.refresh),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
-      body: Form(
-        key: _formKey,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            if (constraints.maxWidth > 600) {
-              return _buildWideLayout();
-            }
-            return _buildNarrowLayout();
-          },
+      body: ColoredBox(
+        color: kOffWhiteBackground,
+        child: Form(
+          key: _formKey,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth > 600) {
+                return _buildWideLayout();
+              }
+              return _buildNarrowLayout();
+            },
+          ),
         ),
       ),
     );
@@ -421,20 +425,23 @@ class _ManualInputScreenState extends State<ManualInputScreen>
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: const [
           BoxShadow(
-              color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
+              color: Colors.black12, blurRadius: 10, offset: Offset(0, 3)),
         ],
       ),
       child: Column(
         children: [
-          TabBar(
-            controller: _tabController,
-            labelColor: const Color(0xFF1B5E20),
-            unselectedLabelColor: Colors.grey,
-            indicatorColor: const Color(0xFF1B5E20),
-            onTap: widget.lockHoleCards
+          ColoredBox(
+            color: kLightGreenBackground,
+            child: TabBar(
+              controller: _tabController,
+              labelColor: kPrimaryGreen,
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: kPrimaryGreen,
+              indicatorWeight: 3,
+              onTap: widget.lockHoleCards
                 ? (index) {
                     // Prevent switching to the hole cards tab when locked.
                     if (index == 0) {
@@ -464,6 +471,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
               const Tab(text: 'Community (0–5)'),
             ],
           ),
+          ),
           Padding(
             padding: const EdgeInsets.all(8),
             child: CardSelector(
@@ -487,106 +495,140 @@ class _ManualInputScreenState extends State<ManualInputScreen>
     return [
       const Text(
         'Game Info',
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          fontSize: 19,
+          fontWeight: FontWeight.bold,
+          color: kPrimaryGreen,
+        ),
       ),
       const SizedBox(height: 12),
-      Row(
-        children: [
-          Expanded(
-            child: _NumericField(
-              controller: _potController,
-              label: 'Pot Size',
-              hint: '100',
-              mustBePositive: true,
+      Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(18),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _NumericField(
-              controller: _betController,
-              label: 'Bet to Call',
-              hint: '20',
+          ],
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: _NumericField(
+                    controller: _potController,
+                    label: 'Pot Size',
+                    hint: '100',
+                    mustBePositive: true,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _NumericField(
+                    controller: _betController,
+                    label: 'Bet to Call',
+                    hint: '20',
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
-      const SizedBox(height: 16),
-      Row(
-        children: [
-          const Text('Opponents:', style: TextStyle(fontSize: 16)),
-          const Spacer(),
-          IconButton(
-            icon: const Icon(Icons.remove_circle_outline),
-            onPressed: _opponents > 1
-                ? () => setState(() {
-                      _opponents--;
-                      // Clamp villain positions to the new opponent count.
-                      if (_villainPositions.length > _opponents) {
-                        _villainPositions =
-                            _villainPositions.sublist(0, _opponents);
-                      }
-                    })
-                : null,
-          ),
-          Text(
-            '$_opponents',
-            style: const TextStyle(
-                fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          IconButton(
-            icon: const Icon(Icons.add_circle_outline),
-            onPressed:
-                _opponents < 9 ? () => setState(() => _opponents++) : null,
-          ),
-        ],
-      ),
-      const SizedBox(height: 8),
-      // Position selector — collapsible so it doesn't clutter the UI.
-      ExpansionTile(
-        title: const Text(
-          'Table Position (optional)',
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-        ),
-        subtitle: Text(
-          _buildPositionSubtitle(),
-          style: TextStyle(
-            fontSize: 12,
-            color: (_heroPosition != null || _villainPositions.isNotEmpty)
-                ? const Color(0xFF2E7D32)
-                : Colors.grey,
-          ),
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-          side: BorderSide(color: Colors.grey.shade200),
-        ),
-        collapsedShape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-          side: BorderSide(color: Colors.grey.shade200),
-        ),
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-            child: Text(
-              'Tap a seat to mark your position (green). '
-              'Tap other seats to mark opponents (red).',
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-              textAlign: TextAlign.center,
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Text('Opponents:', style: TextStyle(fontSize: 16)),
+                const Spacer(),
+                IconButton(
+                  icon: Icon(
+                    Icons.remove_circle_outline,
+                    color: _opponents > 1
+                        ? kPrimaryGreen
+                        : Colors.grey.shade300,
+                  ),
+                  onPressed: _opponents > 1
+                      ? () => setState(() {
+                            _opponents--;
+                            if (_villainPositions.length > _opponents) {
+                              _villainPositions =
+                                  _villainPositions.sublist(0, _opponents);
+                            }
+                          })
+                      : null,
+                ),
+                Text(
+                  '$_opponents',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: kPrimaryGreen,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.add_circle_outline,
+                    color: _opponents < 9
+                        ? kPrimaryGreen
+                        : Colors.grey.shade300,
+                  ),
+                  onPressed:
+                      _opponents < 9 ? () => setState(() => _opponents++) : null,
+                ),
+              ],
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8, 4, 8, 12),
-            child: PositionSelector(
-              selectedPosition: _heroPosition,
-              onPositionChanged: (pos) =>
-                  setState(() => _heroPosition = pos),
-              villainPositions: _villainPositions,
-              onVillainPositionsChanged: (positions) =>
-                  setState(() => _villainPositions = positions),
-              maxVillains: _opponents,
+            const SizedBox(height: 8),
+            // Position selector — collapsible so it doesn't clutter the UI.
+            ExpansionTile(
+              title: const Text(
+                'Table Position (optional)',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              ),
+              subtitle: Text(
+                _buildPositionSubtitle(),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: (_heroPosition != null || _villainPositions.isNotEmpty)
+                      ? kMediumGreen
+                      : Colors.grey,
+                ),
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: BorderSide(color: Colors.grey.shade200),
+              ),
+              collapsedShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+                side: BorderSide(color: Colors.grey.shade200),
+              ),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
+                  child: Text(
+                    'Tap a seat to mark your position (green). '
+                    'Tap other seats to mark opponents (red).',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 4, 8, 12),
+                  child: PositionSelector(
+                    selectedPosition: _heroPosition,
+                    onPositionChanged: (pos) =>
+                        setState(() => _heroPosition = pos),
+                    villainPositions: _villainPositions,
+                    onVillainPositionsChanged: (positions) =>
+                        setState(() => _villainPositions = positions),
+                    maxVillains: _opponents,
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     ];
   }
@@ -608,9 +650,9 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         label:
             Text(_isCalculating ? 'Calculating…' : 'Calculate Best Move'),
         style: FilledButton.styleFrom(
-          backgroundColor: const Color(0xFF1B5E20),
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          textStyle: const TextStyle(fontSize: 18),
+          backgroundColor: kMediumGreen,
+          padding: const EdgeInsets.symmetric(vertical: 18),
+          textStyle: const TextStyle(fontSize: 17, letterSpacing: 0.5),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -635,11 +677,28 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text(title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        Container(
+          width: 3,
+          height: 18,
+          decoration: BoxDecoration(
+            color: kPrimaryGreen,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
         const SizedBox(width: 8),
-        Text(subtitle,
-            style: const TextStyle(color: Colors.grey, fontSize: 14)),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+            color: kPrimaryGreen,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          subtitle,
+          style: const TextStyle(color: Colors.black38, fontSize: 13),
+        ),
       ],
     );
   }
@@ -669,12 +728,12 @@ class _CardPreviewRow extends StatelessWidget {
               width: 48,
               height: 68,
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade300, width: 1.5),
+                border: Border.all(color: kCardSlotBorder, width: 1.5),
                 borderRadius: BorderRadius.circular(6),
-                color: Colors.grey.shade50,
+                color: kLightGreenBackground,
               ),
               child:
-                  const Icon(Icons.add, color: Colors.grey, size: 20),
+                  const Icon(Icons.add, color: kCardSlotIcon, size: 20),
             ),
           ),
         ),
@@ -713,9 +772,9 @@ class _NumericField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         contentPadding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) return 'Required';

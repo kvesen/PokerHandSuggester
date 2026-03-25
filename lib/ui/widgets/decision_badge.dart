@@ -52,10 +52,11 @@ class _DecisionBadgeState extends State<DecisionBadge>
     return ScaleTransition(
       scale: _scale,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 22),
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withAlpha(60), width: 1.5),
           boxShadow: [
             BoxShadow(
               color: color.withAlpha(120),
@@ -67,13 +68,13 @@ class _DecisionBadgeState extends State<DecisionBadge>
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: Colors.white, size: 36),
+            Icon(icon, color: Colors.white, size: 38),
             const SizedBox(width: 12),
             Text(
               label,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 36,
+                fontSize: 38,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 3,
               ),

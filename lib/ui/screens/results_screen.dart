@@ -9,6 +9,7 @@ import '../../models/game_state.dart';
 import '../../models/hand_record.dart';
 import '../../models/position.dart';
 import '../../services/history_service.dart';
+import '../../utils/app_colors.dart';
 import '../widgets/card_widget.dart';
 import '../widgets/decision_badge.dart';
 import '../widgets/table_widget.dart';
@@ -154,14 +155,19 @@ class _ResultsScreenState extends State<ResultsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kOffWhiteBackground,
       appBar: AppBar(
-        title: const Text('Recommendation'),
-        backgroundColor: const Color(0xFF1B5E20),
+        title: const Text(
+          'Recommendation',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+        backgroundColor: kPrimaryGreen,
         foregroundColor: Colors.white,
         elevation: 0,
+        shadowColor: Colors.transparent,
       ),
       floatingActionButton: FloatingActionButton.small(
-        backgroundColor: const Color(0xFF1B5E20),
+        backgroundColor: kPrimaryGreen,
         foregroundColor: Colors.white,
         tooltip: 'New Hand',
         onPressed: _startNewHand,
@@ -239,9 +245,9 @@ class _ResultsScreenState extends State<ResultsScreen>
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade200),
+                  color: kLightGreenBackground,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: kLightGreenBorder),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,7 +255,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                     Row(
                       children: [
                         const Icon(Icons.info_outline,
-                            size: 20, color: Color(0xFF1B5E20)),
+                            size: 20, color: kPrimaryGreen),
                         const SizedBox(width: 6),
                         const Text(
                           'Why this decision?',
@@ -277,8 +283,11 @@ class _ResultsScreenState extends State<ResultsScreen>
                 children: [
                   const Text(
                     'Your Hand',
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      color: kPrimaryGreen,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -296,7 +305,10 @@ class _ResultsScreenState extends State<ResultsScreen>
                     const Text(
                       'Community Cards',
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 15),
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                        color: kPrimaryGreen,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Wrap(
@@ -318,17 +330,27 @@ class _ResultsScreenState extends State<ResultsScreen>
             if (_isShowdown)
               Container(
                 width: double.infinity,
-                color: Colors.grey.shade800,
+                margin: const EdgeInsets.symmetric(vertical: 4),
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [kPrimaryGreen, Color(0xFF4CAF50)],
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.check_circle_outline,
-                        color: Colors.white70, size: 20),
+                    Icon(Icons.emoji_events,
+                        color: Colors.amber, size: 20),
                     SizedBox(width: 8),
                     Text(
                       'Hand Complete — Showdown',
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
@@ -342,11 +364,11 @@ class _ResultsScreenState extends State<ResultsScreen>
                 icon: Icon(_isShowdown ? Icons.refresh : Icons.arrow_forward),
                 label: Text(_isShowdown ? 'New Hand' : 'Continue Hand'),
                 style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFF1B5E20),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  backgroundColor: kPrimaryGreen,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   textStyle: const TextStyle(fontSize: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                 ),
                 onPressed: _isShowdown ? _startNewHand : _continueHand,
@@ -361,10 +383,12 @@ class _ResultsScreenState extends State<ResultsScreen>
                 icon: const Icon(Icons.arrow_back),
                 label: const Text('Adjust Inputs'),
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  foregroundColor: kPrimaryGreen,
+                  side: const BorderSide(color: kPrimaryGreen, width: 1.5),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   textStyle: const TextStyle(fontSize: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                   ),
                 ),
                 onPressed: () => Navigator.of(context).pop(),
@@ -397,11 +421,11 @@ class _StatsRow extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                      vertical: 14, horizontal: 8),
+                      vertical: 16, horizontal: 8),
                   decoration: BoxDecoration(
-                    color: item.color.withAlpha(20),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: item.color.withAlpha(60)),
+                    color: item.color.withAlpha(15),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: item.color.withAlpha(80)),
                   ),
                   child: Column(
                     children: [
@@ -411,14 +435,14 @@ class _StatsRow extends StatelessWidget {
                         item.value,
                         style: TextStyle(
                           color: item.color,
-                          fontSize: 18,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
                         item.label,
                         style: const TextStyle(
-                            fontSize: 12, color: Colors.grey),
+                            fontSize: 11, color: Colors.black45),
                       ),
                     ],
                   ),
@@ -453,42 +477,56 @@ class _EquityBreakdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         boxShadow: const [
           BoxShadow(
-              color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+              color: Colors.black12, blurRadius: 8, offset: Offset(0, 3)),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _BreakdownItem(
-            label: 'Win',
-            value: '${(result.winProbability * 100).toStringAsFixed(1)}%',
-            color: const Color(0xFF388E3C),
-          ),
-          const VerticalDivider(thickness: 1),
-          _BreakdownItem(
-            label: 'Tie',
-            value: '${(result.tieProbability * 100).toStringAsFixed(1)}%',
-            color: const Color(0xFFF9A825),
-          ),
-          const VerticalDivider(thickness: 1),
-          _BreakdownItem(
-            label: 'Loss',
-            value: '${(result.lossProbability * 100).toStringAsFixed(1)}%',
-            color: const Color(0xFFD32F2F),
-          ),
-          const VerticalDivider(thickness: 1),
-          _BreakdownItem(
-            label: 'Iterations',
-            value: result.iterations.toString(),
-            color: Colors.grey,
-          ),
-        ],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: Column(
+          children: [
+            // Green top strip
+            Container(
+              height: 4,
+              color: const Color(0xFF388E3C),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _BreakdownItem(
+                    label: 'Win',
+                    value: '${(result.winProbability * 100).toStringAsFixed(1)}%',
+                    color: const Color(0xFF388E3C),
+                  ),
+                  const VerticalDivider(thickness: 1),
+                  _BreakdownItem(
+                    label: 'Tie',
+                    value: '${(result.tieProbability * 100).toStringAsFixed(1)}%',
+                    color: const Color(0xFFF9A825),
+                  ),
+                  const VerticalDivider(thickness: 1),
+                  _BreakdownItem(
+                    label: 'Loss',
+                    value: '${(result.lossProbability * 100).toStringAsFixed(1)}%',
+                    color: const Color(0xFFD32F2F),
+                  ),
+                  const VerticalDivider(thickness: 1),
+                  _BreakdownItem(
+                    label: 'Iterations',
+                    value: result.iterations.toString(),
+                    color: Colors.grey,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -512,10 +550,10 @@ class _BreakdownItem extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-              color: color, fontWeight: FontWeight.bold, fontSize: 16),
+              color: color, fontWeight: FontWeight.bold, fontSize: 17),
         ),
         Text(label,
-            style: const TextStyle(color: Colors.grey, fontSize: 12)),
+            style: const TextStyle(color: Colors.black45, fontSize: 11)),
       ],
     );
   }
@@ -531,9 +569,9 @@ class _GameInfoSummary extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        color: kLightGreenBackground,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: kLightGreenBorder),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -573,10 +611,14 @@ class _InfoItem extends StatelessWidget {
       children: [
         Text(
           value,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            fontSize: 19,
+            fontWeight: FontWeight.bold,
+            color: kPrimaryGreen,
+          ),
         ),
         Text(label,
-            style: const TextStyle(color: Colors.grey, fontSize: 12)),
+            style: const TextStyle(color: Colors.black45, fontSize: 12)),
       ],
     );
   }
