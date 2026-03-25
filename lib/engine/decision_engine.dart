@@ -3,6 +3,7 @@ library;
 
 import 'pot_odds.dart';
 import '../models/position.dart';
+import '../utils/constants.dart';
 
 /// The three possible player actions.
 enum PlayerAction { fold, call, raise }
@@ -26,7 +27,8 @@ class Decision {
   /// Pot odds required to break even (0–1).
   final double potOdds;
 
-  /// Expected value of calling: `equity * pot - (1 - equity) * costToCall`.
+  /// Expected value of the call action: `equity * pot - (1 - equity) * costToCall`.
+  /// Note: this is the EV of calling, not the EV of raising.
   final double expectedValue;
 
   /// Human-readable explanation of the recommendation.
@@ -87,10 +89,10 @@ class DecisionEngine {
 
     // Raise threshold is position-adjusted: easier to raise from the button,
     // harder from early position.
-    final double raiseThreshold = 1.5 / multiplier;
+    final double raiseThreshold = kRaiseEquityMultiple / multiplier;
 
     // Free-check raise threshold: also position-adjusted.
-    final double freeCheckRaiseThreshold = 0.6 / multiplier;
+    final double freeCheckRaiseThreshold = kFreeCheckRaiseEquityThreshold / multiplier;
 
     final PlayerAction action;
     final String baseExplanation;
@@ -112,19 +114,19 @@ class DecisionEngine {
       baseExplanation =
           'Your equity (${(equity * 100).toStringAsFixed(1)}%) is less than '
           'the pot odds required (${(adjustedPotOddsRequired * 100).toStringAsFixed(1)}%). '
-          'Calling has negative expected value (EV = $ev). Fold.';
+          'Calling has negative expected value (call EV = ${ev.toStringAsFixed(1)}). Fold.';
     } else if (equity < adjustedPotOddsRequired * raiseThreshold) {
       action = PlayerAction.call;
       baseExplanation =
           'Your equity (${(equity * 100).toStringAsFixed(1)}%) meets but does not '
           'greatly exceed pot odds (${(adjustedPotOddsRequired * 100).toStringAsFixed(1)}%). '
-          'Calling is marginally profitable (EV = ${ev.toStringAsFixed(1)}).';
+          'Calling is marginally profitable (call EV = ${ev.toStringAsFixed(1)}).';
     } else {
       action = PlayerAction.raise;
       baseExplanation =
           'Your equity (${(equity * 100).toStringAsFixed(1)}%) significantly exceeds '
           'pot odds (${(adjustedPotOddsRequired * 100).toStringAsFixed(1)}%). '
-          'You have a strong edge — raise to extract value (EV = ${ev.toStringAsFixed(1)}).';
+          'You have a strong edge — raise to extract value (call EV = ${ev.toStringAsFixed(1)}).';
     }
 
     // Append position note when a hero position is provided.
@@ -179,27 +181,62 @@ class DecisionEngine {
     }
   }
 
-  /// Returns a human-readable note about the villain's opening position.
+  /// Returns a human-readable note summarising all villain positions.
   static String _villainPositionNote(List<TablePosition> positions) {
-    // Use the first (or only) villain position for the narrative note.
-    final pos = positions.first;
-    final label = positionLabel(pos);
-    switch (pos) {
-      case TablePosition.utg:
-      case TablePosition.utg1:
-      case TablePosition.mp:
-      case TablePosition.mp1:
-        return 'Opponent opened from $label — a tight range. '
-            'You need stronger equity to continue.';
-      case TablePosition.cutoff:
-      case TablePosition.button:
-        return 'Opponent opened from $label — a wide range. '
-            'You can call lighter here.';
-      case TablePosition.hijack:
-        return 'Opponent opened from $label — a neutral range.';
-      case TablePosition.smallBlind:
-      case TablePosition.bigBlind:
-        return 'Opponent opened from $label — a mixed/defend range.';
+    if (positions.length == 1) {
+      // Single villain — existing per-position logic
+      final pos = positions.first;
+      final label = positionLabel(pos);
+      switch (pos) {
+        case TablePosition.utg:
+        case TablePosition.utg1:
+        case TablePosition.mp:
+        case TablePosition.mp1:
+          return 'Opponent opened from $label — a tight range. '
+              'You need stronger equity to continue.';
+        case TablePosition.cutoff:
+        case TablePosition.button:
+          return 'Opponent opened from $label — a wide range. '
+              'You can call lighter here.';
+        case TablePosition.hijack:
+          return 'Opponent opened from $label — a neutral range.';
+        case TablePosition.smallBlind:
+        case TablePosition.bigBlind:
+          return 'Opponent opened from $label — a mixed/defend range.';
+      }
+    }
+
+    // Multiple villains — summarise by tight/wide/mixed counts
+    int tight = 0, wide = 0, mixed = 0;
+    for (final pos in positions) {
+      switch (pos) {
+        case TablePosition.utg:
+        case TablePosition.utg1:
+        case TablePosition.mp:
+        case TablePosition.mp1:
+          tight++;
+          break;
+        case TablePosition.cutoff:
+        case TablePosition.button:
+          wide++;
+          break;
+        default:
+          mixed++;
+      }
+    }
+
+    final parts = <String>[];
+    if (tight > 0) parts.add('$tight tight-range opponent${tight > 1 ? 's' : ''}');
+    if (wide > 0) parts.add('$wide wide-range opponent${wide > 1 ? 's' : ''}');
+    if (mixed > 0) parts.add('$mixed neutral opponent${mixed > 1 ? 's' : ''}');
+
+    final summary = parts.join(', ');
+    if (tight > wide) {
+      return 'Facing $summary — play tighter and require stronger equity to continue.';
+    } else if (wide > tight) {
+      return 'Facing $summary — you can continue lighter against these wide ranges.';
+    } else {
+      return 'Facing $summary — play your standard ranges.';
     }
   }
 }

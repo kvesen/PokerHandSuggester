@@ -217,14 +217,30 @@ class HandEvaluator {
     return score;
   }
 
-  /// Generates all C([items], [k]) combinations.
+  /// Generates all C(n, k) combinations iteratively using index arrays.
+  /// Avoids deep recursion and minimises intermediate list allocations.
   static List<List<T>> _combinations<T>(List<T> items, int k) {
+    final n = items.length;
+    if (k > n) return [];
     if (k == 0) return [[]];
-    if (items.isEmpty) return [];
+
     final result = <List<T>>[];
-    for (int i = 0; i <= items.length - k; i++) {
-      for (final rest in _combinations(items.sublist(i + 1), k - 1)) {
-        result.add([items[i], ...rest]);
+    // indices[i] holds the index into items for position i in the current combo
+    final indices = List<int>.generate(k, (i) => i);
+
+    while (true) {
+      result.add([for (final i in indices) items[i]]);
+
+      // Find the rightmost index that can be incremented
+      int i = k - 1;
+      while (i >= 0 && indices[i] == i + n - k) {
+        i--;
+      }
+      if (i < 0) break;
+
+      indices[i]++;
+      for (int j = i + 1; j < k; j++) {
+        indices[j] = indices[j - 1] + 1;
       }
     }
     return result;

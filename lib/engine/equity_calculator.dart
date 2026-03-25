@@ -84,7 +84,14 @@ class EquityCalculator {
     int losses = 0;
 
     for (int i = 0; i < iterations; i++) {
-      final shuffled = [...deck]..shuffle(rng);
+      // Partial Fisher-Yates: only randomise the slots we actually use.
+      final shuffled = List<PokerCard>.of(deck);
+      for (int s = 0; s < totalCardsNeeded; s++) {
+        final j = s + rng.nextInt(shuffled.length - s);
+        final tmp = shuffled[s];
+        shuffled[s] = shuffled[j];
+        shuffled[j] = tmp;
+      }
 
       // Deal community cards.
       final simCommunity = [

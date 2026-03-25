@@ -24,6 +24,8 @@ HandRecord _makeRecord({
     numberOfOpponents: 2,
     action: action,
     equity: 0.65,
+    winProbability: 0.60,
+    tieProbability: 0.10,
     potOdds: 0.167,
     expectedValue: 47.5,
     explanation: 'Strong hand.',
