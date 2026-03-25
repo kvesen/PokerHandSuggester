@@ -169,6 +169,7 @@ class _RankSuit extends StatelessWidget {
 /// Sizing presets for [CardWidget].
 enum CardSize {
   // Added padding and border radius variables internally
+  tiny(width: 34, height: 48, fontSize: 8, padding: 2, borderRadius: 6),
   small(width: 34, height: 48, fontSize: 10, padding: 3, borderRadius: 6),
   medium(width: 52, height: 74, fontSize: 14, padding: 4, borderRadius: 8),
   large(width: 72, height: 100, fontSize: 20, padding: 6, borderRadius: 10);
