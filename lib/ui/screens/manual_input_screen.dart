@@ -282,6 +282,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
           _streetTitle,
           style: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: -0.5),
         ),
+        // Glassmorphism surface — intentionally differs between light/dark modes.
         backgroundColor: (isDark ? Colors.black : Colors.white).withOpacity(0.5),
         flexibleSpace: ClipRRect(
           child: BackdropFilter(
@@ -289,7 +290,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
             child: Container(color: Colors.transparent),
           ),
         ),
-        foregroundColor: isDark ? Colors.white : Colors.black87,
+        foregroundColor: theme.colorScheme.onSurface,
         elevation: 0,
         bottom: widget.lockHoleCards
             ? PreferredSize(
@@ -369,24 +370,20 @@ class _ManualInputScreenState extends State<ManualInputScreen>
             children: [
               _SectionHeader(
                   title: 'Your Hand',
-                  subtitle: '${_holeCards.length}/2 cards',
-                  isDark: isDark),
+                  subtitle: '${_holeCards.length}/2 cards'),
               const SizedBox(height: 12),
               _CardPreviewRow(
                   cards: _holeCards,
-                  emptySlots: kMaxHoleCards - _holeCards.length,
-                  isDark: isDark),
+                  emptySlots: kMaxHoleCards - _holeCards.length),
               const SizedBox(height: 24),
               _SectionHeader(
                 title: 'Community Cards',
                 subtitle: '${_communityCards.length}/5 cards',
-                isDark: isDark,
               ),
               const SizedBox(height: 12),
               _CardPreviewRow(
                 cards: _communityCards,
                 emptySlots: kMaxCommunityCards - _communityCards.length,
-                isDark: isDark,
               ),
               const SizedBox(height: 32),
               _buildCardSelectorBox(isDark),
@@ -401,7 +398,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
             children: [
               ..._buildGameInfoWidgets(isDark),
               const SizedBox(height: 32),
-              _buildCalculateButton(isDark),
+              _buildCalculateButton(),
               const SizedBox(height: 60), // Room for FAB
             ],
           ),
@@ -418,31 +415,27 @@ class _ManualInputScreenState extends State<ManualInputScreen>
       children: [
         _SectionHeader(
             title: 'Your Hand',
-            subtitle: '${_holeCards.length}/2 cards',
-            isDark: isDark),
+            subtitle: '${_holeCards.length}/2 cards'),
         const SizedBox(height: 12),
         _CardPreviewRow(
             cards: _holeCards,
-            emptySlots: kMaxHoleCards - _holeCards.length,
-            isDark: isDark),
+            emptySlots: kMaxHoleCards - _holeCards.length),
         const SizedBox(height: 24),
         _SectionHeader(
           title: 'Community Cards',
           subtitle: '${_communityCards.length}/5 cards',
-          isDark: isDark,
         ),
         const SizedBox(height: 12),
         _CardPreviewRow(
           cards: _communityCards,
           emptySlots: kMaxCommunityCards - _communityCards.length,
-          isDark: isDark,
         ),
         const SizedBox(height: 32),
         _buildCardSelectorBox(isDark),
         const SizedBox(height: 32),
         ..._buildGameInfoWidgets(isDark),
         const SizedBox(height: 40),
-        _buildCalculateButton(isDark),
+        _buildCalculateButton(),
         const SizedBox(height: 60), // Space for FAB
       ],
     );
@@ -456,9 +449,11 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
         child: Container(
           decoration: BoxDecoration(
+            // Glassmorphism surface — intentionally differs between light/dark modes.
             color: theme.colorScheme.surface.withOpacity(isDark ? 0.3 : 0.8),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
+              // Glassmorphism surface — intentionally differs between light/dark modes.
               color: (isDark ? Colors.white : Colors.black).withOpacity(0.08),
               width: 1.5,
             ),
@@ -469,6 +464,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                 decoration: BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
+                      // Glassmorphism surface — intentionally differs between light/dark modes.
                       color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
                     ),
                   ),
@@ -476,7 +472,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                 child: TabBar(
                   controller: _tabController,
                   labelColor: theme.colorScheme.primary,
-                  unselectedLabelColor: isDark ? Colors.white54 : Colors.black54,
+                  unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
                   indicatorColor: theme.colorScheme.primary,
                   indicatorWeight: 3,
                   labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
@@ -534,7 +530,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         style: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
-          color: isDark ? Colors.white : Colors.black87,
+          color: theme.colorScheme.onSurface,
           letterSpacing: -0.5,
         ),
       ),
@@ -546,9 +542,11 @@ class _ManualInputScreenState extends State<ManualInputScreen>
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
+              // Glassmorphism surface — intentionally differs between light/dark modes.
               color: theme.colorScheme.surface.withOpacity(isDark ? 0.3 : 0.8),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
+                // Glassmorphism surface — intentionally differs between light/dark modes.
                 color: (isDark ? Colors.white : Colors.black).withOpacity(0.08),
                 width: 1.5,
               ),
@@ -563,7 +561,6 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                         label: 'Pot Size',
                         hint: '100',
                         mustBePositive: true,
-                        isDark: isDark,
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -572,7 +569,6 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                         controller: _betController,
                         label: 'Bet to Call',
                         hint: '20',
-                        isDark: isDark,
                       ),
                     ),
                   ],
@@ -584,7 +580,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                         style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: isDark ? Colors.white70 : Colors.black87)),
+                            color: theme.colorScheme.onSurface)),
                     const Spacer(),
                     IconButton(
                       icon: Icon(
@@ -611,7 +607,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : theme.colorScheme.primary,
+                          color: theme.colorScheme.primary,
                         ),
                       ),
                     ),
@@ -636,7 +632,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                       style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
-                          color: isDark ? Colors.white : Colors.black87),
+                          color: theme.colorScheme.onSurface),
                     ),
                     subtitle: Text(
                       _buildPositionSubtitle(),
@@ -644,7 +640,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                         fontSize: 12,
                         color: (_heroPosition != null || _villainPositions.isNotEmpty)
                             ? theme.colorScheme.primary
-                            : (isDark ? Colors.white54 : Colors.black54),
+                            : theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                     children: [
@@ -655,7 +651,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                           'Tap other seats to mark opponents (red).',
                           style: TextStyle(
                               fontSize: 12,
-                              color: isDark ? Colors.white54 : Colors.black54,
+                              color: theme.colorScheme.onSurfaceVariant,
                               height: 1.4),
                           textAlign: TextAlign.center,
                         ),
@@ -682,7 +678,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
     ];
   }
 
-  Widget _buildCalculateButton(bool isDark) {
+  Widget _buildCalculateButton() {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
@@ -733,21 +729,21 @@ class _ManualInputScreenState extends State<ManualInputScreen>
 // ---------------------------------------------------------------------------
 
 class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title, required this.subtitle, required this.isDark});
+  const _SectionHeader({required this.title, required this.subtitle});
 
   final String title;
   final String subtitle;
-  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Row(
       children: [
         Container(
           width: 4,
           height: 20,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary,
+            color: theme.colorScheme.primary,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
@@ -757,7 +753,7 @@ class _SectionHeader extends StatelessWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white : Colors.black87,
+            color: theme.colorScheme.onSurface,
             letterSpacing: -0.3,
           ),
         ),
@@ -765,13 +761,13 @@ class _SectionHeader extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+            color: theme.colorScheme.onSurface.withOpacity(0.05),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
             subtitle,
             style: TextStyle(
-              color: isDark ? Colors.white60 : Colors.black54,
+              color: theme.colorScheme.onSurfaceVariant,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -783,14 +779,14 @@ class _SectionHeader extends StatelessWidget {
 }
 
 class _CardPreviewRow extends StatelessWidget {
-  const _CardPreviewRow({required this.cards, required this.emptySlots, required this.isDark});
+  const _CardPreviewRow({required this.cards, required this.emptySlots});
 
   final List<PokerCard> cards;
   final int emptySlots;
-  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       physics: const BouncingScrollPhysics(),
@@ -811,16 +807,16 @@ class _CardPreviewRow extends StatelessWidget {
                 height: 72,
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: (isDark ? Colors.white : Colors.black).withOpacity(0.15),
+                    color: theme.colorScheme.outline.withOpacity(0.4),
                     width: 2,
                     style: BorderStyle.solid,
                   ),
                   borderRadius: BorderRadius.circular(8),
-                  color: (isDark ? Colors.white : Colors.black).withOpacity(0.03),
+                  color: theme.colorScheme.onSurface.withOpacity(0.03),
                 ),
                 child: Icon(
                   Icons.add_rounded,
-                  color: (isDark ? Colors.white : Colors.black).withOpacity(0.2),
+                  color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
                   size: 24,
                 ),
               ),
@@ -837,7 +833,6 @@ class _NumericField extends StatelessWidget {
     required this.controller,
     required this.label,
     required this.hint,
-    required this.isDark,
     this.minValue = 0,
     this.mustBePositive = false,
   });
@@ -845,19 +840,19 @@ class _NumericField extends StatelessWidget {
   final TextEditingController controller;
   final String label;
   final String hint;
-  final bool isDark;
   final double minValue;
   final bool mustBePositive;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return TextFormField(
       controller: controller,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       style: TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.w600,
-        color: isDark ? Colors.white : Colors.black87,
+        color: theme.colorScheme.onSurface,
       ),
       inputFormatters: [
         FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
@@ -865,20 +860,21 @@ class _NumericField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        labelStyle: TextStyle(color: isDark ? Colors.white60 : Colors.black54),
-        hintStyle: TextStyle(color: isDark ? Colors.white30 : Colors.black26),
+        labelStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+        hintStyle:
+            TextStyle(color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5)),
         filled: true,
-        fillColor: (isDark ? Colors.white : Colors.black).withOpacity(0.03),
+        fillColor: theme.colorScheme.onSurface.withOpacity(0.03),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
+            color: theme.colorScheme.outline.withOpacity(0.5),
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
-            color: Theme.of(context).colorScheme.primary,
+            color: theme.colorScheme.primary,
             width: 2,
           ),
         ),

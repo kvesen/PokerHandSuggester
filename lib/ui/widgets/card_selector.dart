@@ -32,20 +32,22 @@ class CardSelector extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Dynamically adjust spacing for tablet/desktop vs mobile
-        final isWide = constraints.maxWidth > 600;
-        final crossAxisSpacing = isWide ? 6.0 : 3.0;
-        final mainAxisSpacing = isWide ? 6.0 : 4.0;
+        // Dynamic column count: clamp between 4 (one per suit, readable on
+        // very narrow screens) and 13 (one per rank, full-deck layout on wide
+        // screens). Each cell is ≥ 44 dp wide to meet the 48 dp touch-target
+        // recommendation with a small margin for spacing.
+        final int crossCount =
+            (constraints.maxWidth / 44).floor().clamp(4, 13);
 
         return GridView.builder(
           shrinkWrap: true,
           padding: EdgeInsets.zero,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 13,
-            childAspectRatio: 48 / 68,
-            crossAxisSpacing: crossAxisSpacing,
-            mainAxisSpacing: mainAxisSpacing,
+            crossAxisCount: crossCount,
+            childAspectRatio: 1.0,
+            crossAxisSpacing: 2.0,
+            mainAxisSpacing: 2.0,
           ),
           itemCount: deck.length,
           itemBuilder: (context, index) {
@@ -54,20 +56,30 @@ class CardSelector extends StatelessWidget {
             final isDisabled = disabledCards.contains(card) ||
                 (!isSelected && selectedCards.length >= maxSelectable);
 
-            // Using Animated widgets gives the selector a premium, fluid feel
-            return AnimatedOpacity(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeOutCubic,
-              opacity: isDisabled ? 0.2 : 1.0,
-              child: AnimatedScale(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeOutBack,
-                scale: isSelected ? 1.08 : (isDisabled ? 0.95 : 1.0),
-                child: CardWidget(
-                  card: card,
-                  selected: isSelected,
-                  size: CardSize.tiny,
-                  onTap: isDisabled ? null : () => onCardToggled(card),
+            // Stagger the entry animation by varying duration per card index,
+            // so cards animate in sequentially rather than all at once.
+            return SizedBox(
+              width: 48,
+              height: 48,
+              child: Center(
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0.0, end: isDisabled ? 0.2 : 1.0),
+                  duration:
+                      Duration(milliseconds: 250 + (index * 8).clamp(0, 200)),
+                  curve: Curves.easeOutCubic,
+                  builder: (context, opacity, child) =>
+                      Opacity(opacity: opacity, child: child),
+                  child: AnimatedScale(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOutBack,
+                    scale: isSelected ? 1.08 : (isDisabled ? 0.95 : 1.0),
+                    child: CardWidget(
+                      card: card,
+                      selected: isSelected,
+                      size: CardSize.tiny,
+                      onTap: isDisabled ? null : () => onCardToggled(card),
+                    ),
+                  ),
                 ),
               ),
             );
