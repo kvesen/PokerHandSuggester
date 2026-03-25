@@ -87,27 +87,27 @@ class CardWidget extends StatelessWidget {
                 fontSize: fontSize,
               ),
             ),
-            // Center suit watermark (Reduced from 2.2 to 1.8)
+            // Center suit watermark
             Center(
               child: Opacity(
-                opacity: 0.10, // Made slightly more faint
+                opacity: 0.10,
                 child: Text(
                   suitSymbol,
                   style: TextStyle(
-                    fontSize: fontSize * 1.8, 
+                    fontSize: fontSize * 1.2,
                     color: color,
                     height: 1.0,
                   ),
                 ),
               ),
             ),
-            // Center primary suit (Reduced from 1.8 to 1.3)
+            // Center primary suit
             Center(
               child: Text(
                 suitSymbol,
                 style: TextStyle(
-                  fontSize: fontSize * 1.3,
-                  color: color.withOpacity(0.9), // Slightly softer
+                  fontSize: fontSize * 0.9,
+                  color: color.withOpacity(0.9),
                 ),
               ),
             ),
@@ -159,14 +159,6 @@ class _RankSuit extends StatelessWidget {
             color: color,
             height: 1.0,
             letterSpacing: -0.5,
-          ),
-        ),
-        Text(
-          suit,
-          style: TextStyle(
-            fontSize: fontSize * 0.85, 
-            color: color, 
-            height: 1.0
           ),
         ),
       ],
