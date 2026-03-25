@@ -261,10 +261,14 @@ class _HomeScreenState extends State<HomeScreen> {
               Positioned(
                 top: 12,
                 left: 12,
-                child: IconButton(
-                  icon: Icon(Icons.history_rounded, color: isDark ? Colors.white : Colors.black87),
-                  tooltip: 'Hand History',
-                  onPressed: _openHistory,
+                child: Semantics(
+                  label: 'Hand History',
+                  button: true,
+                  child: IconButton(
+                    icon: Icon(Icons.history_rounded, color: isDark ? Colors.white : Colors.black87),
+                    tooltip: 'Hand History',
+                    onPressed: _openHistory,
+                  ),
                 ),
               ),
 
@@ -272,13 +276,17 @@ class _HomeScreenState extends State<HomeScreen> {
               Positioned(
                 top: 12,
                 right: 12,
-                child: IconButton(
-                  icon: Icon(
-                    isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                    color: isDark ? Colors.white : Colors.black87,
+                child: Semantics(
+                  label: isDark ? 'Switch to light mode' : 'Switch to dark mode',
+                  button: true,
+                  child: IconButton(
+                    icon: Icon(
+                      isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
+                    tooltip: isDark ? 'Light Mode' : 'Dark Mode',
+                    onPressed: () => widget.themeService.toggleTheme(),
                   ),
-                  tooltip: isDark ? 'Light Mode' : 'Dark Mode',
-                  onPressed: () => widget.themeService.toggleTheme(),
                 ),
               ),
             ],
@@ -531,85 +539,89 @@ class _ActionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface.withOpacity(isDark ? 0.3 : 0.8),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: (isDark ? Colors.white : Colors.black).withOpacity(0.08),
-                width: 1.5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: gradientColors.first.withOpacity(0.15),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
+    return Semantics(
+      label: '$title: $description',
+      button: true,
+      child: GestureDetector(
+        onTap: onTap,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface.withOpacity(isDark ? 0.3 : 0.8),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: (isDark ? Colors.white : Colors.black).withOpacity(0.08),
+                  width: 1.5,
                 ),
-              ],
-            ),
-            child: Stack(
-              children: [
-                // Top gradient accent line
-                Positioned(
-                  top: 0, left: 0, right: 0,
-                  child: Container(
-                    height: 4,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: gradientColors),
+                boxShadow: [
+                  BoxShadow(
+                    color: gradientColors.first.withOpacity(0.15),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Stack(
+                children: [
+                  // Top gradient accent line
+                  Positioned(
+                    top: 0, left: 0, right: 0,
+                    child: Container(
+                      height: 4,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: gradientColors),
+                      ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 20),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: gradientColors.map((c) => c.withOpacity(0.15)).toList(),
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 24, 16, 20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: gradientColors.map((c) => c.withOpacity(0.15)).toList(),
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            shape: BoxShape.circle,
                           ),
-                          shape: BoxShape.circle,
+                          child: Icon(
+                            icon,
+                            size: 32,
+                            color: gradientColors.last,
+                          ),
                         ),
-                        child: Icon(
-                          icon,
-                          size: 32,
-                          color: gradientColors.last,
+                        const SizedBox(height: 16),
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.white : Colors.black87,
+                            letterSpacing: -0.2,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : Colors.black87,
-                          letterSpacing: -0.2,
+                        const SizedBox(height: 6),
+                        Text(
+                          description,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: isDark ? Colors.white60 : Colors.black54,
+                            height: 1.3,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        description,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isDark ? Colors.white60 : Colors.black54,
-                          height: 1.3,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

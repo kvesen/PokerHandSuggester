@@ -97,90 +97,95 @@ class PositionSelector extends StatelessWidget {
     return Positioned(
       left: cx - seatSize / 2,
       top: cy - seatSize / 2,
-      child: GestureDetector(
-        onTap: () {
-          if (isHero) {
-            onPositionChanged(null);
-          } else if (isVillain) {
-            if (onVillainPositionsChanged != null) {
-              final updated = List<TablePosition>.from(villainPositions)..remove(pos);
-              onVillainPositionsChanged!(updated);
+      child: Semantics(
+        label: '${positionLabel(pos)} seat${isHero ? ", your position" : isVillain ? ", opponent position" : ""}',
+        button: true,
+        selected: isHero || isVillain,
+        child: GestureDetector(
+          onTap: () {
+            if (isHero) {
+              onPositionChanged(null);
+            } else if (isVillain) {
+              if (onVillainPositionsChanged != null) {
+                final updated = List<TablePosition>.from(villainPositions)..remove(pos);
+                onVillainPositionsChanged!(updated);
+              }
+            } else {
+              if (selectedPosition == null) {
+                onPositionChanged(pos);
+              } else if (onVillainPositionsChanged != null && villainPositions.length < maxVillains) {
+                final updated = List<TablePosition>.from(villainPositions)..add(pos);
+                onVillainPositionsChanged!(updated);
+              } else if (onVillainPositionsChanged == null) {
+                onPositionChanged(pos);
+              }
             }
-          } else {
-            if (selectedPosition == null) {
-              onPositionChanged(pos);
-            } else if (onVillainPositionsChanged != null && villainPositions.length < maxVillains) {
-              final updated = List<TablePosition>.from(villainPositions)..add(pos);
-              onVillainPositionsChanged!(updated);
-            } else if (onVillainPositionsChanged == null) {
-              onPositionChanged(pos);
-            }
-          }
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOutBack,
-          width: seatSize,
-          height: seatSize,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            // Glassmorphism base
-            color: isDark ? Colors.black54 : Colors.white.withOpacity(0.8),
-            border: Border.all(
-              color: borderColor,
-              width: (isHero || isVillain) ? 2.5 : 1.5,
-            ),
-            boxShadow: [
-              if (isHero || isVillain)
-                BoxShadow(
-                  color: shadowColor.withOpacity(isDark ? 0.5 : 0.6),
-                  blurRadius: 10,
-                  spreadRadius: 1,
-                ),
-              if (!isHero && !isVillain)
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-            ],
-          ),
-          child: ClipOval(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (isHero)
-                    Text(
-                      'YOU',
-                      style: TextStyle(
-                        color: borderColor,
-                        fontSize: 8,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0.5,
-                      ),
-                    )
-                  else if (isVillain)
-                    Text(
-                      'OPP',
-                      style: TextStyle(
-                        color: borderColor,
-                        fontSize: 8,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  Text(
-                    positionLabel(pos),
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: (isHero || isVillain) ? 9 : 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
+          },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOutBack,
+            width: seatSize,
+            height: seatSize,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              // Glassmorphism base
+              color: isDark ? Colors.black54 : Colors.white.withOpacity(0.8),
+              border: Border.all(
+                color: borderColor,
+                width: (isHero || isVillain) ? 2.5 : 1.5,
+              ),
+              boxShadow: [
+                if (isHero || isVillain)
+                  BoxShadow(
+                    color: shadowColor.withOpacity(isDark ? 0.5 : 0.6),
+                    blurRadius: 10,
+                    spreadRadius: 1,
                   ),
-                ],
+                if (!isHero && !isVillain)
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+              ],
+            ),
+            child: ClipOval(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (isHero)
+                      Text(
+                        'YOU',
+                        style: TextStyle(
+                          color: borderColor,
+                          fontSize: 8,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.5,
+                        ),
+                      )
+                    else if (isVillain)
+                      Text(
+                        'OPP',
+                        style: TextStyle(
+                          color: borderColor,
+                          fontSize: 8,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    Text(
+                      positionLabel(pos),
+                      style: TextStyle(
+                        color: textColor,
+                        fontSize: (isHero || isVillain) ? 9 : 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

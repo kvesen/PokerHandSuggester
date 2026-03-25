@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'services/theme_service.dart';
 import 'ui/screens/home_screen.dart';
@@ -22,6 +23,8 @@ void main() {
       debugPrint('PlatformDispatcher error: $error\n$stack');
       return true;
     };
+
+    await Hive.initFlutter();
 
     // Make status bar transparent for a modern edge-to-edge look
     SystemChrome.setSystemUIOverlayStyle(

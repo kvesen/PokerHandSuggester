@@ -156,6 +156,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
   }
 
   Future<void> _calculate() async {
+    if (_isCalculating) return; // Prevent multiple simultaneous calculations
     if (!_formKey.currentState!.validate()) return;
     if (_holeCards.length < kMaxHoleCards) {
       _showError('Please select exactly 2 hole cards.');
