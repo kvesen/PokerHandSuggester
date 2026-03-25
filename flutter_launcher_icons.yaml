@@ -1,0 +1,12 @@
+# Run: dart run flutter_launcher_icons
+# See: https://pub.dev/packages/flutter_launcher_icons
+#
+# Before running, place your app icon at assets/icon/app_icon.png (1024x1024 recommended).
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/icon/app_icon.png"
+  adaptive_icon_background: "#0F9D58"
+  adaptive_icon_foreground: "assets/icon/app_icon.png"

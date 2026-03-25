@@ -72,14 +72,12 @@ class _PokerHandSuggesterAppState extends State<PokerHandSuggesterApp> {
           surface: const Color(0xFFF8F9FA),
         ),
         useMaterial3: true,
-        fontFamily: 'Inter', // Or any modern sans-serif
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF1CE885), // Neon accent
           brightness: Brightness.dark,
           surface: const Color(0xFF121212),
-          background: const Color(0xFF090B0F), // Deep premium dark
         ),
         useMaterial3: true,
       ),
