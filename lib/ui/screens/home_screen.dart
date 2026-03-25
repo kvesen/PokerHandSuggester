@@ -243,7 +243,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       // Version / footer
                       Text(
-                        'Texas Hold\'em · Phase 3',
+                        'Texas Hold\'em · v1.1.0',
                         style: TextStyle(
                           color: isDark ? Colors.white38 : Colors.black38,
                           fontSize: 12,

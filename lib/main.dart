@@ -1,19 +1,39 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'services/theme_service.dart';
 import 'ui/screens/home_screen.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  // Make status bar transparent for a modern edge-to-edge look
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
-  );
-  
-  final themeService = await ThemeService.create();
-  runApp(PokerHandSuggesterApp(themeService: themeService));
+void main() {
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+
+    FlutterError.onError = (FlutterErrorDetails details) {
+      FlutterError.presentError(details);
+      // TODO: Send to crash reporting service (e.g., Sentry, Crashlytics)
+      debugPrint('FlutterError: ${details.exceptionAsString()}');
+    };
+
+    PlatformDispatcher.instance.onError = (error, stack) {
+      // TODO: Send to crash reporting service
+      debugPrint('PlatformDispatcher error: $error\n$stack');
+      return true;
+    };
+
+    // Make status bar transparent for a modern edge-to-edge look
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+    );
+
+    final themeService = await ThemeService.create();
+    runApp(PokerHandSuggesterApp(themeService: themeService));
+  }, (error, stack) {
+    // TODO: Send to crash reporting service
+    debugPrint('Uncaught error: $error\n$stack');
+  });
 }
 
 class PokerHandSuggesterApp extends StatefulWidget {
