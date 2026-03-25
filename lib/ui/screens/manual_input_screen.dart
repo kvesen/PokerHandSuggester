@@ -11,6 +11,7 @@ import '../../engine/equity_isolate.dart';
 import '../../models/card.dart';
 import '../../models/game_state.dart';
 import '../../models/position.dart';
+import '../../utils/app_colors.dart';
 import '../../utils/constants.dart';
 import '../widgets/card_selector.dart';
 import '../widgets/card_widget.dart';
@@ -287,7 +288,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(_streetTitle),
-        backgroundColor: const Color(0xFF1B5E20),
+        backgroundColor: kPrimaryGreen,
         foregroundColor: Colors.white,
         elevation: 2,
         bottom: widget.lockHoleCards
@@ -314,14 +315,14 @@ class _ManualInputScreenState extends State<ManualInputScreen>
       ),
       floatingActionButton: FloatingActionButton.small(
         onPressed: _resetToNewHand,
-        backgroundColor: const Color(0xFF1B5E20),
+        backgroundColor: kPrimaryGreen,
         foregroundColor: Colors.white,
         tooltip: 'New Hand',
         child: const Icon(Icons.refresh),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
       body: ColoredBox(
-        color: const Color(0xFFFAFAF8),
+        color: kOffWhiteBackground,
         child: Form(
           key: _formKey,
           child: LayoutBuilder(
@@ -433,12 +434,12 @@ class _ManualInputScreenState extends State<ManualInputScreen>
       child: Column(
         children: [
           ColoredBox(
-            color: const Color(0xFFF1F8E9),
+            color: kLightGreenBackground,
             child: TabBar(
               controller: _tabController,
-              labelColor: const Color(0xFF1B5E20),
+              labelColor: kPrimaryGreen,
               unselectedLabelColor: Colors.grey,
-              indicatorColor: const Color(0xFF1B5E20),
+              indicatorColor: kPrimaryGreen,
               indicatorWeight: 3,
               onTap: widget.lockHoleCards
                 ? (index) {
@@ -497,7 +498,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         style: TextStyle(
           fontSize: 19,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF1B5E20),
+          color: kPrimaryGreen,
         ),
       ),
       const SizedBox(height: 12),
@@ -545,7 +546,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                   icon: Icon(
                     Icons.remove_circle_outline,
                     color: _opponents > 1
-                        ? const Color(0xFF1B5E20)
+                        ? kPrimaryGreen
                         : Colors.grey.shade300,
                   ),
                   onPressed: _opponents > 1
@@ -563,14 +564,14 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1B5E20),
+                    color: kPrimaryGreen,
                   ),
                 ),
                 IconButton(
                   icon: Icon(
                     Icons.add_circle_outline,
                     color: _opponents < 9
-                        ? const Color(0xFF1B5E20)
+                        ? kPrimaryGreen
                         : Colors.grey.shade300,
                   ),
                   onPressed:
@@ -590,7 +591,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                 style: TextStyle(
                   fontSize: 12,
                   color: (_heroPosition != null || _villainPositions.isNotEmpty)
-                      ? const Color(0xFF2E7D32)
+                      ? kMediumGreen
                       : Colors.grey,
                 ),
               ),
@@ -649,7 +650,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         label:
             Text(_isCalculating ? 'Calculating…' : 'Calculate Best Move'),
         style: FilledButton.styleFrom(
-          backgroundColor: const Color(0xFF2E7D32),
+          backgroundColor: kMediumGreen,
           padding: const EdgeInsets.symmetric(vertical: 18),
           textStyle: const TextStyle(fontSize: 17, letterSpacing: 0.5),
           shape: RoundedRectangleBorder(
@@ -680,7 +681,7 @@ class _SectionHeader extends StatelessWidget {
           width: 3,
           height: 18,
           decoration: BoxDecoration(
-            color: const Color(0xFF1B5E20),
+            color: kPrimaryGreen,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
@@ -690,7 +691,7 @@ class _SectionHeader extends StatelessWidget {
           style: const TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF1B5E20),
+            color: kPrimaryGreen,
           ),
         ),
         const SizedBox(width: 8),
@@ -727,12 +728,12 @@ class _CardPreviewRow extends StatelessWidget {
               width: 48,
               height: 68,
               decoration: BoxDecoration(
-                border: Border.all(color: const Color(0xFFA5D6A7), width: 1.5),
+                border: Border.all(color: kCardSlotBorder, width: 1.5),
                 borderRadius: BorderRadius.circular(6),
-                color: const Color(0xFFF1F8E9),
+                color: kLightGreenBackground,
               ),
               child:
-                  const Icon(Icons.add, color: Color(0xFF81C784), size: 20),
+                  const Icon(Icons.add, color: kCardSlotIcon, size: 20),
             ),
           ),
         ),

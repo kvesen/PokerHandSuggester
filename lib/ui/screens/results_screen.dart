@@ -9,6 +9,7 @@ import '../../models/game_state.dart';
 import '../../models/hand_record.dart';
 import '../../models/position.dart';
 import '../../services/history_service.dart';
+import '../../utils/app_colors.dart';
 import '../widgets/card_widget.dart';
 import '../widgets/decision_badge.dart';
 import '../widgets/table_widget.dart';
@@ -154,19 +155,19 @@ class _ResultsScreenState extends State<ResultsScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFAFAF8),
+      backgroundColor: kOffWhiteBackground,
       appBar: AppBar(
         title: const Text(
           'Recommendation',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: const Color(0xFF1B5E20),
+        backgroundColor: kPrimaryGreen,
         foregroundColor: Colors.white,
         elevation: 0,
         shadowColor: Colors.transparent,
       ),
       floatingActionButton: FloatingActionButton.small(
-        backgroundColor: const Color(0xFF1B5E20),
+        backgroundColor: kPrimaryGreen,
         foregroundColor: Colors.white,
         tooltip: 'New Hand',
         onPressed: _startNewHand,
@@ -244,9 +245,9 @@ class _ResultsScreenState extends State<ResultsScreen>
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF1F8E9),
+                  color: kLightGreenBackground,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFC8E6C9)),
+                  border: Border.all(color: kLightGreenBorder),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,7 +255,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                     Row(
                       children: [
                         const Icon(Icons.info_outline,
-                            size: 20, color: Color(0xFF1B5E20)),
+                            size: 20, color: kPrimaryGreen),
                         const SizedBox(width: 6),
                         const Text(
                           'Why this decision?',
@@ -285,7 +286,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 16,
-                      color: Color(0xFF1B5E20),
+                      color: kPrimaryGreen,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -306,7 +307,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
-                        color: Color(0xFF1B5E20),
+                        color: kPrimaryGreen,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -333,7 +334,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFF1B5E20), Color(0xFF4CAF50)],
+                    colors: [kPrimaryGreen, Color(0xFF4CAF50)],
                   ),
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -363,7 +364,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                 icon: Icon(_isShowdown ? Icons.refresh : Icons.arrow_forward),
                 label: Text(_isShowdown ? 'New Hand' : 'Continue Hand'),
                 style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFF1B5E20),
+                  backgroundColor: kPrimaryGreen,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   textStyle: const TextStyle(fontSize: 16),
                   shape: RoundedRectangleBorder(
@@ -382,8 +383,8 @@ class _ResultsScreenState extends State<ResultsScreen>
                 icon: const Icon(Icons.arrow_back),
                 label: const Text('Adjust Inputs'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF1B5E20),
-                  side: const BorderSide(color: Color(0xFF1B5E20), width: 1.5),
+                  foregroundColor: kPrimaryGreen,
+                  side: const BorderSide(color: kPrimaryGreen, width: 1.5),
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   textStyle: const TextStyle(fontSize: 16),
                   shape: RoundedRectangleBorder(
@@ -568,9 +569,9 @@ class _GameInfoSummary extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F8E9),
+        color: kLightGreenBackground,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFC8E6C9)),
+        border: Border.all(color: kLightGreenBorder),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -613,7 +614,7 @@ class _InfoItem extends StatelessWidget {
           style: const TextStyle(
             fontSize: 19,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF1B5E20),
+            color: kPrimaryGreen,
           ),
         ),
         Text(label,
