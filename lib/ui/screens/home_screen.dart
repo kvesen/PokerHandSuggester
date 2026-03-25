@@ -1,6 +1,7 @@
 /// Home screen — app entry point with navigation to manual input.
 library;
 
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import '../../engine/decision_engine.dart';
@@ -69,98 +70,128 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = widget.themeService.isDark;
+    final theme = Theme.of(context);
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF1B5E20), Color(0xFF2E7D32), Color(0xFF1A237E)],
+        decoration: BoxDecoration(
+          // Modern, subtle radial gradient background
+          gradient: RadialGradient(
+            center: const Alignment(-0.5, -0.8),
+            radius: 1.5,
+            colors: isDark
+                ? [
+                    const Color(0xFF1E3C2B), // Deep emerald glow
+                    const Color(0xFF090B0F), // Dark charcoal
+                    const Color(0xFF050505),
+                  ]
+                : [
+                    const Color(0xFFE8F5E9), // Soft mint glow
+                    const Color(0xFFF1F5F9), // Light slate
+                    const Color(0xFFFFFFFF),
+                  ],
           ),
         ),
         child: SafeArea(
           child: Stack(
             children: [
+              // Decorative background blur shapes
+              Positioned(
+                top: 50,
+                right: -50,
+                child: Container(
+                  width: 200,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: (isDark ? Colors.greenAccent : Colors.green).withOpacity(0.15),
+                  ),
+                ),
+              ),
+              Positioned.fill(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+                  child: const SizedBox(),
+                ),
+              ),
+
               // Main scrollable content
               Center(
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  physics: const BouncingScrollPhysics(),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 64),
+                      const SizedBox(height: 48),
 
-                      // App icon / logo
+                      // Refined App icon / logo
                       Container(
-                        width: 120,
-                        height: 120,
+                        width: 100,
+                        height: 100,
                         decoration: BoxDecoration(
-                          color: Colors.white.withAlpha(30),
+                          color: theme.colorScheme.surface.withOpacity(isDark ? 0.1 : 0.5),
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: Colors.white.withAlpha(80),
-                            width: 2,
+                            color: theme.colorScheme.primary.withOpacity(0.3),
+                            width: 1.5,
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: theme.colorScheme.primary.withOpacity(0.2),
+                              blurRadius: 30,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
                         ),
-                        child: const Center(
-                          child: Text(
-                            '🃏',
-                            style: TextStyle(fontSize: 64),
+                        child: Center(
+                          child: Icon(
+                            Icons.style_rounded,
+                            size: 48,
+                            color: isDark ? Colors.white : theme.colorScheme.primary,
                           ),
                         ),
                       ),
                       const SizedBox(height: 24),
 
                       // Title
-                      const Text(
+                      Text(
                         'Poker Hand\nSuggester',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
-                          height: 1.2,
-                          shadows: [
-                            Shadow(
-                              color: Colors.black45,
-                              blurRadius: 8,
-                              offset: Offset(2, 2),
-                            ),
-                          ],
+                          color: isDark ? Colors.white : Colors.black87,
+                          fontSize: 34,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: -0.5,
+                          height: 1.15,
                         ),
                       ),
                       const SizedBox(height: 12),
 
                       // Tagline
                       Text(
-                        'Make mathematically optimal decisions\nat the poker table.',
+                        'Mathematically optimal decisions\nat the poker table.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.white.withAlpha(210),
-                          fontSize: 16,
+                          color: isDark ? Colors.white70 : Colors.black54,
+                          fontSize: 15,
                           height: 1.5,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 32),
 
-                      // Feature chips
+                      // Modern Feature chips (Glassmorphism)
                       Wrap(
                         spacing: 8,
-                        runSpacing: 8,
+                        runSpacing: 10,
                         alignment: WrapAlignment.center,
                         children: const [
-                          _FeatureChip(
-                              icon: Icons.calculate,
-                              label: 'Equity Analysis'),
-                          _FeatureChip(
-                              icon: Icons.percent, label: 'Pot Odds'),
-                          _FeatureChip(
-                              icon: Icons.trending_up,
-                              label: 'EV Calculation'),
-                          _FeatureChip(
-                              icon: Icons.recommend,
-                              label: 'Fold/Call/Raise'),
+                          _FeatureChip(icon: Icons.calculate_outlined, label: 'Equity'),
+                          _FeatureChip(icon: Icons.pie_chart_outline, label: 'Pot Odds'),
+                          _FeatureChip(icon: Icons.auto_graph_rounded, label: 'EV Math'),
+                          _FeatureChip(icon: Icons.lightbulb_outline, label: 'Advice'),
                         ],
                       ),
                       const SizedBox(height: 48),
@@ -170,11 +201,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Expanded(
                             child: _ActionCard(
-                              emoji: '📸',
+                              icon: Icons.camera_alt_rounded,
                               title: 'Scan Table',
-                              description:
-                                  'Take a photo to\nauto-detect cards',
-                              color: const Color(0xFF0D47A1),
+                              description: 'Auto-detect cards',
+                              gradientColors: const [Color(0xFF3B82F6), Color(0xFF2563EB)],
                               onTap: () => Navigator.of(context).push(
                                 MaterialPageRoute<void>(
                                   builder: (_) => const CameraScreen(),
@@ -182,18 +212,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 16),
                           Expanded(
                             child: _ActionCard(
-                              emoji: '✍️',
-                              title: 'Manual Input',
-                              description: 'Select cards\nfrom the grid',
-                              color: const Color(0xFF1B5E20),
+                              icon: Icons.grid_view_rounded,
+                              title: 'Manual',
+                              description: 'Select cards',
+                              gradientColors: const [Color(0xFF10B981), Color(0xFF059669)],
                               onTap: () => Navigator.of(context)
                                   .push(
                                     MaterialPageRoute<void>(
-                                      builder: (_) =>
-                                          const ManualInputScreen(),
+                                      builder: (_) => const ManualInputScreen(),
                                     ),
                                   )
                                   .then((_) => _loadRecent()),
@@ -201,25 +230,28 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 40),
 
                       // Recent Activity section
                       _RecentActivity(
                         records: _recentHands,
                         onSeeAll: _openHistory,
+                        isDark: isDark,
                       ),
 
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 24),
 
                       // Version / footer
                       Text(
                         'Texas Hold\'em · Phase 3',
                         style: TextStyle(
-                          color: Colors.white.withAlpha(120),
-                          fontSize: 13,
+                          color: isDark ? Colors.white38 : Colors.black38,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.5,
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 24),
                     ],
                   ),
                 ),
@@ -227,10 +259,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Top-left: history button
               Positioned(
-                top: 8,
-                left: 8,
+                top: 12,
+                left: 12,
                 child: IconButton(
-                  icon: const Icon(Icons.history, color: Colors.white),
+                  icon: Icon(Icons.history_rounded, color: isDark ? Colors.white : Colors.black87),
                   tooltip: 'Hand History',
                   onPressed: _openHistory,
                 ),
@@ -238,12 +270,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Top-right: theme toggle
               Positioned(
-                top: 8,
-                right: 8,
+                top: 12,
+                right: 12,
                 child: IconButton(
                   icon: Icon(
-                    isDark ? Icons.light_mode : Icons.dark_mode,
-                    color: Colors.white,
+                    isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                    color: isDark ? Colors.white : Colors.black87,
                   ),
                   tooltip: isDark ? 'Light Mode' : 'Dark Mode',
                   onPressed: () => widget.themeService.toggleTheme(),
@@ -265,10 +297,12 @@ class _RecentActivity extends StatelessWidget {
   const _RecentActivity({
     required this.records,
     required this.onSeeAll,
+    required this.isDark,
   });
 
   final List<HandRecord> records;
   final VoidCallback onSeeAll;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
@@ -276,98 +310,133 @@ class _RecentActivity extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Recent Activity',
               style: TextStyle(
-                color: Colors.white,
-                fontSize: 17,
+                color: isDark ? Colors.white : Colors.black87,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
+                letterSpacing: -0.3,
               ),
             ),
-            const Spacer(),
             if (records.isNotEmpty)
-              GestureDetector(
-                onTap: onSeeAll,
-                child: Text(
-                  'See All',
-                  style: TextStyle(
-                    color: Colors.white.withAlpha(200),
-                    fontSize: 13,
-                    decoration: TextDecoration.underline,
-                    decorationColor: Colors.white.withAlpha(200),
-                  ),
+              TextButton(
+                onPressed: onSeeAll,
+                style: TextButton.styleFrom(
+                  foregroundColor: isDark ? Colors.white70 : Colors.black54,
+                  padding: EdgeInsets.zero,
+                  minimumSize: const Size(50, 30),
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
+                child: const Text('See All', style: TextStyle(fontSize: 13)),
               ),
           ],
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 16),
         if (records.isEmpty)
-          Center(
-            child: Text(
-              'Your analyzed hands will appear here',
-              style: TextStyle(
-                color: Colors.white.withAlpha(130),
-                fontSize: 13,
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 32),
+            decoration: BoxDecoration(
+              color: (isDark ? Colors.white : Colors.black).withOpacity(0.03),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
               ),
+            ),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.receipt_long_rounded,
+                  size: 32,
+                  color: (isDark ? Colors.white : Colors.black).withOpacity(0.2),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Your analyzed hands will appear here',
+                  style: TextStyle(
+                    color: isDark ? Colors.white54 : Colors.black54,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
             ),
           )
         else
-          ...records.map((r) => _RecentHandTile(record: r)),
+          ...records.map((r) => _RecentHandTile(record: r, isDark: isDark)),
       ],
     );
   }
 }
 
 class _RecentHandTile extends StatelessWidget {
-  const _RecentHandTile({required this.record});
+  const _RecentHandTile({required this.record, required this.isDark});
 
   final HandRecord record;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
     final (label, color) = switch (record.action) {
-      PlayerAction.fold => ('FOLD', const Color(0xFFD32F2F)),
-      PlayerAction.call => ('CALL', const Color(0xFFF9A825)),
-      PlayerAction.raise => ('RAISE', const Color(0xFF388E3C)),
+      PlayerAction.fold => ('FOLD', const Color(0xFFEF4444)),
+      PlayerAction.call => ('CALL', const Color(0xFFF59E0B)),
+      PlayerAction.raise => ('RAISE', const Color(0xFF10B981)),
     };
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withAlpha(25),
-        borderRadius: BorderRadius.circular(12),
-        border: Border(
-          left: BorderSide(color: color, width: 3),
-          top: BorderSide(color: Colors.white.withAlpha(60)),
-          right: BorderSide(color: Colors.white.withAlpha(60)),
-          bottom: BorderSide(color: Colors.white.withAlpha(60)),
+        color: Theme.of(context).colorScheme.surface.withOpacity(isDark ? 0.4 : 0.8),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.2 : 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         children: [
+          // Activity Indicator line
+          Container(
+            width: 4,
+            height: 36,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 12),
           // Hole cards
           ...record.holeCards.map(
             (c) => Padding(
-              padding: const EdgeInsets.only(right: 4),
+              padding: const EdgeInsets.only(right: 6),
               child: CardWidget(card: c, size: CardSize.small),
             ),
           ),
-          const SizedBox(width: 8),
-          // Decision badge (small)
+          const SizedBox(width: 12),
+          // Decision badge
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(4),
+              color: color.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: color.withOpacity(0.3)),
             ),
             child: Text(
               label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
+              style: TextStyle(
+                color: isDark ? color : color.withRed((color.red * 0.8).toInt()),
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
               ),
             ),
           ),
@@ -376,8 +445,9 @@ class _RecentHandTile extends StatelessWidget {
           Text(
             _formatRelative(record.timestamp),
             style: TextStyle(
-              color: Colors.white.withAlpha(160),
+              color: isDark ? Colors.white54 : Colors.black54,
               fontSize: 11,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -395,7 +465,7 @@ class _RecentHandTile extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Existing helper widgets
+// Existing helper widgets - modernized
 // ---------------------------------------------------------------------------
 
 class _FeatureChip extends StatelessWidget {
@@ -406,103 +476,142 @@ class _FeatureChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white.withAlpha(40),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withAlpha(80)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: Colors.white, size: 18),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(color: Colors.white, fontSize: 13),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(20),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
+            ),
           ),
-        ],
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: isDark ? Colors.white70 : Colors.black87, size: 16),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black87,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
 
-/// A tappable card tile used for the two main action buttons on the home screen.
+/// A highly polished, tappable card tile
 class _ActionCard extends StatelessWidget {
   const _ActionCard({
-    required this.emoji,
+    required this.icon,
     required this.title,
     required this.description,
-    required this.color,
+    required this.gradientColors,
     required this.onTap,
   });
 
-  final String emoji;
+  final IconData icon;
   final String title;
   final String description;
-  final Color color;
+  final List<Color> gradientColors;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 12,
-              offset: Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Colored top accent strip
-            Container(
-              height: 6,
-              decoration: BoxDecoration(
-                color: color,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface.withOpacity(isDark ? 0.3 : 0.8),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: (isDark ? Colors.white : Colors.black).withOpacity(0.08),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: gradientColors.first.withOpacity(0.15),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
                 ),
-              ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(emoji, style: const TextStyle(fontSize: 40)),
-                  const SizedBox(height: 8),
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1B5E20),
+            child: Stack(
+              children: [
+                // Top gradient accent line
+                Positioned(
+                  top: 0, left: 0, right: 0,
+                  child: Container(
+                    height: 4,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(colors: gradientColors),
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    description,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.black54,
-                      height: 1.5,
-                    ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: gradientColors.map((c) => c.withOpacity(0.15)).toList(),
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          icon,
+                          size: 32,
+                          color: gradientColors.last,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.white : Colors.black87,
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        description,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark ? Colors.white60 : Colors.black54,
+                          height: 1.3,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
