@@ -220,6 +220,12 @@ class _ManualInputScreenState extends State<ManualInputScreen>
     }
   }
 
+  void _resetToNewHand() {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute<void>(builder: (_) => const ManualInputScreen()),
+    );
+  }
+
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.red),
@@ -306,6 +312,14 @@ class _ManualInputScreenState extends State<ManualInputScreen>
               )
             : null,
       ),
+      floatingActionButton: FloatingActionButton.small(
+        onPressed: _resetToNewHand,
+        backgroundColor: const Color(0xFF1B5E20),
+        foregroundColor: Colors.white,
+        tooltip: 'New Hand',
+        child: const Icon(Icons.refresh),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
       body: Form(
         key: _formKey,
         child: LayoutBuilder(

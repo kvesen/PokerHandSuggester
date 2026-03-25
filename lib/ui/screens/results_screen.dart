@@ -110,6 +110,15 @@ class _ResultsScreenState extends State<ResultsScreen>
     }
   }
 
+  bool get _isShowdown => widget.gameState.communityCards.length >= 5;
+
+  void _startNewHand() {
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute<void>(builder: (_) => const ManualInputScreen()),
+      (route) => route.isFirst,
+    );
+  }
+
   void _continueHand() {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -297,12 +306,33 @@ class _ResultsScreenState extends State<ResultsScreen>
             ),
             const SizedBox(height: 32),
 
-            // Primary action — continue to next street
+            // Showdown banner (only when all 5 community cards are dealt)
+            if (_isShowdown)
+              Container(
+                width: double.infinity,
+                color: Colors.grey.shade800,
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.check_circle_outline,
+                        color: Colors.white70, size: 20),
+                    SizedBox(width: 8),
+                    Text(
+                      'Hand Complete — Showdown',
+                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+            if (_isShowdown) const SizedBox(height: 12),
+
+            // Primary action — new hand (showdown) or continue to next street
             SizedBox(
               width: double.infinity,
               child: FilledButton.icon(
-                icon: const Icon(Icons.arrow_forward),
-                label: const Text('Continue Hand'),
+                icon: Icon(_isShowdown ? Icons.refresh : Icons.arrow_forward),
+                label: Text(_isShowdown ? 'New Hand' : 'Continue Hand'),
                 style: FilledButton.styleFrom(
                   backgroundColor: const Color(0xFF1B5E20),
                   padding: const EdgeInsets.symmetric(vertical: 14),
@@ -311,10 +341,10 @@ class _ResultsScreenState extends State<ResultsScreen>
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                onPressed: _continueHand,
+                onPressed: _isShowdown ? _startNewHand : _continueHand,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
 
             // Secondary action — go back and re-edit same street
             SizedBox(
