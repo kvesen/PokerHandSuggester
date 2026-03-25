@@ -174,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               title: 'Scan Table',
                               description:
                                   'Take a photo to\nauto-detect cards',
+                              color: const Color(0xFF0D47A1),
                               onTap: () => Navigator.of(context).push(
                                 MaterialPageRoute<void>(
                                   builder: (_) => const CameraScreen(),
@@ -187,6 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               emoji: '✍️',
                               title: 'Manual Input',
                               description: 'Select cards\nfrom the grid',
+                              color: const Color(0xFF1B5E20),
                               onTap: () => Navigator.of(context)
                                   .push(
                                     MaterialPageRoute<void>(
@@ -279,7 +281,7 @@ class _RecentActivity extends StatelessWidget {
               'Recent Activity',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: 17,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -332,11 +334,16 @@ class _RecentHandTile extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white.withAlpha(20),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white.withAlpha(40)),
+        color: Colors.white.withAlpha(25),
+        borderRadius: BorderRadius.circular(12),
+        border: Border(
+          left: BorderSide(color: color, width: 3),
+          top: BorderSide(color: Colors.white.withAlpha(60)),
+          right: BorderSide(color: Colors.white.withAlpha(60)),
+          bottom: BorderSide(color: Colors.white.withAlpha(60)),
+        ),
       ),
       child: Row(
         children: [
@@ -400,16 +407,16 @@ class _FeatureChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white.withAlpha(30),
+        color: Colors.white.withAlpha(40),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withAlpha(60)),
+        border: Border.all(color: Colors.white.withAlpha(80)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: Colors.white, size: 16),
+          Icon(icon, color: Colors.white, size: 18),
           const SizedBox(width: 6),
           Text(
             label,
@@ -427,12 +434,14 @@ class _ActionCard extends StatelessWidget {
     required this.emoji,
     required this.title,
     required this.description,
+    required this.color,
     required this.onTap,
   });
 
   final String emoji;
   final String title;
   final String description;
+  final Color color;
   final VoidCallback onTap;
 
   @override
@@ -440,39 +449,57 @@ class _ActionCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: const [
             BoxShadow(
               color: Colors.black26,
-              blurRadius: 8,
-              offset: Offset(0, 4),
+              blurRadius: 12,
+              offset: Offset(0, 6),
             ),
           ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(emoji, style: const TextStyle(fontSize: 36)),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1B5E20),
+            // Colored top accent strip
+            Container(
+              height: 6,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
               ),
             ),
-            const SizedBox(height: 6),
-            Text(
-              description,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.black54,
-                height: 1.4,
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(emoji, style: const TextStyle(fontSize: 40)),
+                  const SizedBox(height: 8),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1B5E20),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    description,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.black54,
+                      height: 1.5,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

@@ -43,16 +43,16 @@ class CardWidget extends StatelessWidget {
         width: cardWidth,
         height: cardHeight,
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFFFFF9C4) : Colors.white,
-          borderRadius: BorderRadius.circular(6),
+          color: selected ? const Color(0xFFFFFDE7) : Colors.white,
+          borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: selected ? const Color(0xFFF9A825) : const Color(0xFFBDBDBD),
+            color: selected ? const Color(0xFFFFC107) : const Color(0xFFE0E0E0),
             width: selected ? 2.5 : 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withAlpha(selected ? 60 : 30),
-              blurRadius: selected ? 6 : 3,
+              color: Colors.black.withAlpha(selected ? 80 : 20),
+              blurRadius: selected ? 8 : 4,
               offset: const Offset(1, 2),
             ),
           ],
