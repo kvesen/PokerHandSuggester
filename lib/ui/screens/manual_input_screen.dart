@@ -582,22 +582,25 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                             fontWeight: FontWeight.w600,
                             color: theme.colorScheme.onSurface)),
                     const Spacer(),
-                    IconButton(
-                      icon: Icon(
-                        Icons.remove_circle_rounded,
-                        color: _opponents > 1
-                            ? theme.colorScheme.primary
-                            : Colors.grey.shade500,
+                    Semantics(
+                      label: 'Decrease number of opponents',
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.remove_circle_rounded,
+                          color: _opponents > 1
+                              ? theme.colorScheme.primary
+                              : Colors.grey.shade500,
+                        ),
+                        onPressed: _opponents > 1
+                            ? () => setState(() {
+                                  _opponents--;
+                                  if (_villainPositions.length > _opponents) {
+                                    _villainPositions =
+                                        _villainPositions.sublist(0, _opponents);
+                                  }
+                                })
+                            : null,
                       ),
-                      onPressed: _opponents > 1
-                          ? () => setState(() {
-                                _opponents--;
-                                if (_villainPositions.length > _opponents) {
-                                  _villainPositions =
-                                      _villainPositions.sublist(0, _opponents);
-                                }
-                              })
-                          : null,
                     ),
                     Container(
                       width: 32,
@@ -611,14 +614,17 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                         ),
                       ),
                     ),
-                    IconButton(
-                      icon: Icon(
-                        Icons.add_circle_rounded,
-                        color: _opponents < 9
-                            ? theme.colorScheme.primary
-                            : Colors.grey.shade500,
+                    Semantics(
+                      label: 'Increase number of opponents',
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.add_circle_rounded,
+                          color: _opponents < 9
+                              ? theme.colorScheme.primary
+                              : Colors.grey.shade500,
+                        ),
+                        onPressed: _opponents < 9 ? () => setState(() => _opponents++) : null,
                       ),
-                      onPressed: _opponents < 9 ? () => setState(() => _opponents++) : null,
                     ),
                   ],
                 ),
@@ -679,7 +685,10 @@ class _ManualInputScreenState extends State<ManualInputScreen>
   }
 
   Widget _buildCalculateButton() {
-    return Container(
+    return Semantics(
+      label: 'Calculate best poker move',
+      button: true,
+      child: Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
@@ -719,6 +728,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                   ),
                 ],
               ),
+      ),
       ),
     );
   }
