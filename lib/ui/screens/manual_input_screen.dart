@@ -2,6 +2,7 @@
 library;
 
 import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +12,6 @@ import '../../engine/equity_isolate.dart';
 import '../../models/card.dart';
 import '../../models/game_state.dart';
 import '../../models/position.dart';
-import '../../utils/app_colors.dart';
 import '../../utils/constants.dart';
 import '../widgets/card_selector.dart';
 import '../widgets/card_widget.dart';
@@ -142,11 +142,6 @@ class _ManualInputScreenState extends State<ManualInputScreen>
     });
   }
 
-  /// Runs the equity calculation in a separate isolate.
-  ///
-  /// This must be a [static] method so the [Isolate.run] closure does not
-  /// capture [this] (which contains unsendable Flutter framework objects like
-  /// [TabController], [TextEditingController], etc.).
   static Future<EquityResult> _runInIsolate(
     List<PokerCard> holeCards,
     List<PokerCard> communityCards,
@@ -179,8 +174,6 @@ class _ManualInputScreenState extends State<ManualInputScreen>
       final pot = double.parse(_potController.text);
       final bet = double.parse(_betController.text);
 
-      // Copy instance fields into local variables before crossing the isolate
-      // boundary so that _runInIsolate receives only plain Dart objects.
       final holeCardsCopy = List<PokerCard>.from(_holeCards);
       final communityCardsCopy = List<PokerCard>.from(_communityCards);
       final opponentsCopy = _opponents;
@@ -229,7 +222,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.red),
+      SnackBar(content: Text(message), backgroundColor: Colors.redAccent, behavior: SnackBarBehavior.floating),
     );
   }
 
@@ -253,31 +246,25 @@ class _ManualInputScreenState extends State<ManualInputScreen>
   // Street helpers
   // ---------------------------------------------------------------------------
 
-  /// Street info (title + color) derived from the number of community cards
-  /// that were pre-selected when this screen was opened.
   ({String title, Color color}) get _streetInfo {
     switch (widget.preSelectedCommunityCards?.length ?? 0) {
       case 0:
-        return (title: 'Flop', color: Colors.blue.shade700);
+        return (title: 'Flop', color: const Color(0xFF3B82F6));
       case 3:
-        return (title: 'Turn', color: Colors.orange.shade700);
+        return (title: 'Turn', color: const Color(0xFFF59E0B));
       case 4:
-        return (title: 'River', color: Colors.red.shade700);
+        return (title: 'River', color: const Color(0xFFEF4444));
       case 5:
-        return (title: 'Showdown', color: Colors.purple.shade700);
+        return (title: 'Showdown', color: const Color(0xFF8B5CF6));
       default:
-        return (title: 'Select Cards', color: Colors.grey.shade700);
+        return (title: 'Select Cards', color: Colors.grey.shade600);
     }
   }
 
-  /// Returns the title to display in the AppBar.
   String get _streetTitle =>
       widget.lockHoleCards ? _streetInfo.title : 'Select Cards';
 
-  /// A no-op card toggle handler used when hole-card editing is locked.
-  void _lockedCardToggle(PokerCard _) {
-    // Hole cards are locked — do nothing.
-  }
+  void _lockedCardToggle(PokerCard _) {}
 
   // ---------------------------------------------------------------------------
   // Build
@@ -285,27 +272,39 @@ class _ManualInputScreenState extends State<ManualInputScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(_streetTitle),
-        backgroundColor: kPrimaryGreen,
-        foregroundColor: Colors.white,
-        elevation: 2,
+        title: Text(
+          _streetTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: -0.5),
+        ),
+        backgroundColor: (isDark ? Colors.black : Colors.white).withOpacity(0.5),
+        flexibleSpace: ClipRRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(color: Colors.transparent),
+          ),
+        ),
+        foregroundColor: isDark ? Colors.white : Colors.black87,
+        elevation: 0,
         bottom: widget.lockHoleCards
             ? PreferredSize(
                 preferredSize: const Size.fromHeight(32),
                 child: Container(
                   width: double.infinity,
-                  color: _streetInfo.color,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+                  color: _streetInfo.color.withOpacity(isDark ? 0.6 : 0.8),
+                  padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
                   child: Text(
                     _streetTitle.toUpperCase(),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
+                      letterSpacing: 1.5,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -313,74 +312,97 @@ class _ManualInputScreenState extends State<ManualInputScreen>
               )
             : null,
       ),
-      floatingActionButton: FloatingActionButton.small(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _resetToNewHand,
-        backgroundColor: kPrimaryGreen,
+        backgroundColor: theme.colorScheme.primary,
         foregroundColor: Colors.white,
-        tooltip: 'New Hand',
-        child: const Icon(Icons.refresh),
+        elevation: 4,
+        icon: const Icon(Icons.refresh_rounded, size: 20),
+        label: const Text("Reset", style: TextStyle(fontWeight: FontWeight.bold)),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
-      body: ColoredBox(
-        color: kOffWhiteBackground,
-        child: Form(
-          key: _formKey,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              if (constraints.maxWidth > 600) {
-                return _buildWideLayout();
-              }
-              return _buildNarrowLayout();
-            },
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: RadialGradient(
+            center: const Alignment(0, -0.8),
+            radius: 1.5,
+            colors: isDark
+                ? [
+                    const Color(0xFF1E3C2B), // Deep emerald glow
+                    const Color(0xFF090B0F), // Dark charcoal
+                    const Color(0xFF050505),
+                  ]
+                : [
+                    const Color(0xFFE8F5E9), // Soft mint glow
+                    const Color(0xFFF1F5F9), // Light slate
+                    const Color(0xFFFFFFFF),
+                  ],
+          ),
+        ),
+        child: SafeArea(
+          child: Form(
+            key: _formKey,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth > 600) {
+                  return _buildWideLayout(isDark);
+                }
+                return _buildNarrowLayout(isDark);
+              },
+            ),
           ),
         ),
       ),
     );
   }
 
-  // Wide (tablet/desktop) layout: card selector on left, game info on right.
-  Widget _buildWideLayout() {
+  // Wide (tablet/desktop) layout
+  Widget _buildWideLayout(bool isDark) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Left column: card previews + selector
         Expanded(
           flex: 3,
           child: ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(24),
+            physics: const BouncingScrollPhysics(),
             children: [
               _SectionHeader(
                   title: 'Your Hand',
-                  subtitle: '${_holeCards.length}/2 cards'),
-              const SizedBox(height: 8),
+                  subtitle: '${_holeCards.length}/2 cards',
+                  isDark: isDark),
+              const SizedBox(height: 12),
               _CardPreviewRow(
                   cards: _holeCards,
-                  emptySlots: kMaxHoleCards - _holeCards.length),
-              const SizedBox(height: 16),
+                  emptySlots: kMaxHoleCards - _holeCards.length,
+                  isDark: isDark),
+              const SizedBox(height: 24),
               _SectionHeader(
                 title: 'Community Cards',
                 subtitle: '${_communityCards.length}/5 cards',
+                isDark: isDark,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               _CardPreviewRow(
                 cards: _communityCards,
                 emptySlots: kMaxCommunityCards - _communityCards.length,
+                isDark: isDark,
               ),
-              const SizedBox(height: 24),
-              _buildCardSelectorBox(),
+              const SizedBox(height: 32),
+              _buildCardSelectorBox(isDark),
             ],
           ),
         ),
-        // Right column: game info + calculate button
         Expanded(
           flex: 2,
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(8, 16, 16, 16),
+            padding: const EdgeInsets.fromLTRB(8, 24, 24, 24),
+            physics: const BouncingScrollPhysics(),
             children: [
-              ..._buildGameInfoWidgets(),
+              ..._buildGameInfoWidgets(isDark),
               const SizedBox(height: 32),
-              _buildCalculateButton(),
-              const SizedBox(height: 24),
+              _buildCalculateButton(isDark),
+              const SizedBox(height: 60), // Room for FAB
             ],
           ),
         ),
@@ -388,276 +410,319 @@ class _ManualInputScreenState extends State<ManualInputScreen>
     );
   }
 
-  // Narrow (phone) layout: single column.
-  Widget _buildNarrowLayout() {
+  // Narrow (phone) layout
+  Widget _buildNarrowLayout(bool isDark) {
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
+      physics: const BouncingScrollPhysics(),
       children: [
         _SectionHeader(
             title: 'Your Hand',
-            subtitle: '${_holeCards.length}/2 cards'),
-        const SizedBox(height: 8),
+            subtitle: '${_holeCards.length}/2 cards',
+            isDark: isDark),
+        const SizedBox(height: 12),
         _CardPreviewRow(
             cards: _holeCards,
-            emptySlots: kMaxHoleCards - _holeCards.length),
-        const SizedBox(height: 16),
+            emptySlots: kMaxHoleCards - _holeCards.length,
+            isDark: isDark),
+        const SizedBox(height: 24),
         _SectionHeader(
           title: 'Community Cards',
           subtitle: '${_communityCards.length}/5 cards',
+          isDark: isDark,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 12),
         _CardPreviewRow(
           cards: _communityCards,
           emptySlots: kMaxCommunityCards - _communityCards.length,
+          isDark: isDark,
         ),
-        const SizedBox(height: 24),
-        _buildCardSelectorBox(),
-        const SizedBox(height: 24),
-        ..._buildGameInfoWidgets(),
         const SizedBox(height: 32),
-        _buildCalculateButton(),
-        const SizedBox(height: 24),
+        _buildCardSelectorBox(isDark),
+        const SizedBox(height: 32),
+        ..._buildGameInfoWidgets(isDark),
+        const SizedBox(height: 40),
+        _buildCalculateButton(isDark),
+        const SizedBox(height: 60), // Space for FAB
       ],
     );
   }
 
-  Widget _buildCardSelectorBox() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(
-              color: Colors.black12, blurRadius: 10, offset: Offset(0, 3)),
-        ],
-      ),
-      child: Column(
-        children: [
-          ColoredBox(
-            color: kLightGreenBackground,
-            child: TabBar(
-              controller: _tabController,
-              labelColor: kPrimaryGreen,
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: kPrimaryGreen,
-              indicatorWeight: 3,
-              onTap: widget.lockHoleCards
-                ? (index) {
-                    // Prevent switching to the hole cards tab when locked.
-                    if (index == 0) {
-                      _tabController.animateTo(1);
-                    }
-                  }
-                : null,
-            tabs: [
-              Tab(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Hole Cards (2)',
-                      style: TextStyle(
-                        color: widget.lockHoleCards ? Colors.grey.shade400 : null,
+  Widget _buildCardSelectorBox(bool isDark) {
+    final theme = Theme.of(context);
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        child: Container(
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface.withOpacity(isDark ? 0.3 : 0.8),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: (isDark ? Colors.white : Colors.black).withOpacity(0.08),
+              width: 1.5,
+            ),
+          ),
+          child: Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+                    ),
+                  ),
+                ),
+                child: TabBar(
+                  controller: _tabController,
+                  labelColor: theme.colorScheme.primary,
+                  unselectedLabelColor: isDark ? Colors.white54 : Colors.black54,
+                  indicatorColor: theme.colorScheme.primary,
+                  indicatorWeight: 3,
+                  labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  dividerColor: Colors.transparent,
+                  onTap: widget.lockHoleCards
+                      ? (index) {
+                          if (index == 0) _tabController.animateTo(1);
+                        }
+                      : null,
+                  tabs: [
+                    Tab(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Hole Cards (2)',
+                            style: TextStyle(
+                              color: widget.lockHoleCards ? Colors.grey.shade500 : null,
+                            ),
+                          ),
+                          if (widget.lockHoleCards) ...[
+                            const SizedBox(width: 4),
+                            Icon(Icons.lock_rounded, size: 14, color: Colors.grey.shade500),
+                          ],
+                        ],
                       ),
                     ),
-                    if (widget.lockHoleCards) ...[
-                      const SizedBox(width: 4),
-                      Icon(Icons.lock,
-                          size: 14, color: Colors.grey.shade400),
-                    ],
+                    const Tab(text: 'Community (0–5)'),
                   ],
                 ),
               ),
-              const Tab(text: 'Community (0–5)'),
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: CardSelector(
+                  selectedCards: _activeSection == 0 ? _holeCards : _communityCards,
+                  onCardToggled: _activeSection == 0 && widget.lockHoleCards
+                      ? _lockedCardToggle
+                      : _onCardToggled,
+                  disabledCards: _activeSection == 0 ? _communityCards : _holeCards,
+                  maxSelectable: _activeSection == 0 ? kMaxHoleCards : kMaxCommunityCards,
+                ),
+              ),
             ],
           ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: CardSelector(
-              selectedCards:
-                  _activeSection == 0 ? _holeCards : _communityCards,
-              onCardToggled: _activeSection == 0 && widget.lockHoleCards
-                  ? _lockedCardToggle
-                  : _onCardToggled,
-              disabledCards:
-                  _activeSection == 0 ? _communityCards : _holeCards,
-              maxSelectable:
-                  _activeSection == 0 ? kMaxHoleCards : kMaxCommunityCards,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 
-  List<Widget> _buildGameInfoWidgets() {
+  List<Widget> _buildGameInfoWidgets(bool isDark) {
+    final theme = Theme.of(context);
     return [
-      const Text(
+      Text(
         'Game Info',
         style: TextStyle(
-          fontSize: 19,
+          fontSize: 20,
           fontWeight: FontWeight.bold,
-          color: kPrimaryGreen,
+          color: isDark ? Colors.white : Colors.black87,
+          letterSpacing: -0.5,
         ),
       ),
-      const SizedBox(height: 12),
-      Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withAlpha(18),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+      const SizedBox(height: 16),
+      ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface.withOpacity(isDark ? 0.3 : 0.8),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: (isDark ? Colors.white : Colors.black).withOpacity(0.08),
+                width: 1.5,
+              ),
             ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Row(
+            child: Column(
               children: [
-                Expanded(
-                  child: _NumericField(
-                    controller: _potController,
-                    label: 'Pot Size',
-                    hint: '100',
-                    mustBePositive: true,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _NumericField(
+                        controller: _potController,
+                        label: 'Pot Size',
+                        hint: '100',
+                        mustBePositive: true,
+                        isDark: isDark,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: _NumericField(
+                        controller: _betController,
+                        label: 'Bet to Call',
+                        hint: '20',
+                        isDark: isDark,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: _NumericField(
-                    controller: _betController,
-                    label: 'Bet to Call',
-                    hint: '20',
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Text('Opponents:',
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? Colors.white70 : Colors.black87)),
+                    const Spacer(),
+                    IconButton(
+                      icon: Icon(
+                        Icons.remove_circle_rounded,
+                        color: _opponents > 1
+                            ? theme.colorScheme.primary
+                            : Colors.grey.shade500,
+                      ),
+                      onPressed: _opponents > 1
+                          ? () => setState(() {
+                                _opponents--;
+                                if (_villainPositions.length > _opponents) {
+                                  _villainPositions =
+                                      _villainPositions.sublist(0, _opponents);
+                                }
+                              })
+                          : null,
+                    ),
+                    Container(
+                      width: 32,
+                      alignment: Alignment.center,
+                      child: Text(
+                        '$_opponents',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.white : theme.colorScheme.primary,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.add_circle_rounded,
+                        color: _opponents < 9
+                            ? theme.colorScheme.primary
+                            : Colors.grey.shade500,
+                      ),
+                      onPressed: _opponents < 9 ? () => setState(() => _opponents++) : null,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Theme(
+                  data: theme.copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    tilePadding: EdgeInsets.zero,
+                    title: Text(
+                      'Table Position (optional)',
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? Colors.white : Colors.black87),
+                    ),
+                    subtitle: Text(
+                      _buildPositionSubtitle(),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: (_heroPosition != null || _villainPositions.isNotEmpty)
+                            ? theme.colorScheme.primary
+                            : (isDark ? Colors.white54 : Colors.black54),
+                      ),
+                    ),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Text(
+                          'Tap a seat to mark your position (green).\n'
+                          'Tap other seats to mark opponents (red).',
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: isDark ? Colors.white54 : Colors.black54,
+                              height: 1.4),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: PositionSelector(
+                          selectedPosition: _heroPosition,
+                          onPositionChanged: (pos) => setState(() => _heroPosition = pos),
+                          villainPositions: _villainPositions,
+                          onVillainPositionsChanged: (positions) =>
+                              setState(() => _villainPositions = positions),
+                          maxVillains: _opponents,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                const Text('Opponents:', style: TextStyle(fontSize: 16)),
-                const Spacer(),
-                IconButton(
-                  icon: Icon(
-                    Icons.remove_circle_outline,
-                    color: _opponents > 1
-                        ? kPrimaryGreen
-                        : Colors.grey.shade300,
-                  ),
-                  onPressed: _opponents > 1
-                      ? () => setState(() {
-                            _opponents--;
-                            if (_villainPositions.length > _opponents) {
-                              _villainPositions =
-                                  _villainPositions.sublist(0, _opponents);
-                            }
-                          })
-                      : null,
-                ),
-                Text(
-                  '$_opponents',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: kPrimaryGreen,
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.add_circle_outline,
-                    color: _opponents < 9
-                        ? kPrimaryGreen
-                        : Colors.grey.shade300,
-                  ),
-                  onPressed:
-                      _opponents < 9 ? () => setState(() => _opponents++) : null,
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            // Position selector — collapsible so it doesn't clutter the UI.
-            ExpansionTile(
-              title: const Text(
-                'Table Position (optional)',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-              ),
-              subtitle: Text(
-                _buildPositionSubtitle(),
-                style: TextStyle(
-                  fontSize: 12,
-                  color: (_heroPosition != null || _villainPositions.isNotEmpty)
-                      ? kMediumGreen
-                      : Colors.grey,
-                ),
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: BorderSide(color: Colors.grey.shade200),
-              ),
-              collapsedShape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: BorderSide(color: Colors.grey.shade200),
-              ),
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
-                  child: Text(
-                    'Tap a seat to mark your position (green). '
-                    'Tap other seats to mark opponents (red).',
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(8, 4, 8, 12),
-                  child: PositionSelector(
-                    selectedPosition: _heroPosition,
-                    onPositionChanged: (pos) =>
-                        setState(() => _heroPosition = pos),
-                    villainPositions: _villainPositions,
-                    onVillainPositionsChanged: (positions) =>
-                        setState(() => _villainPositions = positions),
-                    maxVillains: _opponents,
-                  ),
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     ];
   }
 
-  Widget _buildCalculateButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: FilledButton.icon(
-        icon: _isCalculating
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2,
-                ),
-              )
-            : const Icon(Icons.calculate),
-        label:
-            Text(_isCalculating ? 'Calculating…' : 'Calculate Best Move'),
-        style: FilledButton.styleFrom(
-          backgroundColor: kMediumGreen,
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          textStyle: const TextStyle(fontSize: 17, letterSpacing: 0.5),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+  Widget _buildCalculateButton(bool isDark) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
+        ],
+      ),
+      child: FilledButton(
+        style: FilledButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
         onPressed: _isCalculating ? null : _calculate,
+        child: _isCalculating
+            ? const SizedBox(
+                height: 24,
+                width: 24,
+                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+              )
+            : const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.auto_awesome_rounded, size: 22, color: Colors.white),
+                  SizedBox(width: 10),
+                  Text(
+                    'Calculate Best Move',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
@@ -668,36 +733,49 @@ class _ManualInputScreenState extends State<ManualInputScreen>
 // ---------------------------------------------------------------------------
 
 class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({required this.title, required this.subtitle});
+  const _SectionHeader({required this.title, required this.subtitle, required this.isDark});
 
   final String title;
   final String subtitle;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Container(
-          width: 3,
-          height: 18,
+          width: 4,
+          height: 20,
           decoration: BoxDecoration(
-            color: kPrimaryGreen,
+            color: Theme.of(context).colorScheme.primary,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 12),
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 17,
+          style: TextStyle(
+            fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: kPrimaryGreen,
+            color: isDark ? Colors.white : Colors.black87,
+            letterSpacing: -0.3,
           ),
         ),
         const SizedBox(width: 8),
-        Text(
-          subtitle,
-          style: const TextStyle(color: Colors.black38, fontSize: 13),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            subtitle,
+            style: TextStyle(
+              color: isDark ? Colors.white60 : Colors.black54,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
       ],
     );
@@ -705,39 +783,51 @@ class _SectionHeader extends StatelessWidget {
 }
 
 class _CardPreviewRow extends StatelessWidget {
-  const _CardPreviewRow({required this.cards, required this.emptySlots});
+  const _CardPreviewRow({required this.cards, required this.emptySlots, required this.isDark});
 
   final List<PokerCard> cards;
   final int emptySlots;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        ...cards.map(
-          (c) => Padding(
-            padding: const EdgeInsets.only(right: 6),
-            child: CardWidget(card: c, selected: true),
-          ),
-        ),
-        ...List.generate(
-          emptySlots,
-          (_) => Padding(
-            padding: const EdgeInsets.only(right: 6),
-            child: Container(
-              width: 48,
-              height: 68,
-              decoration: BoxDecoration(
-                border: Border.all(color: kCardSlotBorder, width: 1.5),
-                borderRadius: BorderRadius.circular(6),
-                color: kLightGreenBackground,
-              ),
-              child:
-                  const Icon(Icons.add, color: kCardSlotIcon, size: 20),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: [
+          ...cards.map(
+            (c) => Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: CardWidget(card: c, selected: true),
             ),
           ),
-        ),
-      ],
+          ...List.generate(
+            emptySlots,
+            (_) => Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Container(
+                width: 50,
+                height: 72,
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: (isDark ? Colors.white : Colors.black).withOpacity(0.15),
+                    width: 2,
+                    style: BorderStyle.solid,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                  color: (isDark ? Colors.white : Colors.black).withOpacity(0.03),
+                ),
+                child: Icon(
+                  Icons.add_rounded,
+                  color: (isDark ? Colors.white : Colors.black).withOpacity(0.2),
+                  size: 24,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -747,6 +837,7 @@ class _NumericField extends StatelessWidget {
     required this.controller,
     required this.label,
     required this.hint,
+    required this.isDark,
     this.minValue = 0,
     this.mustBePositive = false,
   });
@@ -754,11 +845,8 @@ class _NumericField extends StatelessWidget {
   final TextEditingController controller;
   final String label;
   final String hint;
-
-  /// Minimum allowed value (inclusive). Defaults to 0.
+  final bool isDark;
   final double minValue;
-
-  /// When true the value must be strictly greater than [minValue].
   final bool mustBePositive;
 
   @override
@@ -766,25 +854,45 @@ class _NumericField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      style: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        color: isDark ? Colors.white : Colors.black87,
+      ),
       inputFormatters: [
         FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
       ],
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        labelStyle: TextStyle(color: isDark ? Colors.white60 : Colors.black54),
+        hintStyle: TextStyle(color: isDark ? Colors.white30 : Colors.black26),
+        filled: true,
+        fillColor: (isDark ? Colors.white : Colors.black).withOpacity(0.03),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.primary,
+            width: 2,
+          ),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) return 'Required';
         final n = double.tryParse(value);
         if (n == null) return 'Enter a valid number';
         if (mustBePositive && n <= minValue) {
-          return 'Must be greater than ${minValue.toStringAsFixed(0)}';
+          return '>${minValue.toStringAsFixed(0)}';
         }
         if (!mustBePositive && n < minValue) {
-          return 'Must be ≥ ${minValue.toStringAsFixed(0)}';
+          return '≥${minValue.toStringAsFixed(0)}';
         }
         return null;
       },
