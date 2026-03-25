@@ -1,8 +1,8 @@
 /// Position selector widget — oval poker table with 9 tappable seats.
 library;
 
+import 'dart:ui';
 import 'package:flutter/material.dart';
-
 import '../../models/position.dart';
 
 /// Displays a visual oval poker table with 9 tappable seats.
@@ -24,39 +24,29 @@ class PositionSelector extends StatelessWidget {
     this.maxVillains = 1,
   });
 
-  /// Callback invoked when the user selects or clears the hero position.
   final ValueChanged<TablePosition?> onPositionChanged;
-
-  /// The currently selected hero position (null = none selected).
   final TablePosition? selectedPosition;
-
-  /// The currently selected villain seats.
   final List<TablePosition> villainPositions;
-
-  /// Callback invoked when villain seats change.
-  /// If null, villain selection is disabled.
   final ValueChanged<List<TablePosition>>? onVillainPositionsChanged;
-
-  /// Maximum number of villain seats that can be selected.
   final int maxVillains;
 
-  // Seats arranged clockwise from the Button (standard poker table order:
-  // BTN → SB → BB → UTG → UTG+1 → MP → MP+1 → HJ → CO → back to BTN).
-  // Fractional coordinates: (x from left, y from top).
+  // Seats arranged clockwise from the Button
   static const List<(TablePosition, double, double)> _seats = [
-    (TablePosition.button,     0.08, 0.50),  // left-middle (dealer)
-    (TablePosition.smallBlind, 0.32, 0.04),  // upper-left
-    (TablePosition.bigBlind,   0.50, 0.00),  // top-center
-    (TablePosition.utg,        0.68, 0.04),  // upper-right
-    (TablePosition.utg1,       0.88, 0.22),  // right-upper
-    (TablePosition.mp,         0.92, 0.50),  // right-middle
-    (TablePosition.mp1,        0.80, 0.78),  // lower-right
-    (TablePosition.hijack,     0.56, 0.92),  // bottom-center
-    (TablePosition.cutoff,     0.20, 0.78),  // lower-left
+    (TablePosition.button,     0.08, 0.50),
+    (TablePosition.smallBlind, 0.32, 0.04),
+    (TablePosition.bigBlind,   0.50, 0.00),
+    (TablePosition.utg,        0.68, 0.04),
+    (TablePosition.utg1,       0.88, 0.22),
+    (TablePosition.mp,         0.92, 0.50),
+    (TablePosition.mp1,        0.80, 0.78),
+    (TablePosition.hijack,     0.56, 0.92),
+    (TablePosition.cutoff,     0.20, 0.78),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return AspectRatio(
       aspectRatio: 2.0,
       child: LayoutBuilder(
@@ -65,13 +55,13 @@ class PositionSelector extends StatelessWidget {
           final h = constraints.maxHeight;
           return Stack(
             children: [
-              // Table background
+              // Premium Table Background
               Positioned.fill(
-                child: CustomPaint(painter: _TableOutlinePainter()),
+                child: CustomPaint(painter: _TableOutlinePainter(isDark: isDark)),
               ),
-              // Seats
+              // Interactive Seats
               for (final (pos, fx, fy) in _seats)
-                _buildSeat(pos, fx * w, fy * h),
+                _buildSeat(context, pos, fx * w, fy * h, isDark),
             ],
           );
         },
@@ -79,10 +69,30 @@ class PositionSelector extends StatelessWidget {
     );
   }
 
-  Widget _buildSeat(TablePosition pos, double cx, double cy) {
-    const seatSize = 46.0;
+  Widget _buildSeat(BuildContext context, TablePosition pos, double cx, double cy, bool isDark) {
+    const seatSize = 48.0;
     final isHero = selectedPosition == pos;
     final isVillain = villainPositions.contains(pos);
+    final theme = Theme.of(context);
+
+    // Dynamic colors based on state
+    final Color borderColor;
+    final Color shadowColor;
+    final Color textColor;
+    
+    if (isHero) {
+      borderColor = const Color(0xFF10B981); // Emerald glow
+      shadowColor = const Color(0xFF10B981);
+      textColor = Colors.white;
+    } else if (isVillain) {
+      borderColor = const Color(0xFFEF4444); // Ruby glow
+      shadowColor = const Color(0xFFEF4444);
+      textColor = Colors.white;
+    } else {
+      borderColor = isDark ? Colors.white24 : Colors.black26;
+      shadowColor = Colors.transparent;
+      textColor = isDark ? Colors.white60 : Colors.black54;
+    }
 
     return Positioned(
       left: cx - seatSize / 2,
@@ -90,98 +100,89 @@ class PositionSelector extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           if (isHero) {
-            // Tap selected hero seat → deselect hero
             onPositionChanged(null);
           } else if (isVillain) {
-            // Tap villain seat → remove it from villain list
             if (onVillainPositionsChanged != null) {
-              final updated = List<TablePosition>.from(villainPositions)
-                ..remove(pos);
+              final updated = List<TablePosition>.from(villainPositions)..remove(pos);
               onVillainPositionsChanged!(updated);
             }
           } else {
-            // Empty seat: set as hero first, then fill villain slots.
             if (selectedPosition == null) {
               onPositionChanged(pos);
-            } else if (onVillainPositionsChanged != null &&
-                villainPositions.length < maxVillains) {
-              final updated = List<TablePosition>.from(villainPositions)
-                ..add(pos);
+            } else if (onVillainPositionsChanged != null && villainPositions.length < maxVillains) {
+              final updated = List<TablePosition>.from(villainPositions)..add(pos);
               onVillainPositionsChanged!(updated);
             } else if (onVillainPositionsChanged == null) {
               onPositionChanged(pos);
             }
           }
         },
-        child: Container(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutBack,
           width: seatSize,
           height: seatSize,
           decoration: BoxDecoration(
-            color: isHero
-                ? const Color(0xFF2E7D32)
-                : isVillain
-                    ? const Color(0xFFEF5350)
-                    : Colors.grey.shade300,
             shape: BoxShape.circle,
+            // Glassmorphism base
+            color: isDark ? Colors.black54 : Colors.white.withOpacity(0.8),
             border: Border.all(
-              color: isHero
-                  ? const Color(0xFF1B5E20)
-                  : isVillain
-                      ? const Color(0xFFB71C1C)
-                      : Colors.grey.shade400,
+              color: borderColor,
               width: (isHero || isVillain) ? 2.5 : 1.5,
             ),
-            boxShadow: isHero
-                ? const [
-                    BoxShadow(
-                      color: Color(0x552E7D32),
-                      blurRadius: 6,
-                      spreadRadius: 1,
-                    )
-                  ]
-                : isVillain
-                    ? const [
-                        BoxShadow(
-                          color: Color(0x55EF5350),
-                          blurRadius: 6,
-                          spreadRadius: 1,
-                        )
-                      ]
-                    : null,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (isHero)
-                const Text(
-                  'YOU',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 8,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )
-              else if (isVillain)
-                const Text(
-                  'OPP',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 8,
-                    fontWeight: FontWeight.bold,
-                  ),
+            boxShadow: [
+              if (isHero || isVillain)
+                BoxShadow(
+                  color: shadowColor.withOpacity(isDark ? 0.5 : 0.6),
+                  blurRadius: 10,
+                  spreadRadius: 1,
                 ),
-              Text(
-                positionLabel(pos),
-                style: TextStyle(
-                  color: (isHero || isVillain)
-                      ? Colors.white
-                      : Colors.grey.shade700,
-                  fontSize: (isHero || isVillain) ? 9 : 10,
-                  fontWeight: FontWeight.bold,
+              if (!isHero && !isVillain)
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
                 ),
-                textAlign: TextAlign.center,
-              ),
             ],
+          ),
+          child: ClipOval(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (isHero)
+                    Text(
+                      'YOU',
+                      style: TextStyle(
+                        color: borderColor,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.5,
+                      ),
+                    )
+                  else if (isVillain)
+                    Text(
+                      'OPP',
+                      style: TextStyle(
+                        color: borderColor,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  Text(
+                    positionLabel(pos),
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: (isHero || isVillain) ? 9 : 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -194,6 +195,9 @@ class PositionSelector extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 class _TableOutlinePainter extends CustomPainter {
+  final bool isDark;
+  _TableOutlinePainter({required this.isDark});
+
   @override
   void paint(Canvas canvas, Size size) {
     final w = size.width;
@@ -201,39 +205,50 @@ class _TableOutlinePainter extends CustomPainter {
 
     final rect = Rect.fromLTWH(w * 0.08, h * 0.10, w * 0.84, h * 0.80);
 
-    // Felt fill
+    // Neon glowing rail border
+    final outerGlowPaint = Paint()
+      ..color = const Color(0xFF10B981).withOpacity(isDark ? 0.3 : 0.15)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = w * 0.035
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
+    canvas.drawOval(rect, outerGlowPaint);
+
+    // Rich dark felt fill
     final feltPaint = Paint()
       ..shader = RadialGradient(
-        colors: const [Color(0xFF388E3C), Color(0xFF1B5E20)],
+        colors: isDark 
+            ? [const Color(0xFF1B3B2B), const Color(0xFF0D1C15)] 
+            : [const Color(0xFFE8F5E9), const Color(0xFFC8E6C9)],
         center: Alignment.center,
         radius: 0.8,
       ).createShader(rect)
       ..style = PaintingStyle.fill;
     canvas.drawOval(rect, feltPaint);
 
-    // Rail border
+    // Solid rail edge
     final borderPaint = Paint()
-      ..color = const Color(0xFF3E1F00)
+      ..color = isDark ? const Color(0xFF234B36) : const Color(0xFFA5D6A7)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = w * 0.025;
+      ..strokeWidth = w * 0.02;
     canvas.drawOval(rect, borderPaint);
 
-    // Inner highlight ring
+    // Subtle inner felt ring
     final innerRect = Rect.fromLTWH(
         w * 0.12, h * 0.16, w * 0.76, h * 0.68);
     final innerPaint = Paint()
-      ..color = const Color(0xFF66BB6A).withAlpha(80)
+      ..color = (isDark ? Colors.white : Colors.black).withOpacity(0.08)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
     canvas.drawOval(innerRect, innerPaint);
 
-    // "Table Position" label in center
+    // Center watermark label
     final textSpan = TextSpan(
-      text: 'Table\nPosition',
+      text: 'TABLE\nPOSITION',
       style: TextStyle(
-        color: Colors.white.withAlpha(160),
-        fontSize: w * 0.042,
-        fontWeight: FontWeight.bold,
+        color: (isDark ? Colors.white : Colors.black).withOpacity(0.2),
+        fontSize: w * 0.040,
+        fontWeight: FontWeight.w900,
+        letterSpacing: 2.0,
         height: 1.3,
       ),
     );
@@ -249,5 +264,7 @@ class _TableOutlinePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _TableOutlinePainter oldDelegate) {
+    return oldDelegate.isDark != isDark;
+  }
 }
