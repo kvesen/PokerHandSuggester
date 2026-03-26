@@ -202,6 +202,7 @@ class _CardSelectorState extends State<CardSelector> {
   @override
   Widget build(BuildContext context) {
     final deck = _buildDeck();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -216,21 +217,30 @@ class _CardSelectorState extends State<CardSelector> {
                 textCapitalization: TextCapitalization.characters,
                 decoration: InputDecoration(
                   hintText: 'e.g. Ah, Kd, 10s',
-                  hintStyle: const TextStyle(color: Colors.white38, fontSize: 13),
+                  hintStyle: TextStyle(
+                    color: isDark ? Colors.white38 : Colors.black38,
+                    fontSize: 13,
+                  ),
                   isDense: true,
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.white24),
+                    borderSide: BorderSide(
+                      color: isDark ? Colors.white24 : Colors.black26,
+                    ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.white24),
+                    borderSide: BorderSide(
+                      color: isDark ? Colors.white24 : Colors.black26,
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Colors.white54),
+                    borderSide: BorderSide(
+                      color: isDark ? Colors.white54 : Colors.black54,
+                    ),
                   ),
                   errorBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -241,11 +251,16 @@ class _CardSelectorState extends State<CardSelector> {
                     borderSide: const BorderSide(color: Colors.redAccent),
                   ),
                   filled: true,
-                  fillColor: Colors.white10,
+                  fillColor: isDark
+                      ? Colors.white10
+                      : Colors.black.withOpacity(0.04),
                   errorText: _errorText,
                   errorStyle: const TextStyle(fontSize: 11),
                 ),
-                style: const TextStyle(color: Colors.white, fontSize: 13),
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black87,
+                  fontSize: 13,
+                ),
                 onChanged: (_) {
                   if (_errorText != null) setState(() => _errorText = null);
                 },
@@ -257,7 +272,10 @@ class _CardSelectorState extends State<CardSelector> {
               padding: const EdgeInsets.only(top: 2),
               child: IconButton(
                 onPressed: _submit,
-                icon: const Icon(Icons.add_circle_outline, color: Colors.white70),
+                icon: Icon(
+                  Icons.add_circle_outline,
+                  color: isDark ? Colors.white70 : Colors.black54,
+                ),
                 tooltip: 'Add card',
                 padding: const EdgeInsets.all(4),
                 constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
