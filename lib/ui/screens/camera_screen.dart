@@ -56,7 +56,10 @@ class _CameraScreenState extends State<CameraScreen> {
   // ---------------------------------------------------------------------------
 
   Future<void> _initCamera() async {
-    await _cameraService.initialize();
+    await Future.wait([
+      _cameraService.initialize(),
+      _detector.loadModel(),
+    ]);
     if (mounted) setState(() => _isInitializing = false);
   }
 

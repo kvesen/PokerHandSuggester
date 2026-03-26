@@ -1,199 +1,255 @@
-/// Card detection from images using Google ML Kit text recognition.
+/// Card detection from images using a custom TFLite object detection model.
 library;
 
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'dart:io';
+
+import 'package:flutter/services.dart';
+import 'package:image/image.dart' as img;
+import 'package:tflite_flutter/tflite_flutter.dart';
 
 import '../models/card.dart';
+
+/// A single detection from the model — card identity, confidence, and location.
+class Detection {
+  const Detection({
+    required this.card,
+    required this.confidence,
+    required this.boundingBox,
+  });
+
+  final PokerCard card;
+
+  /// Confidence score in the range [0, 1].
+  final double confidence;
+
+  /// Normalized bounding box `[top, left, bottom, right]` in the range [0, 1].
+  final List<double> boundingBox;
+}
 
 /// Result of a card-detection attempt on a single image.
 class DetectionResult {
   const DetectionResult({
     required this.detectedCards,
     required this.unrecognizedTexts,
+    this.detections = const [],
   });
 
-  /// Cards successfully parsed from the image.
+  /// Cards successfully identified in the image.
   final List<PokerCard> detectedCards;
 
-  /// Text fragments that looked card-like but could not be parsed.
+  /// Text / label tokens that looked card-like but could not be mapped to a
+  /// known card (kept for debugging / review UI).
   final List<String> unrecognizedTexts;
+
+  /// Full detection list including confidence scores and bounding boxes.
+  final List<Detection> detections;
 
   /// Whether at least one card was detected.
   bool get isSuccessful => detectedCards.isNotEmpty;
 }
 
-/// Detects playing cards in an image by running ML Kit text recognition and
-/// parsing the resulting text with [CardTextParser].
+/// Detects playing cards using an on-device TFLite object detection model.
+///
+/// Call [loadModel] once before using [detectCards]. Call [close] when the
+/// detector is no longer needed to release native resources.
 class CardDetector {
-  CardDetector() : _recognizer = TextRecognizer();
+  Interpreter? _interpreter;
+  List<String> _labels = [];
 
-  final TextRecognizer _recognizer;
+  /// Model input image size (width == height). Must match the trained model.
+  static const int _inputSize = 320;
 
-  /// Analyse [imagePath] and return a [DetectionResult].
-  Future<DetectionResult> detectCards(String imagePath) async {
-    final inputImage = InputImage.fromFilePath(imagePath);
+  /// Detections below this score are discarded.
+  static const double _confidenceThreshold = 0.5;
+
+  /// Maximum number of detections the model can return per image.
+  static const int _maxDetections = 25;
+
+  // ---------------------------------------------------------------------------
+  // Initialisation
+  // ---------------------------------------------------------------------------
+
+  /// Loads the TFLite interpreter and label list from bundled assets.
+  ///
+  /// Safe to call multiple times — subsequent calls are no-ops when the model
+  /// is already loaded.
+  ///
+  /// Throws a [StateError] if the model asset is a placeholder stub rather than
+  /// a valid TFLite flatbuffer. Replace `assets/models/card_detection_model.tflite`
+  /// with a trained model — see `assets/models/README.md` for instructions.
+  Future<void> loadModel() async {
+    if (_interpreter != null) return;
     try {
-      final recognized = await _recognizer.processImage(inputImage);
-      final allText = recognized.blocks
-          .expand((b) => b.lines)
-          .expand((l) => l.elements)
-          .map((e) => e.text)
-          .toList();
-      return CardTextParser.parse(allText);
-    } finally {
-      // Do NOT close the recognizer here — it may be reused.
+      _interpreter = await Interpreter.fromAsset(
+        'assets/models/card_detection_model.tflite',
+      );
+    } on Exception catch (e) {
+      throw StateError(
+        'Failed to load card detection model. '
+        'The bundled .tflite file is a placeholder stub — replace it with a '
+        'trained model. See assets/models/README.md for instructions.\n'
+        'Underlying error: $e',
+      );
     }
+    _labels = await _loadLabels('assets/models/card_labels.txt');
   }
 
-  /// Must be called when this detector is no longer needed.
-  Future<void> close() => _recognizer.close();
-}
+  Future<List<String>> _loadLabels(String assetPath) async {
+    final raw = await rootBundle.loadString(assetPath);
+    return raw
+        .split('\n')
+        .map((l) => l.trim())
+        .where((l) => l.isNotEmpty)
+        .toList();
+  }
 
-/// Pure text-parsing logic: converts raw text tokens into [PokerCard] objects.
-///
-/// Supported formats
-/// -----------------
-/// * Unicode suits : `A♠`, `K♥`, `Q♦`, `J♣`, `10♠`
-/// * Letter suits  : `Ah`, `Ks`, `Qd`, `Jc`, `Td`, `2c`
-/// * Full names    : `Ace of Spades`, `King of Hearts`
-class CardTextParser {
-  const CardTextParser._();
+  // ---------------------------------------------------------------------------
+  // Detection
+  // ---------------------------------------------------------------------------
 
-  // --------------------------------------------------------------------------
-  // Rank mappings
-  // --------------------------------------------------------------------------
+  /// Analyses [imagePath] and returns a [DetectionResult].
+  ///
+  /// Loads the model automatically if [loadModel] has not been called yet.
+  Future<DetectionResult> detectCards(String imagePath) async {
+    if (_interpreter == null) await loadModel();
 
-  static const Map<String, Rank> _rankFromLabel = {
-    'a': Rank.ace,
-    'ace': Rank.ace,
-    'k': Rank.king,
-    'king': Rank.king,
-    'q': Rank.queen,
-    'queen': Rank.queen,
-    'j': Rank.jack,
-    'jack': Rank.jack,
-    't': Rank.ten,
-    '10': Rank.ten,
-    'ten': Rank.ten,
-    '9': Rank.nine,
-    'nine': Rank.nine,
-    '8': Rank.eight,
-    'eight': Rank.eight,
-    '7': Rank.seven,
-    'seven': Rank.seven,
-    '6': Rank.six,
-    'six': Rank.six,
-    '5': Rank.five,
-    'five': Rank.five,
-    '4': Rank.four,
-    'four': Rank.four,
-    '3': Rank.three,
-    'three': Rank.three,
-    '2': Rank.two,
-    'two': Rank.two,
-  };
+    // Load and resize the image to the model's expected input dimensions.
+    final bytes = await File(imagePath).readAsBytes();
+    final image = img.decodeImage(bytes);
+    if (image == null) {
+      return const DetectionResult(
+        detectedCards: [],
+        unrecognizedTexts: [],
+      );
+    }
 
-  static const Map<String, Suit> _suitFromLabel = {
-    // unicode
-    '♥': Suit.hearts,
-    '♦': Suit.diamonds,
-    '♣': Suit.clubs,
-    '♠': Suit.spades,
-    // letter abbreviations
-    'h': Suit.hearts,
-    'd': Suit.diamonds,
-    'c': Suit.clubs,
-    's': Suit.spades,
-    // full names
-    'hearts': Suit.hearts,
-    'heart': Suit.hearts,
-    'diamonds': Suit.diamonds,
-    'diamond': Suit.diamonds,
-    'clubs': Suit.clubs,
-    'club': Suit.clubs,
-    'spades': Suit.spades,
-    'spade': Suit.spades,
-  };
+    final resized = img.copyResize(image, width: _inputSize, height: _inputSize);
+    final input = _imageToInput(resized);
 
-  // --------------------------------------------------------------------------
-  // Regexes
-  // --------------------------------------------------------------------------
+    // Output buffers — SSD-style: boxes, classes, scores, count.
+    final outputBoxes = List.generate(
+      1,
+      (_) => List.generate(_maxDetections, (_) => List.filled(4, 0.0)),
+    );
+    final outputClasses =
+        List.generate(1, (_) => List.filled(_maxDetections, 0.0));
+    final outputScores =
+        List.generate(1, (_) => List.filled(_maxDetections, 0.0));
+    final outputCount = List.filled(1, 0.0);
 
-  /// Matches compact notation like `A♠`, `K♥`, `10♦`, `Ah`, `Ks`, `Td`.
-  static final RegExp _compactRe = RegExp(
-    r'(10|[2-9AKQJT])([\u2660\u2665\u2666\u2663hsdc])',
-    caseSensitive: false,
-  );
+    final outputs = <int, Object>{
+      0: outputBoxes,
+      1: outputClasses,
+      2: outputScores,
+      3: outputCount,
+    };
 
-  /// Matches "Ace of Spades", "King of Hearts", etc.
-  static final RegExp _fullNameRe = RegExp(
-    r'(ace|king|queen|jack|ten|nine|eight|seven|six|five|four|three|two)\s+of\s+'
-    r'(spades?|hearts?|diamonds?|clubs?)',
-    caseSensitive: false,
-  );
+    _interpreter!.runForMultipleInputs([input], outputs);
 
-  // --------------------------------------------------------------------------
-  // Public API
-  // --------------------------------------------------------------------------
-
-  /// Parse a list of raw text tokens and return a [DetectionResult].
-  static DetectionResult parse(List<String> tokens) {
-    final detected = <PokerCard>{};
+    // Parse detections.
+    final detections = <Detection>[];
+    final cards = <PokerCard>{};
     final unrecognized = <String>[];
+    final count = outputCount[0].toInt().clamp(0, _maxDetections);
 
-    for (final token in tokens) {
-      final trimmed = token.trim();
-      if (trimmed.isEmpty) continue;
+    for (var i = 0; i < count; i++) {
+      final score = outputScores[0][i];
+      if (score < _confidenceThreshold) continue;
 
-      // Try full-name match first on the whole token (handles multi-word)
-      final fullMatches = _fullNameRe.allMatches(trimmed.toLowerCase());
-      for (final m in fullMatches) {
-        final rank = _rankFromLabel[m.group(1)!.toLowerCase()];
-        final suit = _suitFromLabel[m.group(2)!.toLowerCase()] ??
-            _suitFromLabel['${m.group(2)!.toLowerCase()}s'];
-        if (rank != null && suit != null) {
-          detected.add(PokerCard(suit: suit, rank: rank));
-        }
+      final classIndex = outputClasses[0][i].toInt();
+      if (classIndex < 0 || classIndex >= _labels.length) continue;
+
+      final label = _labels[classIndex];
+      final card = labelToPokerCard(label);
+      if (card == null) {
+        unrecognized.add(label);
+        continue;
       }
 
-      // Try compact notation on the token
-      final compactMatches = _compactRe.allMatches(trimmed);
-      for (final m in compactMatches) {
-        final rankStr = m.group(1)!.toLowerCase();
-        final suitStr = m.group(2)!.toLowerCase();
-        final rank = _rankFromLabel[rankStr];
-        final suit = _suitFromLabel[suitStr];
-        if (rank != null && suit != null) {
-          detected.add(PokerCard(suit: suit, rank: rank));
-        } else {
-          // Looked like a card but couldn't parse
-          unrecognized.add(m.group(0)!);
-        }
-      }
-
-      // If the token looks card-like but matched nothing, record it
-      if (fullMatches.isEmpty && compactMatches.isEmpty) {
-        if (_looksCardLike(trimmed)) {
-          unrecognized.add(trimmed);
-        }
-      }
+      cards.add(card);
+      detections.add(Detection(
+        card: card,
+        confidence: score,
+        boundingBox: List<double>.from(outputBoxes[0][i]),
+      ));
     }
 
     return DetectionResult(
-      detectedCards: detected.toList(),
+      detectedCards: cards.toList(),
       unrecognizedTexts: unrecognized,
+      detections: detections,
     );
   }
 
-  // --------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
   // Helpers
-  // --------------------------------------------------------------------------
+  // ---------------------------------------------------------------------------
 
-  /// Returns true for short tokens that look like they might be card notation
-  /// but didn't match any known pattern (e.g. "1s", "Xx").
-  static bool _looksCardLike(String text) {
-    if (text.length > 10 || text.length < 2) return false;
-    // Contains a digit or a face-card letter
-    return RegExp(r'[2-9AKQJT]', caseSensitive: false).hasMatch(text);
+  /// Converts an [img.Image] to the float32 input tensor expected by the model.
+  ///
+  /// Pixel values are normalized to [0, 1].
+  List<List<List<List<double>>>> _imageToInput(img.Image image) {
+    return List.generate(
+      1,
+      (_) => List.generate(
+        _inputSize,
+        (y) => List.generate(_inputSize, (x) {
+          final pixel = image.getPixel(x, y);
+          return [
+            pixel.r / 255.0,
+            pixel.g / 255.0,
+            pixel.b / 255.0,
+          ];
+        }),
+      ),
+    );
+  }
+
+  /// Maps a label string like `"ace_spades"` to a [PokerCard].
+  ///
+  /// Returns `null` if the label cannot be parsed.
+  static PokerCard? labelToPokerCard(String label) {
+    final parts = label.toLowerCase().split('_');
+    if (parts.length != 2) return null;
+
+    final rank = _rankFromName[parts[0]];
+    final suit = _suitFromName[parts[1]];
+    if (rank == null || suit == null) return null;
+
+    return PokerCard(rank: rank, suit: suit);
+  }
+
+  static const Map<String, Rank> _rankFromName = {
+    'ace': Rank.ace,
+    '2': Rank.two,
+    '3': Rank.three,
+    '4': Rank.four,
+    '5': Rank.five,
+    '6': Rank.six,
+    '7': Rank.seven,
+    '8': Rank.eight,
+    '9': Rank.nine,
+    '10': Rank.ten,
+    'jack': Rank.jack,
+    'queen': Rank.queen,
+    'king': Rank.king,
+  };
+
+  static const Map<String, Suit> _suitFromName = {
+    'spades': Suit.spades,
+    'hearts': Suit.hearts,
+    'diamonds': Suit.diamonds,
+    'clubs': Suit.clubs,
+  };
+
+  // ---------------------------------------------------------------------------
+  // Lifecycle
+  // ---------------------------------------------------------------------------
+
+  /// Releases the TFLite interpreter. Call when the detector is no longer needed.
+  Future<void> close() async {
+    _interpreter?.close();
+    _interpreter = null;
   }
 }
+
