@@ -2,9 +2,9 @@
 -keep class io.flutter.** { *; }
 -dontwarn io.flutter.**
 
-# Google ML Kit
--keep class com.google.mlkit.** { *; }
--dontwarn com.google.mlkit.**
+# TFLite Flutter
+-keep class org.tensorflow.lite.** { *; }
+-dontwarn org.tensorflow.lite.**
 
 # Camera plugin
 -keep class io.flutter.plugins.camera.** { *; }

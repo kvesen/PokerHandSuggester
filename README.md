@@ -37,8 +37,8 @@ A Flutter mobile app (Android & iOS) that calculates the **mathematically optima
 
 
 - 📸 **Scan Table** — take a photo (or pick from gallery) and have cards automatically detected
-- 🔍 **On-device ML** — Google ML Kit text recognition runs entirely on device (no server required)
-- 🃏 **Multi-format parsing** — detects cards in unicode (`A♠`), letter (`Ks`), and full-name (`Ace of Spades`) notation
+- 🔍 **On-device ML** — TFLite object detection model runs entirely on device (no server required)
+- 🃏 **Visual card recognition** — detects playing cards by appearance, not OCR text; works with stylized fonts, suit graphics, and real table conditions
 - 🔎 **Detection Review Screen** — inspect detected cards, remove false positives, add missed cards, and assign each card to "My Hand" or "Community"
 - ⚡ **Pre-populated input** — confirmed cards flow directly into the Manual Input screen
 - 🏠 **Updated Home Screen** — two equal-prominence buttons: **📸 Scan Table** and **✍️ Manual Input**
@@ -50,7 +50,7 @@ A Flutter mobile app (Android & iOS) that calculates the **mathematically optima
 | Framework | Flutter (Dart 3) |
 | State | `StatefulWidget` + `ChangeNotifier` |
 | Poker math | Custom Dart engine (hand evaluator + Monte Carlo) |
-| Card recognition | Google ML Kit Text Recognition |
+| Card recognition | TFLite Object Detection (custom playing card model) |
 | Camera | `camera` plugin |
 | Image processing | `image` package |
 | Persistence | `shared_preferences` |
@@ -76,7 +76,7 @@ lib/
 │   ├── pot_odds.dart                   # Pot odds math
 │   └── decision_engine.dart            # Fold / Call / Raise recommendation
 ├── recognition/
-│   ├── card_detector.dart              # ML Kit OCR → PokerCard list
+│   ├── card_detector.dart              # TFLite object detection → PokerCard list
 │   └── image_processor.dart            # Grayscale, contrast, crop, rotate
 ├── services/
 │   ├── camera_service.dart             # Camera lifecycle & permissions
@@ -113,7 +113,7 @@ test/
 ├── services/
 │   └── history_service_test.dart
 └── recognition/
-    └── card_detector_test.dart         # Text-parsing logic tests
+    └── card_detector_test.dart         # TFLite label-to-card mapping tests
 ```
 
 ## Setup & Installation
@@ -177,12 +177,15 @@ The required usage descriptions are already present in `ios/Runner/Info.plist`:
 ### Camera Scan Flow
 1. Tap **📸 Scan Table** on the home screen
 2. Point the camera at your poker table and tap the shutter button (or pick from gallery)
-3. The app pre-processes the image (grayscale + contrast enhancement) and runs on-device ML
+3. The app pre-processes the image (grayscale + contrast enhancement) and runs on-device TFLite object detection
 4. Review detected cards on the **Detection Review** screen:
    - Swipe left to remove false positives
    - Tap the chip to toggle between **My Hand** and **Community**
    - Tap **"Add Card Manually"** for any missed cards
 5. Tap **"Continue"** — cards are pre-populated in the Manual Input screen
+
+> **Note:** The TFLite model file (`assets/models/card_detection_model.tflite`) is a placeholder stub.
+> You must supply your own trained model. See [`assets/models/README.md`](assets/models/README.md) for instructions on obtaining or training one from Roboflow.
 
 ### Decision Logic
 

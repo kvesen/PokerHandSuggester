@@ -3,249 +3,205 @@ import 'package:poker_hand_suggester/models/card.dart';
 import 'package:poker_hand_suggester/recognition/card_detector.dart';
 
 void main() {
-  group('CardTextParser', () {
+  group('CardDetector.labelToPokerCard', () {
     // -------------------------------------------------------------------------
-    // Unicode suit notation
-    // -------------------------------------------------------------------------
-
-    test('parses A♠ → ace of spades', () {
-      final result = CardTextParser.parse(['A♠']);
-      expect(result.detectedCards, contains(PokerCard(suit: Suit.spades, rank: Rank.ace)));
-    });
-
-    test('parses K♥ → king of hearts', () {
-      final result = CardTextParser.parse(['K♥']);
-      expect(result.detectedCards, contains(PokerCard(suit: Suit.hearts, rank: Rank.king)));
-    });
-
-    test('parses Q♦ → queen of diamonds', () {
-      final result = CardTextParser.parse(['Q♦']);
-      expect(result.detectedCards, contains(PokerCard(suit: Suit.diamonds, rank: Rank.queen)));
-    });
-
-    test('parses J♣ → jack of clubs', () {
-      final result = CardTextParser.parse(['J♣']);
-      expect(result.detectedCards, contains(PokerCard(suit: Suit.clubs, rank: Rank.jack)));
-    });
-
-    test('parses 10♦ → ten of diamonds', () {
-      final result = CardTextParser.parse(['10♦']);
-      expect(result.detectedCards, contains(PokerCard(suit: Suit.diamonds, rank: Rank.ten)));
-    });
-
-    test('parses 10♠ → ten of spades', () {
-      final result = CardTextParser.parse(['10♠']);
-      expect(result.detectedCards, contains(PokerCard(suit: Suit.spades, rank: Rank.ten)));
-    });
-
-    // -------------------------------------------------------------------------
-    // Letter suit notation
+    // Valid labels — all ranks
     // -------------------------------------------------------------------------
 
-    test('parses Ah → ace of hearts', () {
-      final result = CardTextParser.parse(['Ah']);
-      expect(result.detectedCards, contains(PokerCard(suit: Suit.hearts, rank: Rank.ace)));
+    test('parses ace_spades', () {
+      final card = CardDetector.labelToPokerCard('ace_spades');
+      expect(card, PokerCard(suit: Suit.spades, rank: Rank.ace));
     });
 
-    test('parses Ks → king of spades', () {
-      final result = CardTextParser.parse(['Ks']);
-      expect(result.detectedCards, contains(PokerCard(suit: Suit.spades, rank: Rank.king)));
+    test('parses king_hearts', () {
+      final card = CardDetector.labelToPokerCard('king_hearts');
+      expect(card, PokerCard(suit: Suit.hearts, rank: Rank.king));
     });
 
-    test('parses Qd → queen of diamonds', () {
-      final result = CardTextParser.parse(['Qd']);
-      expect(result.detectedCards, contains(PokerCard(suit: Suit.diamonds, rank: Rank.queen)));
+    test('parses queen_diamonds', () {
+      final card = CardDetector.labelToPokerCard('queen_diamonds');
+      expect(card, PokerCard(suit: Suit.diamonds, rank: Rank.queen));
     });
 
-    test('parses Jc → jack of clubs', () {
-      final result = CardTextParser.parse(['Jc']);
-      expect(result.detectedCards, contains(PokerCard(suit: Suit.clubs, rank: Rank.jack)));
+    test('parses jack_clubs', () {
+      final card = CardDetector.labelToPokerCard('jack_clubs');
+      expect(card, PokerCard(suit: Suit.clubs, rank: Rank.jack));
     });
 
-    test('parses Td → ten of diamonds', () {
-      final result = CardTextParser.parse(['Td']);
-      expect(result.detectedCards, contains(PokerCard(suit: Suit.diamonds, rank: Rank.ten)));
+    test('parses 10_spades', () {
+      final card = CardDetector.labelToPokerCard('10_spades');
+      expect(card, PokerCard(suit: Suit.spades, rank: Rank.ten));
     });
 
-    test('parses 2c → two of clubs', () {
-      final result = CardTextParser.parse(['2c']);
-      expect(result.detectedCards, contains(PokerCard(suit: Suit.clubs, rank: Rank.two)));
+    test('parses 9_hearts', () {
+      final card = CardDetector.labelToPokerCard('9_hearts');
+      expect(card, PokerCard(suit: Suit.hearts, rank: Rank.nine));
     });
 
-    test('parses 9h → nine of hearts', () {
-      final result = CardTextParser.parse(['9h']);
-      expect(result.detectedCards, contains(PokerCard(suit: Suit.hearts, rank: Rank.nine)));
+    test('parses 8_diamonds', () {
+      final card = CardDetector.labelToPokerCard('8_diamonds');
+      expect(card, PokerCard(suit: Suit.diamonds, rank: Rank.eight));
     });
 
-    test('parses 7s → seven of spades', () {
-      final result = CardTextParser.parse(['7s']);
-      expect(result.detectedCards, contains(PokerCard(suit: Suit.spades, rank: Rank.seven)));
+    test('parses 7_clubs', () {
+      final card = CardDetector.labelToPokerCard('7_clubs');
+      expect(card, PokerCard(suit: Suit.clubs, rank: Rank.seven));
+    });
+
+    test('parses 6_spades', () {
+      final card = CardDetector.labelToPokerCard('6_spades');
+      expect(card, PokerCard(suit: Suit.spades, rank: Rank.six));
+    });
+
+    test('parses 5_hearts', () {
+      final card = CardDetector.labelToPokerCard('5_hearts');
+      expect(card, PokerCard(suit: Suit.hearts, rank: Rank.five));
+    });
+
+    test('parses 4_diamonds', () {
+      final card = CardDetector.labelToPokerCard('4_diamonds');
+      expect(card, PokerCard(suit: Suit.diamonds, rank: Rank.four));
+    });
+
+    test('parses 3_clubs', () {
+      final card = CardDetector.labelToPokerCard('3_clubs');
+      expect(card, PokerCard(suit: Suit.clubs, rank: Rank.three));
+    });
+
+    test('parses 2_spades', () {
+      final card = CardDetector.labelToPokerCard('2_spades');
+      expect(card, PokerCard(suit: Suit.spades, rank: Rank.two));
     });
 
     // -------------------------------------------------------------------------
-    // Full name notation
+    // Valid labels — all suits
     // -------------------------------------------------------------------------
 
-    test('parses "Ace of Spades" → ace of spades', () {
-      final result = CardTextParser.parse(['Ace of Spades']);
-      expect(result.detectedCards, contains(PokerCard(suit: Suit.spades, rank: Rank.ace)));
+    test('parses ace_spades (spades suit)', () {
+      final card = CardDetector.labelToPokerCard('ace_spades');
+      expect(card?.suit, Suit.spades);
     });
 
-    test('parses "King of Hearts" → king of hearts', () {
-      final result = CardTextParser.parse(['King of Hearts']);
-      expect(result.detectedCards, contains(PokerCard(suit: Suit.hearts, rank: Rank.king)));
+    test('parses ace_hearts (hearts suit)', () {
+      final card = CardDetector.labelToPokerCard('ace_hearts');
+      expect(card?.suit, Suit.hearts);
     });
 
-    test('parses "queen of diamonds" (lowercase) → queen of diamonds', () {
-      final result = CardTextParser.parse(['queen of diamonds']);
-      expect(result.detectedCards,
-          contains(PokerCard(suit: Suit.diamonds, rank: Rank.queen)));
+    test('parses ace_diamonds (diamonds suit)', () {
+      final card = CardDetector.labelToPokerCard('ace_diamonds');
+      expect(card?.suit, Suit.diamonds);
     });
 
-    test('parses "Jack of Clubs" → jack of clubs', () {
-      final result = CardTextParser.parse(['Jack of Clubs']);
-      expect(result.detectedCards, contains(PokerCard(suit: Suit.clubs, rank: Rank.jack)));
-    });
-
-    // -------------------------------------------------------------------------
-    // Multiple cards in one token / multiple tokens
-    // -------------------------------------------------------------------------
-
-    test('parses multiple cards from separate tokens', () {
-      final result = CardTextParser.parse(['Ah', 'Ks', 'Qd']);
-      expect(result.detectedCards.length, 3);
-      expect(result.isSuccessful, isTrue);
-    });
-
-    test('parses multiple cards embedded in same string', () {
-      // Some OCR engines concatenate text — e.g. "AhKs"
-      final result = CardTextParser.parse(['AhKs']);
-      expect(result.detectedCards,
-          containsAll([
-            PokerCard(suit: Suit.hearts, rank: Rank.ace),
-            PokerCard(suit: Suit.spades, rank: Rank.king),
-          ]));
+    test('parses ace_clubs (clubs suit)', () {
+      final card = CardDetector.labelToPokerCard('ace_clubs');
+      expect(card?.suit, Suit.clubs);
     });
 
     // -------------------------------------------------------------------------
-    // Deduplication
+    // Case-insensitive
     // -------------------------------------------------------------------------
 
-    test('deduplicates duplicate cards', () {
-      final result = CardTextParser.parse(['Ah', 'Ah', 'Ah']);
-      expect(
-        result.detectedCards
-            .where((c) => c == PokerCard(suit: Suit.hearts, rank: Rank.ace))
-            .length,
-        1,
-      );
+    test('parses label with uppercase', () {
+      final card = CardDetector.labelToPokerCard('ACE_SPADES');
+      expect(card, PokerCard(suit: Suit.spades, rank: Rank.ace));
     });
 
-    test('deduplicates same card in different notation', () {
-      // 'Ah' and 'A♥' both represent ace of hearts
-      final result = CardTextParser.parse(['Ah', 'A♥']);
-      expect(
-        result.detectedCards
-            .where((c) => c == PokerCard(suit: Suit.hearts, rank: Rank.ace))
-            .length,
-        1,
-      );
+    test('parses label with mixed case', () {
+      final card = CardDetector.labelToPokerCard('King_Hearts');
+      expect(card, PokerCard(suit: Suit.hearts, rank: Rank.king));
     });
 
     // -------------------------------------------------------------------------
-    // Invalid / garbage input
+    // All 52 labels round-trip
     // -------------------------------------------------------------------------
 
-    test('handles empty list gracefully', () {
-      final result = CardTextParser.parse([]);
-      expect(result.detectedCards, isEmpty);
-      expect(result.isSuccessful, isFalse);
-    });
-
-    test('handles empty string token gracefully', () {
-      final result = CardTextParser.parse(['', '  ']);
-      expect(result.detectedCards, isEmpty);
-    });
-
-    test('ignores pure garbage text', () {
-      final result = CardTextParser.parse(['hello', 'world', '!!!', '12345']);
-      expect(result.detectedCards, isEmpty);
-    });
-
-    test('does not crash on very long strings', () {
-      final longText = 'x' * 10000;
-      expect(() => CardTextParser.parse([longText]), returnsNormally);
-    });
-
-    test('does not crash on special characters', () {
-      expect(() => CardTextParser.parse(['@#\$%^&*()']), returnsNormally);
-    });
-
-    // -------------------------------------------------------------------------
-    // Mixed formats in the same scan
-    // -------------------------------------------------------------------------
-
-    test('handles mixed formats in the same token list', () {
-      final result = CardTextParser.parse([
-        'A♠',           // unicode suit
-        'Kh',           // letter suit
-        'Td',           // T = ten
-        '2c',           // numeric rank + letter suit
-        'Queen of Hearts', // full name
-      ]);
-
-      expect(
-        result.detectedCards,
-        containsAll([
-          PokerCard(suit: Suit.spades, rank: Rank.ace),
-          PokerCard(suit: Suit.hearts, rank: Rank.king),
-          PokerCard(suit: Suit.diamonds, rank: Rank.ten),
-          PokerCard(suit: Suit.clubs, rank: Rank.two),
-          PokerCard(suit: Suit.hearts, rank: Rank.queen),
-        ]),
-      );
-      expect(result.isSuccessful, isTrue);
-    });
-
-    // -------------------------------------------------------------------------
-    // isSuccessful flag
-    // -------------------------------------------------------------------------
-
-    test('isSuccessful is true when at least one card is detected', () {
-      final result = CardTextParser.parse(['Ah']);
-      expect(result.isSuccessful, isTrue);
-    });
-
-    test('isSuccessful is false when no cards are detected', () {
-      final result = CardTextParser.parse(['garbage']);
-      expect(result.isSuccessful, isFalse);
-    });
-
-    // -------------------------------------------------------------------------
-    // All ranks
-    // -------------------------------------------------------------------------
-
-    test('parses all ranks correctly', () {
-      final tokens = [
-        '2h', '3h', '4h', '5h', '6h', '7h',
-        '8h', '9h', 'Th', 'Jh', 'Qh', 'Kh', 'Ah',
+    test('parses all 52 labels from card_labels.txt format', () {
+      const labels = [
+        'ace_spades', '2_spades', '3_spades', '4_spades', '5_spades',
+        '6_spades', '7_spades', '8_spades', '9_spades', '10_spades',
+        'jack_spades', 'queen_spades', 'king_spades',
+        'ace_hearts', '2_hearts', '3_hearts', '4_hearts', '5_hearts',
+        '6_hearts', '7_hearts', '8_hearts', '9_hearts', '10_hearts',
+        'jack_hearts', 'queen_hearts', 'king_hearts',
+        'ace_diamonds', '2_diamonds', '3_diamonds', '4_diamonds', '5_diamonds',
+        '6_diamonds', '7_diamonds', '8_diamonds', '9_diamonds', '10_diamonds',
+        'jack_diamonds', 'queen_diamonds', 'king_diamonds',
+        'ace_clubs', '2_clubs', '3_clubs', '4_clubs', '5_clubs',
+        '6_clubs', '7_clubs', '8_clubs', '9_clubs', '10_clubs',
+        'jack_clubs', 'queen_clubs', 'king_clubs',
       ];
-      final result = CardTextParser.parse(tokens);
-      expect(result.detectedCards.length, 13);
+
+      final cards = labels.map(CardDetector.labelToPokerCard).toList();
+      expect(cards.every((c) => c != null), isTrue,
+          reason: 'Every label should map to a valid PokerCard');
+      expect(cards.toSet().length, 52,
+          reason: 'All 52 labels should produce distinct cards');
     });
 
     // -------------------------------------------------------------------------
-    // All suits
+    // Invalid labels → null
     // -------------------------------------------------------------------------
 
-    test('parses all suits correctly', () {
-      final tokens = ['Ah', 'Ad', 'Ac', 'As'];
-      final result = CardTextParser.parse(tokens);
-      expect(result.detectedCards.length, 4);
+    test('returns null for empty string', () {
+      expect(CardDetector.labelToPokerCard(''), isNull);
+    });
+
+    test('returns null for label without underscore', () {
+      expect(CardDetector.labelToPokerCard('acespades'), isNull);
+    });
+
+    test('returns null for unknown rank', () {
+      expect(CardDetector.labelToPokerCard('joker_spades'), isNull);
+    });
+
+    test('returns null for unknown suit', () {
+      expect(CardDetector.labelToPokerCard('ace_stars'), isNull);
+    });
+
+    test('returns null for too many parts', () {
+      expect(CardDetector.labelToPokerCard('ace_of_spades'), isNull);
+    });
+
+    test('returns null for garbage input', () {
+      expect(CardDetector.labelToPokerCard('hello_world'), isNull);
+    });
+
+    test('does not throw on very long strings', () {
       expect(
-        result.detectedCards.map((c) => c.suit).toSet(),
-        {Suit.hearts, Suit.diamonds, Suit.clubs, Suit.spades},
+        () => CardDetector.labelToPokerCard('x' * 10000),
+        returnsNormally,
       );
     });
   });
+
+  // ---------------------------------------------------------------------------
+  // DetectionResult
+  // ---------------------------------------------------------------------------
+
+  group('DetectionResult', () {
+    test('isSuccessful is true when detectedCards is non-empty', () {
+      final result = DetectionResult(
+        detectedCards: [PokerCard(suit: Suit.spades, rank: Rank.ace)],
+        unrecognizedTexts: [],
+      );
+      expect(result.isSuccessful, isTrue);
+    });
+
+    test('isSuccessful is false when detectedCards is empty', () {
+      const result = DetectionResult(
+        detectedCards: [],
+        unrecognizedTexts: [],
+      );
+      expect(result.isSuccessful, isFalse);
+    });
+
+    test('defaults detections to empty list', () {
+      const result = DetectionResult(
+        detectedCards: [],
+        unrecognizedTexts: [],
+      );
+      expect(result.detections, isEmpty);
+    });
+  });
 }
+
