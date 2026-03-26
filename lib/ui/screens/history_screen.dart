@@ -295,12 +295,12 @@ class _HistoryCard extends StatelessWidget {
           padding: const EdgeInsets.only(right: 24),
           decoration: BoxDecoration(
             color: const Color(0xFFEF4444).withOpacity(0.8),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(24),
           ),
           child: const Icon(Icons.delete_rounded, color: Colors.white, size: 28),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: Material(
@@ -316,7 +316,7 @@ class _HistoryCard extends StatelessWidget {
                     border: Border.all(
                       color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
                     ),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(24),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,6 +1,8 @@
 /// Results screen: shows the decision, equity, pot odds, and EV.
 library;
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import '../../engine/decision_engine.dart';
@@ -165,267 +167,331 @@ class _ResultsScreenState extends State<ResultsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: kOffWhiteBackground,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: const Text(
           'Recommendation',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: kPrimaryGreen,
-        foregroundColor: Colors.white,
+        backgroundColor:
+            (isDark ? Colors.black : Colors.white).withOpacity(0.5),
+        flexibleSpace: ClipRRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(color: Colors.transparent),
+          ),
+        ),
+        foregroundColor: isDark ? Colors.white : Colors.black87,
         elevation: 0,
-        shadowColor: Colors.transparent,
       ),
       floatingActionButton: FloatingActionButton.small(
-        backgroundColor: kPrimaryGreen,
-        foregroundColor: Colors.white,
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: isDark ? Colors.black : Colors.white,
         tooltip: 'New Hand',
         onPressed: _startNewHand,
         child: const Icon(Icons.refresh),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 8),
-
-            // Section 0 — Decision badge
-            _animated(0, DecisionBadge(action: widget.decision.action)),
-            const SizedBox(height: 28),
-
-            // Section 1 — Stats row
-            _animated(
-              1,
-              _StatsRow(
-                items: [
-                  _StatItem(
-                    label: 'Equity',
-                    value: widget.decision.equityPercent,
-                    icon: Icons.bar_chart,
-                    color: const Color(0xFF1565C0),
-                  ),
-                  _StatItem(
-                    label: 'Pot Odds',
-                    value: widget.decision.potOddsPercent,
-                    icon: Icons.percent,
-                    color: const Color(0xFF6A1B9A),
-                  ),
-                  _StatItem(
-                    label: 'EV',
-                    value: widget.decision.evFormatted,
-                    icon: Icons.trending_up,
-                    color: widget.decision.expectedValue >= 0
-                        ? const Color(0xFF2E7D32)
-                        : const Color(0xFFC62828),
-                  ),
-                ],
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: RadialGradient(
+            center: const Alignment(0, -0.8),
+            radius: 1.5,
+            colors: isDark
+                ? [
+                    const Color(0xFF1E3C2B),
+                    const Color(0xFF090B0F),
+                    const Color(0xFF050505),
+                  ]
+                : [
+                    const Color(0xFFE8F5E9),
+                    const Color(0xFFF1F5F9),
+                    const Color(0xFFFFFFFF),
+                  ],
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Space below the AppBar (SafeArea top + AppBar height)
+              SizedBox(
+                height: MediaQuery.of(context).padding.top +
+                    kToolbarHeight +
+                    8,
               ),
-            ),
-            const SizedBox(height: 20),
 
-            // Animated equity bar (#13)
-            _animated(
-              2,
-              _EquityBar(equity: widget.decision.equity),
-            ),
-            const SizedBox(height: 12),
+              // Section 0 — Decision badge
+              _animated(0, DecisionBadge(action: widget.decision.action)),
+              const SizedBox(height: 28),
 
-            // Hand strength badge (#16)
-            if (widget.gameState.communityCards.isNotEmpty)
+              // Section 1 — Stats row
               _animated(
-                2,
-                _HandStrengthBadge(
-                  holeCards: widget.gameState.holeCards,
-                  communityCards: widget.gameState.communityCards,
-                ),
-              ),
-            if (widget.gameState.communityCards.isNotEmpty)
-              const SizedBox(height: 12),
-
-            // Section 2 — Equity breakdown
-            _animated(
-              3,
-              _EquityBreakdown(result: widget.equityResult),
-            ),
-            const SizedBox(height: 20),
-
-            // Section 3 — Poker table visualization
-            _animated(
-              4,
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: PokerTableWidget(
-                  holeCards: widget.gameState.holeCards,
-                  communityCards: widget.gameState.communityCards,
-                  numberOfOpponents: widget.gameState.numberOfOpponents,
-                  potSize: widget.gameState.potSize,
-                  heroPosition: widget.gameState.heroPosition,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Section 4 — Explanation
-            _animated(
-              5,
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: kLightGreenBackground,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: kLightGreenBorder),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.info_outline,
-                            size: 20, color: kPrimaryGreen),
-                        const SizedBox(width: 6),
-                        const Text(
-                          'Why this decision?',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15),
-                        ),
-                      ],
+                1,
+                _StatsRow(
+                  isDark: isDark,
+                  items: [
+                    _StatItem(
+                      label: 'Equity',
+                      value: widget.decision.equityPercent,
+                      icon: Icons.bar_chart,
+                      color: const Color(0xFF1565C0),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      widget.decision.explanation,
-                      style: const TextStyle(fontSize: 14, height: 1.5),
+                    _StatItem(
+                      label: 'Pot Odds',
+                      value: widget.decision.potOddsPercent,
+                      icon: Icons.percent,
+                      color: const Color(0xFF6A1B9A),
+                    ),
+                    _StatItem(
+                      label: 'EV',
+                      value: widget.decision.evFormatted,
+                      icon: Icons.trending_up,
+                      color: widget.decision.expectedValue >= 0
+                          ? const Color(0xFF2E7D32)
+                          : const Color(0xFFC62828),
                     ),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            // Section 5 — Cards display + game info
-            _animated(
-              5,
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Your Hand',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      color: kPrimaryGreen,
+              // Animated equity bar
+              _animated(
+                2,
+                _EquityBar(equity: widget.decision.equity, isDark: isDark),
+              ),
+              const SizedBox(height: 12),
+
+              // Hand strength badge
+              if (widget.gameState.communityCards.isNotEmpty)
+                _animated(
+                  2,
+                  _HandStrengthBadge(
+                    holeCards: widget.gameState.holeCards,
+                    communityCards: widget.gameState.communityCards,
+                  ),
+                ),
+              if (widget.gameState.communityCards.isNotEmpty)
+                const SizedBox(height: 12),
+
+              // Section 2 — Equity breakdown
+              _animated(
+                3,
+                _EquityBreakdown(result: widget.equityResult, isDark: isDark),
+              ),
+              const SizedBox(height: 20),
+
+              // Section 3 — Poker table visualization
+              _animated(
+                4,
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: PokerTableWidget(
+                    holeCards: widget.gameState.holeCards,
+                    communityCards: widget.gameState.communityCards,
+                    numberOfOpponents: widget.gameState.numberOfOpponents,
+                    potSize: widget.gameState.potSize,
+                    heroPosition: widget.gameState.heroPosition,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Section 4 — Explanation
+              _animated(
+                5,
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? kDarkGreenBackground
+                        : kLightGreenBackground,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isDark ? kDarkGreenBorder : kLightGreenBorder,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: widget.gameState.holeCards
-                        .map(
-                          (c) => Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: CardWidget(card: c, size: CardSize.large),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            size: 20,
+                            color: isDark
+                                ? kPrimaryGreenDark
+                                : kPrimaryGreen,
                           ),
-                        )
-                        .toList(),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Why this decision?',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: isDark ? Colors.white : Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        widget.decision.explanation,
+                        style: TextStyle(
+                          fontSize: 14,
+                          height: 1.5,
+                          color:
+                              isDark ? Colors.white70 : Colors.black87,
+                        ),
+                      ),
+                    ],
                   ),
-                  if (widget.gameState.communityCards.isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Community Cards',
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Section 5 — Cards display + game info
+              _animated(
+                5,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Your Hand',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
-                        color: kPrimaryGreen,
+                        color: isDark ? kPrimaryGreenDark : kPrimaryGreen,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      children: widget.gameState.communityCards
+                    Row(
+                      children: widget.gameState.holeCards
                           .map(
-                              (c) => CardWidget(card: c, size: CardSize.large))
+                            (c) => Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child:
+                                  CardWidget(card: c, size: CardSize.large),
+                            ),
+                          )
                           .toList(),
                     ),
-                  ],
-                  const SizedBox(height: 20),
-                  _GameInfoSummary(gameState: widget.gameState),
-                ],
-              ),
-            ),
-            const SizedBox(height: 32),
-
-            // Showdown banner (only when all 5 community cards are dealt)
-            if (_isShowdown)
-              Container(
-                width: double.infinity,
-                margin: const EdgeInsets.symmetric(vertical: 4),
-                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [kPrimaryGreen, Color(0xFF4CAF50)],
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.emoji_events,
-                        color: Colors.amber, size: 20),
-                    SizedBox(width: 8),
-                    Text(
-                      'Hand Complete — Showdown',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                    if (widget.gameState.communityCards.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        'Community Cards',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          color: isDark ? kPrimaryGreenDark : kPrimaryGreen,
+                        ),
                       ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        children: widget.gameState.communityCards
+                            .map((c) =>
+                                CardWidget(card: c, size: CardSize.large))
+                            .toList(),
+                      ),
+                    ],
+                    const SizedBox(height: 20),
+                    _GameInfoSummary(
+                      gameState: widget.gameState,
+                      isDark: isDark,
                     ),
                   ],
                 ),
               ),
-            if (_isShowdown) const SizedBox(height: 12),
+              const SizedBox(height: 32),
 
-            // Primary action — new hand (showdown) or continue to next street
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                icon: Icon(_isShowdown ? Icons.refresh : Icons.arrow_forward),
-                label: Text(_isShowdown ? 'New Hand' : 'Continue Hand'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: kPrimaryGreen,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  textStyle: const TextStyle(fontSize: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+              // Showdown banner
+              if (_isShowdown)
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.symmetric(vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 10, horizontal: 16),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: isDark
+                          ? [kPrimaryGreenDark, kMediumGreenDark]
+                          : [kPrimaryGreen, const Color(0xFF4CAF50)],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.emoji_events,
+                          color: Colors.amber, size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Hand Complete — Showdown',
+                        style: TextStyle(
+                          color: isDark ? Colors.black87 : Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                onPressed: _isShowdown ? _startNewHand : _continueHand,
-              ),
-            ),
-            const SizedBox(height: 12),
+              if (_isShowdown) const SizedBox(height: 12),
 
-            // Secondary action — go back and re-edit same street
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                icon: const Icon(Icons.arrow_back),
-                label: const Text('Adjust Inputs'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: kPrimaryGreen,
-                  side: const BorderSide(color: kPrimaryGreen, width: 1.5),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  textStyle: const TextStyle(fontSize: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
+              // Primary action button
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  icon: Icon(
+                      _isShowdown ? Icons.refresh : Icons.arrow_forward),
+                  label:
+                      Text(_isShowdown ? 'New Hand' : 'Continue Hand'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor:
+                        isDark ? Colors.black : Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    textStyle: const TextStyle(fontSize: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                   ),
+                  onPressed:
+                      _isShowdown ? _startNewHand : _continueHand,
                 ),
-                onPressed: () => Navigator.of(context).pop(),
               ),
-            ),
-            const SizedBox(height: 16),
-          ],
+              const SizedBox(height: 12),
+
+              // Secondary action button
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.arrow_back),
+                  label: const Text('Adjust Inputs'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: theme.colorScheme.primary,
+                    side: BorderSide(
+                        color: theme.colorScheme.primary, width: 1.5),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    textStyle: const TextStyle(fontSize: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );
@@ -437,9 +503,10 @@ class _ResultsScreenState extends State<ResultsScreen>
 // ---------------------------------------------------------------------------
 
 class _StatsRow extends StatelessWidget {
-  const _StatsRow({required this.items});
+  const _StatsRow({required this.items, required this.isDark});
 
   final List<_StatItem> items;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
@@ -454,7 +521,7 @@ class _StatsRow extends StatelessWidget {
                       vertical: 16, horizontal: 8),
                   decoration: BoxDecoration(
                     color: item.color.withAlpha(15),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: item.color.withAlpha(80)),
                   ),
                   child: Column(
@@ -471,8 +538,10 @@ class _StatsRow extends StatelessWidget {
                       ),
                       Text(
                         item.label,
-                        style: const TextStyle(
-                            fontSize: 11, color: Colors.black45),
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isDark ? Colors.white54 : Colors.black45,
+                        ),
                       ),
                     ],
                   ),
@@ -500,23 +569,27 @@ class _StatItem {
 }
 
 class _EquityBreakdown extends StatelessWidget {
-  const _EquityBreakdown({required this.result});
+  const _EquityBreakdown({required this.result, required this.isDark});
 
   final EquityResult result;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: const [
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
           BoxShadow(
-              color: Colors.black12, blurRadius: 8, offset: Offset(0, 3)),
+            color: isDark ? Colors.black38 : Colors.black12,
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         child: Column(
           children: [
             // Green top strip
@@ -533,24 +606,28 @@ class _EquityBreakdown extends StatelessWidget {
                     label: 'Win',
                     value: '${(result.winProbability * 100).toStringAsFixed(1)}%',
                     color: const Color(0xFF388E3C),
+                    isDark: isDark,
                   ),
                   const VerticalDivider(thickness: 1),
                   _BreakdownItem(
                     label: 'Tie',
                     value: '${(result.tieProbability * 100).toStringAsFixed(1)}%',
                     color: const Color(0xFFF9A825),
+                    isDark: isDark,
                   ),
                   const VerticalDivider(thickness: 1),
                   _BreakdownItem(
                     label: 'Loss',
                     value: '${(result.lossProbability * 100).toStringAsFixed(1)}%',
                     color: const Color(0xFFD32F2F),
+                    isDark: isDark,
                   ),
                   const VerticalDivider(thickness: 1),
                   _BreakdownItem(
                     label: 'Iterations',
                     value: result.iterations.toString(),
                     color: Colors.grey,
+                    isDark: isDark,
                   ),
                 ],
               ),
@@ -567,11 +644,13 @@ class _BreakdownItem extends StatelessWidget {
     required this.label,
     required this.value,
     required this.color,
+    required this.isDark,
   });
 
   final String label;
   final String value;
   final Color color;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
@@ -582,26 +661,34 @@ class _BreakdownItem extends StatelessWidget {
           style: TextStyle(
               color: color, fontWeight: FontWeight.bold, fontSize: 17),
         ),
-        Text(label,
-            style: const TextStyle(color: Colors.black45, fontSize: 11)),
+        Text(
+          label,
+          style: TextStyle(
+            color: isDark ? Colors.white54 : Colors.black45,
+            fontSize: 11,
+          ),
+        ),
       ],
     );
   }
 }
 
 class _GameInfoSummary extends StatelessWidget {
-  const _GameInfoSummary({required this.gameState});
+  const _GameInfoSummary({required this.gameState, required this.isDark});
 
   final GameState gameState;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: kLightGreenBackground,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: kLightGreenBorder),
+        color: isDark ? kDarkGreenBackground : kLightGreenBackground,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark ? kDarkGreenBorder : kLightGreenBorder,
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -609,19 +696,23 @@ class _GameInfoSummary extends StatelessWidget {
           _InfoItem(
             label: 'Pot',
             value: gameState.potSize.toStringAsFixed(0),
+            isDark: isDark,
           ),
           _InfoItem(
             label: 'To Call',
             value: gameState.betToCall.toStringAsFixed(0),
+            isDark: isDark,
           ),
           _InfoItem(
             label: 'Opponents',
             value: '${gameState.numberOfOpponents}',
+            isDark: isDark,
           ),
           if (gameState.heroPosition != null)
             _InfoItem(
               label: 'Position',
               value: positionLabel(gameState.heroPosition!),
+              isDark: isDark,
             ),
         ],
       ),
@@ -630,10 +721,15 @@ class _GameInfoSummary extends StatelessWidget {
 }
 
 class _InfoItem extends StatelessWidget {
-  const _InfoItem({required this.label, required this.value});
+  const _InfoItem({
+    required this.label,
+    required this.value,
+    required this.isDark,
+  });
 
   final String label;
   final String value;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
@@ -641,14 +737,19 @@ class _InfoItem extends StatelessWidget {
       children: [
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 19,
             fontWeight: FontWeight.bold,
-            color: kPrimaryGreen,
+            color: isDark ? kPrimaryGreenDark : kPrimaryGreen,
           ),
         ),
-        Text(label,
-            style: const TextStyle(color: Colors.black45, fontSize: 12)),
+        Text(
+          label,
+          style: TextStyle(
+            color: isDark ? Colors.white54 : Colors.black45,
+            fontSize: 12,
+          ),
+        ),
       ],
     );
   }
@@ -670,9 +771,10 @@ String _handRankLabel(HandRanking rank) => switch (rank) {
 
 /// Animated equity bar shown below the stats row.
 class _EquityBar extends StatelessWidget {
-  const _EquityBar({required this.equity});
+  const _EquityBar({required this.equity, required this.isDark});
 
   final double equity;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
@@ -708,10 +810,10 @@ class _EquityBar extends StatelessWidget {
                   ),
                   Text(
                     '${animatedOppPct.toStringAsFixed(1)}% Opponents',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black45,
+                      color: isDark ? Colors.white54 : Colors.black45,
                     ),
                   ),
                 ],
@@ -722,7 +824,8 @@ class _EquityBar extends StatelessWidget {
                 child: LinearProgressIndicator(
                   value: value,
                   minHeight: 14,
-                  backgroundColor: Colors.black12,
+                  backgroundColor:
+                      isDark ? Colors.white12 : Colors.black12,
                   valueColor: AlwaysStoppedAnimation<Color>(barColor),
                 ),
               ),

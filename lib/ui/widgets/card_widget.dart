@@ -59,7 +59,9 @@ class CardWidget extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(size.borderRadius),
           border: Border.all(
-            color: selected ? theme.colorScheme.primary : Colors.white,
+            color: selected
+                ? theme.colorScheme.primary
+                : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
             width: selected ? 2.5 : 1.5,
           ),
           boxShadow: [
