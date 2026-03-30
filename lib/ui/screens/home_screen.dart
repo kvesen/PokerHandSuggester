@@ -205,6 +205,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               title: 'Scan Table',
                               description: 'Auto-detect cards',
                               gradientColors: const [Color(0xFF3B82F6), Color(0xFF2563EB)],
+                              enabled: false,
+                              comingSoonLabel: 'Coming Soon',
                               onTap: () => Navigator.of(context).push(
                                 MaterialPageRoute<void>(
                                   builder: (_) => const CameraScreen(),
@@ -527,6 +529,8 @@ class _ActionCard extends StatelessWidget {
     required this.description,
     required this.gradientColors,
     required this.onTap,
+    this.enabled = true,
+    this.comingSoonLabel,
   });
 
   final IconData icon;
@@ -534,16 +538,22 @@ class _ActionCard extends StatelessWidget {
   final String description;
   final List<Color> gradientColors;
   final VoidCallback onTap;
+  final bool enabled;
+  final String? comingSoonLabel;
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Semantics(
+    final card = Semantics(
       label: '$title: $description',
       button: true,
       child: GestureDetector(
-        onTap: onTap,
+        onTap: enabled
+            ? onTap
+            : () => ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('$title is coming soon!')),
+                ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(24),
           child: BackdropFilter(
@@ -617,6 +627,28 @@ class _ActionCard extends StatelessWidget {
                             height: 1.3,
                           ),
                         ),
+                        if (!enabled && comingSoonLabel != null) ...[
+                          const SizedBox(height: 10),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: gradientColors.first.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: gradientColors.first.withOpacity(0.4),
+                              ),
+                            ),
+                            child: Text(
+                              comingSoonLabel ?? '',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: gradientColors.last,
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -627,5 +659,10 @@ class _ActionCard extends StatelessWidget {
         ),
       ),
     );
+
+    if (!enabled) {
+      return Opacity(opacity: 0.6, child: card);
+    }
+    return card;
   }
 }

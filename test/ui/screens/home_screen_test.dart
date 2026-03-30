@@ -38,6 +38,35 @@ void main() {
       expect(find.text('Manual'), findsOneWidget);
     });
 
+    testWidgets('Scan Table card shows Coming Soon label', (tester) async {
+      final themeService = await ThemeService.create();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: HomeScreen(themeService: themeService),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('Coming Soon'), findsOneWidget);
+    });
+
+    testWidgets('Scan Table card shows snackbar when tapped', (tester) async {
+      final themeService = await ThemeService.create();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: HomeScreen(themeService: themeService),
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.text('Scan Table'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Scan Table is coming soon!'), findsOneWidget);
+    });
+
     testWidgets('renders version footer text', (tester) async {
       final themeService = await ThemeService.create();
 
