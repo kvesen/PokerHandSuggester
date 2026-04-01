@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'services/crash_reporting_service.dart';
 import 'services/theme_service.dart';
 import 'ui/screens/home_screen.dart';
 
@@ -12,15 +13,17 @@ void main() {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
+    // Initialize crash reporting (gracefully no-ops if Firebase config
+    // files are missing — see CrashReportingService for details).
+    await CrashReportingService.initialize();
+
     FlutterError.onError = (FlutterErrorDetails details) {
       FlutterError.presentError(details);
-      // TODO: Send to crash reporting service (e.g., Sentry, Crashlytics)
-      debugPrint('FlutterError: ${details.exceptionAsString()}');
+      CrashReportingService.recordFlutterError(details);
     };
 
     PlatformDispatcher.instance.onError = (error, stack) {
-      // TODO: Send to crash reporting service
-      debugPrint('PlatformDispatcher error: $error\n$stack');
+      CrashReportingService.recordError(error, stack, fatal: true);
       return true;
     };
 
@@ -34,8 +37,7 @@ void main() {
     final themeService = await ThemeService.create();
     runApp(PokerHandSuggesterApp(themeService: themeService));
   }, (error, stack) {
-    // TODO: Send to crash reporting service
-    debugPrint('Uncaught error: $error\n$stack');
+    CrashReportingService.recordError(error, stack, fatal: true);
   });
 }
 
