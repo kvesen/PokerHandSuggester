@@ -51,7 +51,7 @@ void main() {
       expect(find.text('Coming Soon'), findsOneWidget);
     });
 
-    testWidgets('Scan Table card shows snackbar when tapped', (tester) async {
+    testWidgets('Scan Table card shows coming soon bottom sheet when tapped', (tester) async {
       final themeService = await ThemeService.create();
 
       await tester.pumpWidget(
@@ -64,7 +64,8 @@ void main() {
       await tester.tap(find.text('Scan Table'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Scan Table is coming soon!'), findsOneWidget);
+      expect(find.text('Scan Table — Coming Soon'), findsOneWidget);
+      expect(find.text('Go to Manual Input'), findsOneWidget);
     });
 
     testWidgets('renders version footer text', (tester) async {

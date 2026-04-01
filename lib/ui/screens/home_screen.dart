@@ -551,8 +551,22 @@ class _ActionCard extends StatelessWidget {
       child: GestureDetector(
         onTap: enabled
             ? onTap
-            : () => ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('$title is coming soon!')),
+            : () => showModalBottomSheet<void>(
+                  context: context,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                  ),
+                  builder: (_) => _ComingSoonSheet(
+                    gradientColors: gradientColors,
+                    onManualInput: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const ManualInputScreen(),
+                        ),
+                      );
+                    },
+                  ),
                 ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(24),
@@ -627,31 +641,34 @@ class _ActionCard extends StatelessWidget {
                             height: 1.3,
                           ),
                         ),
-                        if (!enabled && comingSoonLabel != null) ...[
-                          const SizedBox(height: 10),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: gradientColors.first.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: gradientColors.first.withOpacity(0.4),
-                              ),
-                            ),
-                            child: Text(
-                              comingSoonLabel ?? '',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: gradientColors.last,
-                                letterSpacing: 0.3,
-                              ),
-                            ),
-                          ),
-                        ],
                       ],
                     ),
                   ),
+                  // "Coming Soon" ribbon badge — overlaid in top-right corner
+                  if (!enabled && comingSoonLabel != null)
+                    Positioned(
+                      top: 12,
+                      right: 4,
+                      child: Transform.rotate(
+                        angle: 0.3, // ~17° clockwise tilt
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: gradientColors.first.withOpacity(0.80),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            comingSoonLabel!,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              letterSpacing: 0.2,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -664,5 +681,106 @@ class _ActionCard extends StatelessWidget {
       return Opacity(opacity: 0.6, child: card);
     }
     return card;
+  }
+}
+
+/// Bottom sheet shown when the user taps the disabled "Scan Table" card.
+class _ComingSoonSheet extends StatelessWidget {
+  const _ComingSoonSheet({
+    required this.gradientColors,
+    required this.onManualInput,
+  });
+
+  final List<Color> gradientColors;
+  final VoidCallback onManualInput;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Drag handle
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: isDark ? Colors.white24 : Colors.black26,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: gradientColors.map((c) => c.withOpacity(0.15)).toList(),
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.camera_alt_rounded,
+              size: 36,
+              color: gradientColors.last,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Scan Table — Coming Soon',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'Automatic card detection is under development '
+            'and not yet available. In the meantime, use '
+            'Manual Input to enter your hand details.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: isDark ? Colors.white60 : Colors.black54,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: onManualInput,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: gradientColors.first,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+              child: const Text(
+                'Go to Manual Input',
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(
+              'Dismiss',
+              style: TextStyle(
+                color: isDark ? Colors.white54 : Colors.black45,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
