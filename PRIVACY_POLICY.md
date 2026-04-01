@@ -1,12 +1,12 @@
 # Privacy Policy
 
-**Last updated: 2025**
+**Last updated: 2026**
 
 This Privacy Policy describes how the Poker Hand Suggester app ("the App") handles information.
 
 ## Camera Usage
 
-The App uses your device's camera to scan playing cards. All image processing is performed **entirely on-device** using Google ML Kit's text recognition. No images or camera data are ever uploaded, transmitted, or stored outside of your device.
+The App uses your device's camera to scan playing cards. All image processing is performed **entirely on-device** using a TensorFlow Lite (TFLite) object detection model. No images or camera data are ever uploaded, transmitted, or stored beyond the immediate analysis session.
 
 ## On-Device Processing
 
@@ -23,7 +23,7 @@ All card recognition and poker hand calculations are performed locally on your d
 
 ## Local Storage
 
-Hand history is stored **locally on your device only** using Android/iOS SharedPreferences (device-local key-value storage). This data never leaves your device and can be cleared at any time by uninstalling the App or clearing its data through your device settings.
+Hand history is stored **locally on your device only** using Hive (device-local database storage). Theme preferences are stored using SharedPreferences. This data never leaves your device and can be cleared at any time by uninstalling the app or clearing app data.
 
 ## Analytics and Tracking
 
@@ -33,7 +33,9 @@ The App currently includes **no analytics, tracking, or advertising** of any kin
 
 The App uses the following on-device libraries:
 
-- **Google ML Kit Text Recognition** — Runs entirely on-device. No data is sent to Google servers during text recognition. See [Google's Privacy Policy](https://policies.google.com/privacy) for information about the ML Kit SDK itself.
+- **TensorFlow Lite (via tflite_flutter)** — Runs an object detection model entirely on-device for playing card recognition. No data is sent to any external server. See <a href="https://policies.google.com/privacy">TensorFlow's Privacy Policy</a> for general information.
+- **Hive** — Local on-device database for hand history persistence. All data stays on your device.
+- **Firebase Crashlytics** — If configured, collects anonymous crash reports to help improve app stability. No personally identifiable information is collected. Crashlytics can be disabled by the user via device settings. See <a href="https://firebase.google.com/support/privacy">Firebase's Privacy Policy</a> for details.
 
 ## Data Sharing
 
