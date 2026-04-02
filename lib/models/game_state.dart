@@ -2,6 +2,7 @@
 library;
 
 import 'card.dart';
+import 'game_mode.dart';
 import 'position.dart';
 
 /// The current state of the poker table used as input to the decision engine.
@@ -14,6 +15,7 @@ class GameState {
     required this.numberOfOpponents,
     this.heroPosition,
     this.villainPositions,
+    this.gameMode,
   });
 
   /// The player's two private hole cards.
@@ -37,6 +39,9 @@ class GameState {
   /// The villain seats (optional).
   final List<TablePosition>? villainPositions;
 
+  /// The selected game mode / playing style (optional).
+  final GameMode? gameMode;
+
   /// Creates a copy with optional overrides.
   ///
   /// To explicitly clear [heroPosition] or [villainPositions], pass
@@ -49,8 +54,10 @@ class GameState {
     int? numberOfOpponents,
     TablePosition? heroPosition,
     List<TablePosition>? villainPositions,
+    GameMode? gameMode,
     bool clearHeroPosition = false,
     bool clearVillainPositions = false,
+    bool clearGameMode = false,
   }) {
     return GameState(
       holeCards: holeCards ?? this.holeCards,
@@ -63,6 +70,7 @@ class GameState {
       villainPositions: clearVillainPositions
           ? null
           : (villainPositions ?? this.villainPositions),
+      gameMode: clearGameMode ? null : (gameMode ?? this.gameMode),
     );
   }
 }

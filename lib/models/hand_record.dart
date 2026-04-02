@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import '../engine/decision_engine.dart';
 import 'card.dart';
+import 'game_mode.dart';
 
 /// A persisted record of a single analyzed poker hand.
 class HandRecord {
@@ -23,6 +24,7 @@ class HandRecord {
     required this.potOdds,
     required this.expectedValue,
     required this.explanation,
+    this.gameMode,
   });
 
   /// Unique identifier (timestamp-based).
@@ -67,6 +69,9 @@ class HandRecord {
   /// Human-readable explanation.
   final String explanation;
 
+  /// The game mode / playing style when the hand was analyzed (optional).
+  final GameMode? gameMode;
+
   // -------------------------------------------------------------------------
   // JSON serialization
   // -------------------------------------------------------------------------
@@ -87,6 +92,7 @@ class HandRecord {
       'potOdds': potOdds,
       'expectedValue': expectedValue,
       'explanation': explanation,
+      if (gameMode != null) 'gameMode': gameMode!.name,
     };
   }
 
@@ -112,6 +118,12 @@ class HandRecord {
       potOdds: (json['potOdds'] as num).toDouble(),
       expectedValue: (json['expectedValue'] as num).toDouble(),
       explanation: json['explanation'] as String,
+      gameMode: json['gameMode'] != null
+          ? GameMode.values.firstWhere(
+              (m) => m.name == json['gameMode'] as String,
+              orElse: () => GameMode.cashGame,
+            )
+          : null,
     );
   }
 
