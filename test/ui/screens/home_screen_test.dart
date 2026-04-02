@@ -78,7 +78,8 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('Texas Hold\'em · v1.1.0'), findsOneWidget);
+      // Before PackageInfo resolves, the footer shows just 'Texas Hold\'em'
+      expect(find.text('Texas Hold\'em'), findsOneWidget);
     });
   });
 }
