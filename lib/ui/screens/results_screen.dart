@@ -9,6 +9,7 @@ import '../../engine/decision_engine.dart';
 import '../../engine/equity_calculator.dart';
 import '../../engine/hand_evaluator.dart';
 import '../../models/card.dart';
+import '../../models/game_mode.dart';
 import '../../models/game_state.dart';
 import '../../models/hand_record.dart';
 import '../../models/position.dart';
@@ -117,6 +118,7 @@ class _ResultsScreenState extends State<ResultsScreen>
         potOdds: widget.decision.potOdds,
         expectedValue: widget.decision.expectedValue,
         explanation: widget.decision.explanation,
+        gameMode: widget.gameState.gameMode,
       );
       await service.saveHand(record);
     } catch (_) {
@@ -145,6 +147,7 @@ class _ResultsScreenState extends State<ResultsScreen>
           preSelectedHeroPosition: widget.gameState.heroPosition,
           preSelectedVillainPositions: widget.gameState.villainPositions?.toList(),
           lockHoleCards: true,
+          preSelectedGameMode: widget.gameState.gameMode,
         ),
       ),
     );
@@ -681,6 +684,9 @@ class _GameInfoSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mode = gameState.gameMode;
+    final showMode = mode != null && mode != GameMode.cashGame;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -690,30 +696,65 @@ class _GameInfoSummary extends StatelessWidget {
           color: isDark ? kDarkGreenBorder : kLightGreenBorder,
         ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          _InfoItem(
-            label: 'Pot',
-            value: gameState.potSize.toStringAsFixed(0),
-            isDark: isDark,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _InfoItem(
+                label: 'Pot',
+                value: gameState.potSize.toStringAsFixed(0),
+                isDark: isDark,
+              ),
+              _InfoItem(
+                label: 'To Call',
+                value: gameState.betToCall.toStringAsFixed(0),
+                isDark: isDark,
+              ),
+              _InfoItem(
+                label: 'Opponents',
+                value: '${gameState.numberOfOpponents}',
+                isDark: isDark,
+              ),
+              if (gameState.heroPosition != null)
+                _InfoItem(
+                  label: 'Position',
+                  value: positionLabel(gameState.heroPosition!),
+                  isDark: isDark,
+                ),
+            ],
           ),
-          _InfoItem(
-            label: 'To Call',
-            value: gameState.betToCall.toStringAsFixed(0),
-            isDark: isDark,
-          ),
-          _InfoItem(
-            label: 'Opponents',
-            value: '${gameState.numberOfOpponents}',
-            isDark: isDark,
-          ),
-          if (gameState.heroPosition != null)
-            _InfoItem(
-              label: 'Position',
-              value: positionLabel(gameState.heroPosition!),
-              isDark: isDark,
+          if (showMode) ...[
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: (isDark ? kPrimaryGreenDark : kPrimaryGreen).withAlpha(25),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.sports_esports_rounded,
+                    size: 14,
+                    color: isDark ? kPrimaryGreenDark : kPrimaryGreen,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    gameModeLabel(mode),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? kPrimaryGreenDark : kPrimaryGreen,
+                    ),
+                  ),
+                ],
+              ),
             ),
+          ],
         ],
       ),
     );

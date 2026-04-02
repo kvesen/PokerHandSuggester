@@ -10,6 +10,7 @@ import '../../engine/equity_calculator.dart';
 import '../../engine/decision_engine.dart';
 import '../../engine/equity_isolate.dart';
 import '../../models/card.dart';
+import '../../models/game_mode.dart';
 import '../../models/game_state.dart';
 import '../../models/position.dart';
 import '../../utils/constants.dart';
@@ -30,6 +31,7 @@ class ManualInputScreen extends StatefulWidget {
     this.preSelectedVillainPositions,
     this.initialOpponents,
     this.lockHoleCards = false,
+    this.preSelectedGameMode,
   });
 
   /// Optional hole cards pre-populated from the camera/detection flow.
@@ -57,6 +59,9 @@ class ManualInputScreen extends StatefulWidget {
   /// Used when continuing a hand into a new street.
   final bool lockHoleCards;
 
+  /// Optional pre-selected game mode (carried over from prior street).
+  final GameMode? preSelectedGameMode;
+
   @override
   State<ManualInputScreen> createState() => _ManualInputScreenState();
 }
@@ -74,6 +79,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
   bool _isCalculating = false;
   TablePosition? _heroPosition;
   late List<TablePosition> _villainPositions;
+  late GameMode _gameMode;
 
   // Which section is the selector currently filling? 0 = hole, 1 = community.
   late int _activeSection;
@@ -96,6 +102,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
     _heroPosition = widget.preSelectedHeroPosition;
     _villainPositions =
         List<TablePosition>.from(widget.preSelectedVillainPositions ?? []);
+    _gameMode = widget.preSelectedGameMode ?? GameMode.cashGame;
     // When hole cards are locked, open directly on the community cards tab.
     _activeSection = widget.lockHoleCards ? 1 : 0;
     _tabController = TabController(
@@ -188,6 +195,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         costToCall: bet,
         heroPosition: _heroPosition,
         villainPositions: _villainPositions.isNotEmpty ? _villainPositions : null,
+        gameMode: _gameMode,
       );
 
       final gameState = GameState(
@@ -198,6 +206,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         numberOfOpponents: _opponents,
         heroPosition: _heroPosition,
         villainPositions: _villainPositions.isNotEmpty ? List.unmodifiable(_villainPositions) : null,
+        gameMode: _gameMode,
       );
 
       if (!mounted) return;
@@ -630,6 +639,8 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                   ],
                 ),
                 const SizedBox(height: 16),
+                _buildGameModeSelector(isDark, theme),
+                const SizedBox(height: 16),
                 Theme(
                   data: theme.copyWith(dividerColor: Colors.transparent),
                   child: ExpansionTile(
@@ -683,6 +694,68 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         ),
       ),
     ];
+  }
+
+  Widget _buildGameModeSelector(bool isDark, ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'Game Mode:',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<GameMode>(
+                  value: _gameMode,
+                  isExpanded: true,
+                  dropdownColor: isDark
+                      ? const Color(0xFF1E2A20)
+                      : theme.colorScheme.surface,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.primary,
+                  ),
+                  icon: Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: theme.colorScheme.primary,
+                  ),
+                  items: GameMode.values.map((mode) {
+                    return DropdownMenuItem<GameMode>(
+                      value: mode,
+                      child: Text(
+                        gameModeLabel(mode),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (mode) {
+                    if (mode != null) setState(() => _gameMode = mode);
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          gameModeDescription(_gameMode),
+          style: TextStyle(
+            fontSize: 12,
+            color: theme.colorScheme.onSurfaceVariant,
+            height: 1.3,
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildCalculateButton() {

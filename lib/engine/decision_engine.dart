@@ -2,6 +2,7 @@
 library;
 
 import 'pot_odds.dart';
+import '../models/game_mode.dart';
 import '../models/position.dart';
 import '../utils/constants.dart';
 
@@ -57,12 +58,16 @@ class DecisionEngine {
   /// [heroPosition]    – optional table position; adjusts raise/call thresholds.
   /// [villainPositions] – optional opponent positions; applies range-pressure
   ///                      adjustment to the pot-odds threshold.
+  /// [gameMode]        – optional playing style; scales all thresholds for the
+  ///                      selected game format. Falls back to cash-game defaults
+  ///                      when null (full backward compatibility).
   static Decision decide({
     required double equity,
     required double pot,
     required double costToCall,
     TablePosition? heroPosition,
     List<TablePosition>? villainPositions,
+    GameMode? gameMode,
   }) {
     final potOddsRequired =
         PotOdds.requiredEquity(pot: pot, costToCall: costToCall);
@@ -70,8 +75,12 @@ class DecisionEngine {
 
     // Position multiplier: > 1.0 → play more aggressively (e.g. BTN),
     // < 1.0 → play tighter (e.g. UTG).
-    final double multiplier =
+    // When a game mode is active its position scale is applied on top.
+    final double baseMultiplier =
         heroPosition != null ? positionMultiplier(heroPosition) : 1.0;
+    final double positionScale =
+        gameMode != null ? gameModePositionScale(gameMode) : 1.0;
+    final double multiplier = baseMultiplier * positionScale;
 
     // Villain range-pressure: average opponentRangePressure across all
     // villain positions. > 1.0 means tighter opponent range (need more equity);
@@ -88,11 +97,18 @@ class DecisionEngine {
     final double adjustedPotOddsRequired = potOddsRequired * villainPressure;
 
     // Raise threshold is position-adjusted: easier to raise from the button,
-    // harder from early position.
-    final double raiseThreshold = kRaiseEquityMultiple / multiplier;
+    // harder from early position. Uses game-mode raise multiple when provided.
+    final double raiseMultiple = gameMode != null
+        ? gameModeRaiseMultiple(gameMode)
+        : kRaiseEquityMultiple;
+    final double raiseThreshold = raiseMultiple / multiplier;
 
-    // Free-check raise threshold: also position-adjusted.
-    final double freeCheckRaiseThreshold = kFreeCheckRaiseEquityThreshold / multiplier;
+    // Free-check raise threshold: also position-adjusted. Uses game-mode
+    // free-check threshold when provided.
+    final double freeCheckBase = gameMode != null
+        ? gameModeFreeCheckThreshold(gameMode)
+        : kFreeCheckRaiseEquityThreshold;
+    final double freeCheckRaiseThreshold = freeCheckBase / multiplier;
 
     final PlayerAction action;
     final String baseExplanation;
@@ -139,12 +155,17 @@ class DecisionEngine {
             ? ' ${_villainPositionNote(villainPositions)}'
             : '';
 
+    // Append game mode note when a mode is provided.
+    final String gameModeNote = gameMode != null
+        ? ' [${gameModeLabel(gameMode)} — ${gameModeDescription(gameMode)}]'
+        : '';
+
     return Decision(
       action: action,
       equity: equity,
       potOdds: adjustedPotOddsRequired,
       expectedValue: ev,
-      explanation: '$baseExplanation$heroNote$villainNote',
+      explanation: '$baseExplanation$heroNote$villainNote$gameModeNote',
     );
   }
 
