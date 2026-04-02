@@ -20,10 +20,6 @@ class RangeChartScreen extends StatefulWidget {
 /// The purple accent colour used throughout the range chart screen.
 const Color _kPurple = Color(0xFF8B5CF6);
 
-  @override
-  State<RangeChartScreen> createState() => _RangeChartScreenState();
-}
-
 class _RangeChartScreenState extends State<RangeChartScreen> {
   TablePosition _selectedPosition = TablePosition.button;
 
