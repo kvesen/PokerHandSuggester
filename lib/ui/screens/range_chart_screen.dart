@@ -433,13 +433,21 @@ class _RangeGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Compute adaptive cell size based on screen width
-    final screenWidth = MediaQuery.of(context).size.width;
-    // 12px padding * 2 = 24px, 14 cells (1 rank label + 13 data)
-    final cellSize = ((screenWidth - 24) / 14).clamp(18.0, 34.0);
-    final fontSize = (cellSize * 0.36).clamp(6.5, 12.0);
-    final labelFontSize = (cellSize * 0.40).clamp(7.0, 13.0);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Container padding: EdgeInsets.all(6) => 6px × 2 = 12px
+        // Cell margins: EdgeInsets.all(0.5) × 2 sides × 14 columns = 14px
+        final cellSize =
+            ((constraints.maxWidth - 12 - 14) / 14).clamp(12.0, 34.0);
+        final fontSize = (cellSize * 0.36).clamp(6.0, 12.0);
+        final labelFontSize = (cellSize * 0.40).clamp(6.5, 13.0);
 
+        return _buildGrid(cellSize, fontSize, labelFontSize);
+      },
+    );
+  }
+
+  Widget _buildGrid(double cellSize, double fontSize, double labelFontSize) {
     return Container(
       decoration: BoxDecoration(
         color: (isDark ? Colors.white : Colors.black).withOpacity(0.03),
