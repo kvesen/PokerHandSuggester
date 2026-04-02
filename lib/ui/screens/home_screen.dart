@@ -3,6 +3,7 @@ library;
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../engine/decision_engine.dart';
 import '../../models/hand_record.dart';
@@ -26,11 +27,19 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<HandRecord> _recentHands = [];
   HistoryService? _historyService;
+  String _appVersion = '';
 
   @override
   void initState() {
     super.initState();
     _initHistory();
+    _loadAppVersion();
+  }
+
+  Future<void> _loadAppVersion() async {
+    final info = await PackageInfo.fromPlatform();
+    if (!mounted) return;
+    setState(() => _appVersion = info.version);
   }
 
   Future<void> _initHistory() async {
@@ -245,7 +254,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       // Version / footer
                       Text(
-                        'Texas Hold\'em · v1.1.0',
+                        _appVersion.isEmpty
+                            ? 'Texas Hold\'em'
+                            : 'Texas Hold\'em · v$_appVersion',
                         style: TextStyle(
                           color: isDark ? Colors.white38 : Colors.black38,
                           fontSize: 12,
