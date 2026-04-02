@@ -17,6 +17,13 @@ class RangeChartScreen extends StatefulWidget {
   State<RangeChartScreen> createState() => _RangeChartScreenState();
 }
 
+/// The purple accent colour used throughout the range chart screen.
+const Color _kPurple = Color(0xFF8B5CF6);
+
+  @override
+  State<RangeChartScreen> createState() => _RangeChartScreenState();
+}
+
 class _RangeChartScreenState extends State<RangeChartScreen> {
   TablePosition _selectedPosition = TablePosition.button;
 
@@ -44,7 +51,6 @@ class _RangeChartScreenState extends State<RangeChartScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final theme = Theme.of(context);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -113,7 +119,6 @@ class _RangeChartScreenState extends State<RangeChartScreen> {
                         action: _tooltipAction!,
                         position: _selectedPosition,
                         isDark: isDark,
-                        theme: theme,
                       )
                     : const SizedBox(key: ValueKey('empty'), height: 0),
               ),
@@ -190,7 +195,7 @@ class _PositionSelector extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
                 gradient: isSelected
                     ? const LinearGradient(
-                        colors: [Color(0xFF8B5CF6), Color(0xFF7C3AED)],
+                        colors: [_kPurple, Color(0xFF7C3AED)],
                       )
                     : null,
                 color: isSelected
@@ -242,10 +247,10 @@ class _StatsBar extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: const Color(0xFF8B5CF6).withOpacity(isDark ? 0.15 : 0.10),
+          color: _kPurple.withOpacity(isDark ? 0.15 : 0.10),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: const Color(0xFF8B5CF6).withOpacity(0.25),
+            color: _kPurple.withOpacity(0.25),
           ),
         ),
         child: Row(
@@ -277,13 +282,13 @@ class _StatsBar extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFF8B5CF6).withOpacity(0.2),
+                color: _kPurple.withOpacity(0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 '${pct.toStringAsFixed(0)}%',
                 style: const TextStyle(
-                  color: Color(0xFF8B5CF6),
+                  color: _kPurple,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -307,14 +312,12 @@ class _CellTooltip extends StatelessWidget {
     required this.action,
     required this.position,
     required this.isDark,
-    required this.theme,
   });
 
   final String label;
   final RangeAction action;
   final TablePosition position;
   final bool isDark;
-  final ThemeData theme;
 
   @override
   Widget build(BuildContext context) {

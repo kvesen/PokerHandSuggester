@@ -237,7 +237,7 @@ RangeAction _co(int hi, int lo, bool suited, bool pair) {
     if (hi == 2 && lo <= 7) return RangeAction.raise; // QJs–Q7s
     if (hi == 3 && lo <= 7) return RangeAction.raise; // JTs–J7s
     if (hi == 4 && lo <= 7) return RangeAction.raise; // T9s–T7s
-    if (hi == 5 && lo <= 7) return RangeAction.raise; // 98s–96s
+    if (hi == 5 && lo <= 7) return RangeAction.raise; // 98s–97s
     if (hi == 6 && lo == 7) return RangeAction.raise; // 87s
     if (hi == 7 && lo == 8) return RangeAction.call; // 76s
     if (hi == 7 && lo == 9) return RangeAction.call; // 75s
