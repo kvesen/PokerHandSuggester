@@ -13,6 +13,7 @@ import '../widgets/card_widget.dart';
 import 'camera_screen.dart';
 import 'history_screen.dart';
 import 'manual_input_screen.dart';
+import 'range_chart_screen.dart';
 
 /// The main landing screen of the Poker Hand Suggester.
 class HomeScreen extends StatefulWidget {
@@ -201,6 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           _FeatureChip(icon: Icons.pie_chart_outline, label: 'Pot Odds'),
                           _FeatureChip(icon: Icons.auto_graph_rounded, label: 'EV Math'),
                           _FeatureChip(icon: Icons.lightbulb_outline, label: 'Advice'),
+                          _FeatureChip(icon: Icons.grid_on_rounded, label: 'Ranges'),
                         ],
                       ),
                       const SizedBox(height: 48),
@@ -240,6 +242,21 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Hand Ranges action card (full-width row)
+                      _ActionCard(
+                        icon: Icons.grid_on_rounded,
+                        title: 'Hand Ranges',
+                        description: 'Position-based charts',
+                        gradientColors: const [Color(0xFF8B5CF6), Color(0xFF7C3AED)],
+                        fullWidth: true,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const RangeChartScreen(),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 40),
 
@@ -542,6 +559,7 @@ class _ActionCard extends StatelessWidget {
     required this.onTap,
     this.enabled = true,
     this.comingSoonLabel,
+    this.fullWidth = false,
   });
 
   final IconData icon;
@@ -551,6 +569,7 @@ class _ActionCard extends StatelessWidget {
   final VoidCallback onTap;
   final bool enabled;
   final String? comingSoonLabel;
+  final bool fullWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -613,47 +632,100 @@ class _ActionCard extends StatelessWidget {
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 24, 16, 20),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: gradientColors.map((c) => c.withOpacity(0.15)).toList(),
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            shape: BoxShape.circle,
+                    child: fullWidth
+                        ? Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: gradientColors.map((c) => c.withOpacity(0.15)).toList(),
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  icon,
+                                  size: 28,
+                                  color: gradientColors.last,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      title,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: isDark ? Colors.white : Colors.black87,
+                                        letterSpacing: -0.2,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      description,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: isDark ? Colors.white60 : Colors.black54,
+                                        height: 1.3,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right_rounded,
+                                color: gradientColors.last.withOpacity(0.7),
+                                size: 24,
+                              ),
+                            ],
+                          )
+                        : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: gradientColors.map((c) => c.withOpacity(0.15)).toList(),
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  icon,
+                                  size: 32,
+                                  color: gradientColors.last,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                title,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: isDark ? Colors.white : Colors.black87,
+                                  letterSpacing: -0.2,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                description,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: isDark ? Colors.white60 : Colors.black54,
+                                  height: 1.3,
+                                ),
+                              ),
+                            ],
                           ),
-                          child: Icon(
-                            icon,
-                            size: 32,
-                            color: gradientColors.last,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          title,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : Colors.black87,
-                            letterSpacing: -0.2,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          description,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: isDark ? Colors.white60 : Colors.black54,
-                            height: 1.3,
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
                   // "Coming Soon" ribbon badge — overlaid in top-right corner
                   if (!enabled && comingSoonLabel != null)
