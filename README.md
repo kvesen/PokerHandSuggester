@@ -151,11 +151,24 @@ Crash reporting via Firebase Crashlytics requires project-specific config files.
 ### Steps
 
 1. Go to [https://console.firebase.google.com](https://console.firebase.google.com) and create a new Firebase project.
-2. **Android**: Register an Android app with package name `com.example.poker_hand_suggester`. Download `google-services.json` and replace the placeholder at `android/app/google-services.json`.
-3. **iOS**: Register an iOS app with bundle ID `com.example.pokerHandSuggester`. Download `GoogleService-Info.plist` and replace the placeholder at `ios/Runner/GoogleService-Info.plist`.
+2. **Android**: Register an Android app with package name `com.kvesen.pokerbuddy`. Download `google-services.json` and replace the placeholder at `android/app/google-services.json`.
+3. **iOS**: Register an iOS app with bundle ID `com.kvesen.pokerbuddy`. Download `GoogleService-Info.plist` and replace the placeholder at `ios/Runner/GoogleService-Info.plist`.
 4. Enable **Crashlytics** in the Firebase Console for your project.
 
 > **Note:** The app works fine without real Firebase config files — crash reporting is simply disabled (no-op) in that case.
+
+## Release Signing (Android)
+
+To build a signed release APK/AAB for Google Play, create `android/key.properties` (already gitignored) based on the template at `android/key.properties.example`:
+
+```
+storePassword=<your keystore password>
+keyPassword=<your key password>
+keyAlias=<your key alias>
+storeFile=<absolute or relative path to your .jks/.keystore file>
+```
+
+When `android/key.properties` is present, the release build type automatically uses the release signing config. Without it, the build falls back to debug keys (suitable for local testing only).
 
 ## Camera Permissions Setup
 

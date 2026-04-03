@@ -1,4 +1,4 @@
-package com.example.poker_hand_suggester
+package com.kvesen.pokerbuddy
 
 import io.flutter.embedding.android.FlutterActivity
 
