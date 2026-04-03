@@ -68,7 +68,7 @@ class _PokerHandSuggesterAppState extends State<PokerHandSuggesterApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Poker Hand Suggester',
+      title: 'Poker Buddy',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(

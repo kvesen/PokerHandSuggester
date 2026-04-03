@@ -1,6 +1,6 @@
 {
-    "name": "poker_hand_suggester",
-    "short_name": "poker_hand_suggester",
+    "name": "Poker Buddy",
+    "short_name": "Poker Buddy",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

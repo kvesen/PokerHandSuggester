@@ -1,5 +1,5 @@
 name: poker_hand_suggester
-description: A Flutter app that calculates the mathematically optimal poker decision (Fold/Call/Raise).
+description: Poker Buddy - your pocket poker strategy partner for mathematically optimal Fold/Call/Raise decisions.
 version: 1.2.0+3
 
 environment:
