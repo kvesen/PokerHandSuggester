@@ -710,58 +710,69 @@ class _ManualInputScreenState extends State<ManualInputScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(
-              'Game Mode:',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurface,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<GameMode>(
-                  value: _gameMode,
-                  isExpanded: true,
-                  dropdownColor: isDark
-                      ? const Color(0xFF1E2A20)
-                      : theme.colorScheme.surface,
+        Text(
+          'Game Mode:',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: GameMode.values.map((mode) {
+            final isSelected = _gameMode == mode;
+            return GestureDetector(
+              onTap: () => setState(() => _gameMode = mode),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  gradient: isSelected
+                      ? LinearGradient(
+                          colors: [
+                            theme.colorScheme.primary,
+                            theme.colorScheme.primary.withValues(alpha: 0.8),
+                          ],
+                        )
+                      : null,
+                  color: isSelected
+                      ? null
+                      : (isDark ? Colors.white : Colors.black).withValues(alpha: 0.06),
+                  border: Border.all(
+                    color: isSelected
+                        ? Colors.transparent
+                        : (isDark ? Colors.white : Colors.black).withValues(alpha: 0.12),
+                  ),
+                ),
+                child: Text(
+                  gameModeLabel(mode),
                   style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.primary,
+                    color: isSelected
+                        ? Colors.white
+                        : (isDark ? Colors.white70 : Colors.black87),
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                    fontSize: 13,
                   ),
-                  icon: Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    color: theme.colorScheme.primary,
-                  ),
-                  items: GameMode.values.map((mode) {
-                    return DropdownMenuItem<GameMode>(
-                      value: mode,
-                      child: Text(
-                        gameModeLabel(mode),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (mode) {
-                    if (mode != null) setState(() => _gameMode = mode);
-                  },
                 ),
               ),
-            ),
-          ],
+            );
+          }).toList(),
         ),
-        const SizedBox(height: 4),
-        Text(
-          gameModeDescription(_gameMode),
-          style: TextStyle(
-            fontSize: 12,
-            color: theme.colorScheme.onSurfaceVariant,
-            height: 1.3,
+        const SizedBox(height: 8),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: Text(
+            gameModeDescription(_gameMode),
+            key: ValueKey(_gameMode),
+            style: TextStyle(
+              fontSize: 12,
+              color: theme.colorScheme.onSurfaceVariant,
+              height: 1.3,
+            ),
           ),
         ),
       ],

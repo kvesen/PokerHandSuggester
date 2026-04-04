@@ -123,9 +123,9 @@ class _RangeChartScreenState extends State<RangeChartScreen> {
               Expanded(
                 child: SingleChildScrollView(
                   padding: EdgeInsets.fromLTRB(
-                    12,
+                    4,
                     8,
-                    12,
+                    4,
                     MediaQuery.of(context).padding.bottom + 16,
                   ),
                   physics: const BouncingScrollPhysics(),
@@ -154,7 +154,7 @@ class _RangeChartScreenState extends State<RangeChartScreen> {
 }
 
 // ---------------------------------------------------------------------------
-// Position selector — horizontal scrollable chip row
+// Position selector — wrapped chip layout showing all positions at once
 // ---------------------------------------------------------------------------
 
 class _PositionSelector extends StatelessWidget {
@@ -172,15 +172,13 @@ class _PositionSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 52,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        itemCount: positions.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemBuilder: (context, i) {
-          final pos = positions[i];
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        alignment: WrapAlignment.center,
+        children: positions.map((pos) {
           final isSelected = pos == selected;
           return GestureDetector(
             onTap: () => onChanged(pos),
@@ -209,14 +207,13 @@ class _PositionSelector extends StatelessWidget {
                   color: isSelected
                       ? Colors.white
                       : (isDark ? Colors.white70 : Colors.black87),
-                  fontWeight:
-                      isSelected ? FontWeight.bold : FontWeight.w500,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                   fontSize: 13,
                 ),
               ),
             ),
           );
-        },
+        }).toList(),
       ),
     );
   }
@@ -239,7 +236,7 @@ class _StatsBar extends StatelessWidget {
     final desc = positionDescription(position).split('—').first.trim();
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
+      padding: const EdgeInsets.fromLTRB(8, 4, 8, 8),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
@@ -324,7 +321,7 @@ class _CellTooltip extends StatelessWidget {
     };
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -435,10 +432,9 @@ class _RangeGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Container padding: EdgeInsets.all(6) => 6px × 2 = 12px
+        // Container padding: EdgeInsets.all(4) => 4px on each side × 2 = 8px total
         // Cell margins: EdgeInsets.all(0.5) × 2 sides × 14 columns = 14px
-        final cellSize =
-            ((constraints.maxWidth - 12 - 14) / 14).clamp(12.0, 34.0);
+        final cellSize = ((constraints.maxWidth - 8 - 14) / 14).clamp(12.0, double.infinity);
         final fontSize = (cellSize * 0.36).clamp(6.0, 12.0);
         final labelFontSize = (cellSize * 0.40).clamp(6.5, 13.0);
 
@@ -456,13 +452,12 @@ class _RangeGrid extends StatelessWidget {
           color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.07),
         ),
       ),
-      padding: const EdgeInsets.all(6),
+      padding: const EdgeInsets.all(4),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           // Header row: blank + rank labels
           Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(width: cellSize, height: cellSize),
               for (int col = 0; col < 13; col++)
@@ -477,7 +472,6 @@ class _RangeGrid extends StatelessWidget {
           // Data rows
           for (int row = 0; row < 13; row++)
             Row(
-              mainAxisSize: MainAxisSize.min,
               children: [
                 // Row rank label
                 _RankLabel(
