@@ -2,6 +2,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../engine/decision_engine.dart';
 
@@ -31,6 +32,7 @@ class _DecisionBadgeState extends State<DecisionBadge>
     _scale = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
     );
+    HapticFeedback.heavyImpact();
     _controller.forward();
   }
 

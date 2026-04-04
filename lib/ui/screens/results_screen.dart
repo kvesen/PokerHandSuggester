@@ -191,14 +191,6 @@ class _ResultsScreenState extends State<ResultsScreen>
         foregroundColor: isDark ? Colors.white : Colors.black87,
         elevation: 0,
       ),
-      floatingActionButton: FloatingActionButton.small(
-        backgroundColor: theme.colorScheme.primary,
-        foregroundColor: isDark ? Colors.black : Colors.white,
-        tooltip: 'New Hand',
-        onPressed: _startNewHand,
-        child: const Icon(Icons.refresh),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndTop,
       body: Container(
         decoration: BoxDecoration(
           gradient: RadialGradient(
@@ -608,7 +600,8 @@ class _EquityBreakdown extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.all(16),
-              child: Row(
+              child: IntrinsicHeight(
+                child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _BreakdownItem(
@@ -617,21 +610,21 @@ class _EquityBreakdown extends StatelessWidget {
                     color: const Color(0xFF388E3C),
                     isDark: isDark,
                   ),
-                  const VerticalDivider(thickness: 1),
+                  VerticalDivider(thickness: 1, color: isDark ? Colors.white24 : Colors.black12),
                   _BreakdownItem(
                     label: 'Tie',
                     value: '${(result.tieProbability * 100).toStringAsFixed(1)}%',
                     color: const Color(0xFFF9A825),
                     isDark: isDark,
                   ),
-                  const VerticalDivider(thickness: 1),
+                  VerticalDivider(thickness: 1, color: isDark ? Colors.white24 : Colors.black12),
                   _BreakdownItem(
                     label: 'Loss',
                     value: '${(result.lossProbability * 100).toStringAsFixed(1)}%',
                     color: const Color(0xFFD32F2F),
                     isDark: isDark,
                   ),
-                  const VerticalDivider(thickness: 1),
+                  VerticalDivider(thickness: 1, color: isDark ? Colors.white24 : Colors.black12),
                   _BreakdownItem(
                     label: 'Iterations',
                     value: result.iterations.toString(),
@@ -639,6 +632,7 @@ class _EquityBreakdown extends StatelessWidget {
                     isDark: isDark,
                   ),
                 ],
+                ),
               ),
             ),
           ],

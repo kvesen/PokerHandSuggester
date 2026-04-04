@@ -1,6 +1,7 @@
 # Dependencies are pinned to exact versions for production stability.
 # Run `flutter pub outdated` to check for updates.
 name: poker_hand_suggester
+# App display name: Poker Buddy
 description: Poker Buddy - your pocket poker strategy partner for mathematically optimal Fold/Call/Raise decisions.
 version: 1.2.0+3
 

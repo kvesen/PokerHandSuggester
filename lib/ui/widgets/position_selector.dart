@@ -3,6 +3,7 @@ library;
 
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../models/position.dart';
 
 /// Displays a visual oval poker table with 9 tappable seats.
@@ -61,7 +62,7 @@ class PositionSelector extends StatelessWidget {
               ),
               // Interactive Seats
               for (final (pos, fx, fy) in _seats)
-                _buildSeat(context, pos, fx * w, fy * h, isDark),
+                _buildSeat(context, pos, fx * w, fy * h, isDark, w),
             ],
           );
         },
@@ -69,8 +70,8 @@ class PositionSelector extends StatelessWidget {
     );
   }
 
-  Widget _buildSeat(BuildContext context, TablePosition pos, double cx, double cy, bool isDark) {
-    const seatSize = 48.0;
+  Widget _buildSeat(BuildContext context, TablePosition pos, double cx, double cy, bool isDark, double w) {
+    final seatSize = (w * 0.12).clamp(36.0, 48.0);
     final isHero = selectedPosition == pos;
     final isVillain = villainPositions.contains(pos);
     final theme = Theme.of(context);
@@ -103,6 +104,7 @@ class PositionSelector extends StatelessWidget {
         selected: isHero || isVillain,
         child: GestureDetector(
           onTap: () {
+            HapticFeedback.selectionClick();
             if (isHero) {
               onPositionChanged(null);
             } else if (isVillain) {
