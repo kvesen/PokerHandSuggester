@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:poker_hand_suggester/models/card.dart';
 import 'package:poker_hand_suggester/models/position.dart';
 import 'package:poker_hand_suggester/ui/widgets/position_selector.dart';
 
@@ -97,14 +96,12 @@ void main() {
       await tester.pumpWidget(buildSelector());
       await tester.pump();
 
-      // Each seat should have a Semantics node.
+      // Each seat should have a Semantics node with '<LABEL> seat'.
       expect(
-        tester.getSemantics(
-          find.bySemanticsLabel(
-            RegExp('${positionLabel(TablePosition.button)} seat'),
-          ),
+        find.bySemanticsLabel(
+          RegExp('${positionLabel(TablePosition.button)} seat'),
         ),
-        isNotNull,
+        findsOneWidget,
       );
     });
   });

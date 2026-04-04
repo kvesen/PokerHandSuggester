@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:poker_hand_suggester/models/card.dart';
 import 'package:poker_hand_suggester/recognition/card_detector.dart';
@@ -10,10 +9,6 @@ import 'package:poker_hand_suggester/ui/screens/detection_review_screen.dart';
 import 'package:poker_hand_suggester/ui/screens/manual_input_screen.dart';
 
 void main() {
-  setUp(() {
-    SharedPreferences.setMockInitialValues({});
-  });
-
   late File testImageFile;
 
   setUp(() async {
