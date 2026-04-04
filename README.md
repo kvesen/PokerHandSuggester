@@ -245,3 +245,13 @@ To activate GitHub Pages hosting:
 4. Save — the policy will be live within a few minutes
 
 The policy source is also available in [`PRIVACY_POLICY.md`](PRIVACY_POLICY.md).
+
+## Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for:
+
+- How to set up the development environment
+- How to run tests (`flutter test`)
+- How to run the linter (`flutter analyze`)
+- Branch naming conventions and PR guidelines
+- Code style notes

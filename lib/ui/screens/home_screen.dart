@@ -7,8 +7,10 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../engine/decision_engine.dart';
 import '../../models/hand_record.dart';
+import '../../services/crash_reporting_service.dart';
 import '../../services/history_service.dart';
 import '../../services/theme_service.dart';
+import '../utils/error_helpers.dart';
 import '../widgets/card_widget.dart';
 import 'camera_screen.dart';
 import 'history_screen.dart';
@@ -29,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<HandRecord> _recentHands = [];
   HistoryService? _historyService;
   String _appVersion = '';
+  bool _hasHistoryError = false;
 
   @override
   void initState() {
@@ -38,16 +41,28 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadAppVersion() async {
-    final info = await PackageInfo.fromPlatform();
-    if (!mounted) return;
-    setState(() => _appVersion = info.version);
+    try {
+      final info = await PackageInfo.fromPlatform();
+      if (!mounted) return;
+      setState(() => _appVersion = info.version);
+    } catch (e, st) {
+      // Version display is non-critical — keep _appVersion as empty string.
+      CrashReportingService.recordError(e, st);
+    }
   }
 
   Future<void> _initHistory() async {
-    final service = await HistoryService.create();
-    if (!mounted) return;
-    setState(() => _historyService = service);
-    await _loadRecent();
+    try {
+      final service = await HistoryService.create();
+      if (!mounted) return;
+      setState(() => _historyService = service);
+      await _loadRecent();
+    } catch (e, st) {
+      CrashReportingService.recordError(e, st);
+      if (!mounted) return;
+      setState(() => _hasHistoryError = true);
+      showErrorSnackBar(context, 'Could not load hand history');
+    }
   }
 
   Future<void> _loadRecent() async {
@@ -265,6 +280,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         records: _recentHands,
                         onSeeAll: _openHistory,
                         isDark: isDark,
+                        hasError: _hasHistoryError,
                       ),
 
                       const SizedBox(height: 24),
@@ -336,11 +352,13 @@ class _RecentActivity extends StatelessWidget {
     required this.records,
     required this.onSeeAll,
     required this.isDark,
+    this.hasError = false,
   });
 
   final List<HandRecord> records;
   final VoidCallback onSeeAll;
   final bool isDark;
+  final bool hasError;
 
   @override
   Widget build(BuildContext context) {
@@ -373,7 +391,36 @@ class _RecentActivity extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        if (records.isEmpty)
+        if (hasError)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            decoration: BoxDecoration(
+              color: Colors.red.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.red.withValues(alpha: 0.2),
+              ),
+            ),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.error_outline_rounded,
+                  size: 32,
+                  color: Colors.red.withValues(alpha: 0.6),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Could not load hand history',
+                  style: TextStyle(
+                    color: isDark ? Colors.white54 : Colors.black54,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          )
+        else if (records.isEmpty)
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 32),
@@ -423,7 +470,13 @@ class _RecentHandTile extends StatelessWidget {
       PlayerAction.raise => ('RAISE', const Color(0xFF10B981)),
     };
 
-    return Container(
+    final cardLabels = record.holeCards
+        .map((c) => '${c.rank.name} of ${c.suit.name}')
+        .join(', ');
+
+    return Semantics(
+      label: 'Recent hand: $cardLabels — $label — ${_formatRelative(record.timestamp)}',
+      child: Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -490,6 +543,7 @@ class _RecentHandTile extends StatelessWidget {
           ),
         ],
       ),
+      ),
     );
   }
 
@@ -515,7 +569,9 @@ class _FeatureChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return ClipRRect(
+    return Semantics(
+      label: label,
+      child: ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -544,6 +600,7 @@ class _FeatureChip extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }

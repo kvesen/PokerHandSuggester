@@ -20,11 +20,25 @@ class ThemeService extends ChangeNotifier {
   bool get isDark => _themeMode == ThemeMode.dark;
 
   /// Creates and initialises a [ThemeService] instance.
+  ///
+  /// If the preference cannot be loaded (e.g. [SharedPreferences] unavailable),
+  /// the service falls back to [ThemeMode.system] silently.
   static Future<ThemeService> create() async {
     final service = ThemeService._();
-    await service._load();
+    try {
+      await service._load();
+    } catch (e, st) {
+      debugPrint(
+        'ThemeService: failed to load theme preference — '
+        'defaulting to system\n$e\n$st',
+      );
+    }
     return service;
   }
+
+  /// Creates a [ThemeService] with [ThemeMode.system] without loading from
+  /// [SharedPreferences]. Used as a fallback when initialisation fails.
+  static ThemeService systemDefault() => ThemeService._();
 
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();

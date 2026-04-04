@@ -13,7 +13,9 @@ import '../../models/card.dart';
 import '../../models/game_mode.dart';
 import '../../models/game_state.dart';
 import '../../models/position.dart';
+import '../../services/crash_reporting_service.dart';
 import '../../utils/constants.dart';
+import '../utils/error_helpers.dart';
 import '../widgets/card_selector.dart';
 import '../widgets/card_widget.dart';
 import '../widgets/position_selector.dart';
@@ -219,6 +221,11 @@ class _ManualInputScreenState extends State<ManualInputScreen>
           ),
         ),
       );
+    } catch (e, st) {
+      CrashReportingService.recordError(e, st);
+      if (mounted) {
+        showErrorSnackBar(context, 'Could not calculate — please try again.');
+      }
     } finally {
       if (mounted) setState(() => _isCalculating = false);
     }
