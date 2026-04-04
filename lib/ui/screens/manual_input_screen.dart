@@ -167,6 +167,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
   Future<void> _calculate() async {
     if (_isCalculating) return; // Prevent multiple simultaneous calculations
     if (!_formKey.currentState!.validate()) return;
+    HapticFeedback.mediumImpact();
     if (_holeCards.length < kMaxHoleCards) {
       _showError('Please select exactly 2 hole cards.');
       return;
@@ -309,6 +310,19 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         ),
         foregroundColor: theme.colorScheme.onSurface,
         elevation: 0,
+        actions: [
+          TextButton.icon(
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              _resetToNewHand();
+            },
+            icon: const Icon(Icons.refresh_rounded, size: 18),
+            label: const Text('Reset', style: TextStyle(fontWeight: FontWeight.bold)),
+            style: TextButton.styleFrom(
+              foregroundColor: theme.colorScheme.onSurface,
+            ),
+          ),
+        ],
         bottom: widget.lockHoleCards
             ? PreferredSize(
                 preferredSize: const Size.fromHeight(32),
@@ -330,15 +344,6 @@ class _ManualInputScreenState extends State<ManualInputScreen>
               )
             : null,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _resetToNewHand,
-        backgroundColor: theme.colorScheme.primary,
-        foregroundColor: Colors.white,
-        elevation: 4,
-        icon: const Icon(Icons.refresh_rounded, size: 20),
-        label: const Text("Reset", style: TextStyle(fontWeight: FontWeight.bold)),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
       body: Container(
         decoration: BoxDecoration(
           gradient: RadialGradient(
@@ -416,7 +421,6 @@ class _ManualInputScreenState extends State<ManualInputScreen>
               ..._buildGameInfoWidgets(isDark),
               const SizedBox(height: 32),
               _buildCalculateButton(),
-              const SizedBox(height: 60), // Room for FAB
             ],
           ),
         ),
@@ -453,7 +457,6 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         ..._buildGameInfoWidgets(isDark),
         const SizedBox(height: 40),
         _buildCalculateButton(),
-        const SizedBox(height: 60), // Space for FAB
       ],
     );
   }
@@ -670,7 +673,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                     ),
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        padding: const EdgeInsets.only(top: 8, bottom: 20),
                         child: Text(
                           'Tap a seat to mark your position (green).\n'
                           'Tap other seats to mark opponents (red).',

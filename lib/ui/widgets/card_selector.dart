@@ -2,6 +2,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../models/card.dart';
 import 'card_widget.dart';
@@ -216,6 +217,7 @@ class _CardSelectorState extends State<CardSelector> {
                 controller: _textController,
                 textCapitalization: TextCapitalization.characters,
                 decoration: InputDecoration(
+                  labelText: 'Add cards by shorthand',
                   hintText: 'e.g. Ah, Kd, 10s',
                   hintStyle: TextStyle(
                     color: isDark ? Colors.white38 : Colors.black38,
@@ -322,7 +324,10 @@ class _CardSelectorState extends State<CardSelector> {
                   card: card,
                   selected: isSelected,
                   size: CardSize.tiny,
-                  onTap: isDisabled ? null : () => widget.onCardToggled(card),
+                  onTap: isDisabled ? null : () {
+                    HapticFeedback.selectionClick();
+                    widget.onCardToggled(card);
+                  },
                 ),
               ),
             );

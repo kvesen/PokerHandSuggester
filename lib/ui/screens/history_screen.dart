@@ -528,8 +528,11 @@ class _MiniCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isRed = card.suit == Suit.hearts || card.suit == Suit.diamonds;
-    final color = isRed ? const Color(0xFFEF4444) : const Color(0xFF1C1C1E);
+    final color = isRed
+        ? const Color(0xFFEF4444)
+        : isDark ? Colors.white : const Color(0xFF1C1C1E);
     final rank = kRankLabels[card.rank.name] ?? '';
     final suit = kSuitSymbols[card.suit.name] ?? '';
 
@@ -537,10 +540,14 @@ class _MiniCard extends StatelessWidget {
       width: 28,
       height: 36,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF2A2A2E) : Colors.white,
         borderRadius: BorderRadius.circular(4),
-        boxShadow: const [
-          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+        boxShadow: [
+          BoxShadow(
+            color: isDark ? Colors.black26 : Colors.black12,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(

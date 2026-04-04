@@ -21,7 +21,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('Poker Hand\nSuggester'), findsOneWidget);
+      expect(find.text('Poker\nBuddy'), findsOneWidget);
     });
 
     testWidgets('renders Scan Table and Manual action buttons', (tester) async {

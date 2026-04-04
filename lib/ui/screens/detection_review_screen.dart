@@ -2,6 +2,7 @@
 library;
 
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -103,15 +104,45 @@ class _DetectionReviewScreenState
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final total = _cards.length;
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Review Detected Cards'),
-        backgroundColor: const Color(0xFF1B5E20),
-        foregroundColor: Colors.white,
+        title: const Text(
+          'Review Detected Cards',
+          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: -0.5),
+        ),
+        backgroundColor: (isDark ? Colors.black : Colors.white).withValues(alpha: 0.5),
+        flexibleSpace: ClipRRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(color: Colors.transparent),
+          ),
+        ),
+        foregroundColor: isDark ? Colors.white : Colors.black87,
+        elevation: 0,
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: RadialGradient(
+            center: const Alignment(0, -0.8),
+            radius: 1.5,
+            colors: isDark
+                ? [
+                    const Color(0xFF1E3C2B),
+                    const Color(0xFF090B0F),
+                    const Color(0xFF050505),
+                  ]
+                : [
+                    const Color(0xFFE8F5E9),
+                    const Color(0xFFF1F5F9),
+                    const Color(0xFFFFFFFF),
+                  ],
+          ),
+        ),
+        child: ListView(
+        padding: EdgeInsets.fromLTRB(16, MediaQuery.of(context).padding.top + kToolbarHeight + 8, 16, 16),
         children: [
           // Image preview
           ClipRRect(
@@ -251,7 +282,7 @@ class _DetectionReviewScreenState
                 style: TextStyle(fontSize: 18),
               ),
               style: FilledButton.styleFrom(
-                backgroundColor: const Color(0xFF1B5E20),
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
@@ -277,6 +308,7 @@ class _DetectionReviewScreenState
           ),
           const SizedBox(height: 24),
         ],
+        ),
       ),
     );
   }
@@ -315,15 +347,16 @@ class _AssignmentChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isHole = assignment == CardAssignment.hole;
+    final primary = Theme.of(context).colorScheme.primary;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: isHole
-            ? const Color(0xFF1B5E20).withAlpha(30)
+            ? primary.withAlpha(30)
             : Colors.blue.withAlpha(30),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isHole ? const Color(0xFF1B5E20) : Colors.blue,
+          color: isHole ? primary : Colors.blue,
         ),
       ),
       child: Text(
@@ -331,7 +364,7 @@ class _AssignmentChip extends StatelessWidget {
         style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.bold,
-          color: isHole ? const Color(0xFF1B5E20) : Colors.blue,
+          color: isHole ? primary : Colors.blue,
         ),
       ),
     );

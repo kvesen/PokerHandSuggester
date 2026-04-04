@@ -556,7 +556,16 @@ class _GridCell extends StatelessWidget {
     // Suited cells get slightly lighter background; pairs get a bold border
     final bgColor = color.withValues(alpha: opacity * (suited ? 0.85 : pair ? 0.95 : 0.75));
 
-    return GestureDetector(
+    final actionText = switch (action) {
+      RangeAction.raise => 'Raise',
+      RangeAction.call => 'Call',
+      RangeAction.fold => 'Fold',
+    };
+
+    return Semantics(
+      label: '$label: $actionText from ${positionLabel(position)}',
+      button: true,
+      child: GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
@@ -593,6 +602,7 @@ class _GridCell extends StatelessWidget {
             maxLines: 1,
           ),
         ),
+      ),
       ),
     );
   }

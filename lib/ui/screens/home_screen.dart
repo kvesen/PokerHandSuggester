@@ -17,7 +17,7 @@ import 'history_screen.dart';
 import 'manual_input_screen.dart';
 import 'range_chart_screen.dart';
 
-/// The main landing screen of the Poker Hand Suggester.
+/// The main landing screen of the Poker Buddy app.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, required this.themeService});
 
@@ -32,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   HistoryService? _historyService;
   String _appVersion = '';
   bool _hasHistoryError = false;
+  bool _isLoadingHistory = true;
 
   @override
   void initState() {
@@ -55,12 +56,18 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final service = await HistoryService.create();
       if (!mounted) return;
-      setState(() => _historyService = service);
+      setState(() {
+        _historyService = service;
+        _isLoadingHistory = false;
+      });
       await _loadRecent();
     } catch (e, st) {
       CrashReportingService.recordError(e, st);
       if (!mounted) return;
-      setState(() => _hasHistoryError = true);
+      setState(() {
+        _hasHistoryError = true;
+        _isLoadingHistory = false;
+      });
       showErrorSnackBar(context, 'Could not load hand history');
     }
   }
@@ -182,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       // Title
                       Text(
-                        'Poker Hand\nSuggester',
+                        'Poker\nBuddy',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: isDark ? Colors.white : Colors.black87,
@@ -223,7 +230,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 48),
 
                       // Primary action buttons
-                      Row(
+                      IntrinsicHeight(
+                        child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Expanded(
                             child: _ActionCard(
@@ -257,6 +266,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ],
+                        ),
                       ),
                       const SizedBox(height: 12),
 
@@ -281,6 +291,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onSeeAll: _openHistory,
                         isDark: isDark,
                         hasError: _hasHistoryError,
+                        isLoading: _isLoadingHistory,
                       ),
 
                       const SizedBox(height: 24),
@@ -353,12 +364,14 @@ class _RecentActivity extends StatelessWidget {
     required this.onSeeAll,
     required this.isDark,
     this.hasError = false,
+    this.isLoading = false,
   });
 
   final List<HandRecord> records;
   final VoidCallback onSeeAll;
   final bool isDark;
   final bool hasError;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -391,7 +404,9 @@ class _RecentActivity extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        if (hasError)
+        if (isLoading)
+          ...List.generate(2, (_) => _ShimmerPlaceholder(isDark: isDark))
+        else if (hasError)
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 24),
@@ -452,6 +467,57 @@ class _RecentActivity extends StatelessWidget {
         else
           ...records.map((r) => _RecentHandTile(record: r, isDark: isDark)),
       ],
+    );
+  }
+}
+
+class _ShimmerPlaceholder extends StatefulWidget {
+  const _ShimmerPlaceholder({required this.isDark});
+
+  final bool isDark;
+
+  @override
+  State<_ShimmerPlaceholder> createState() => _ShimmerPlaceholderState();
+}
+
+class _ShimmerPlaceholderState extends State<_ShimmerPlaceholder>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _opacity;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat(reverse: true);
+    _opacity = Tween<double>(begin: 0.3, end: 0.7).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _opacity,
+      builder: (context, _) => Opacity(
+        opacity: _opacity.value,
+        child: Container(
+          height: 64,
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: (widget.isDark ? Colors.white : Colors.black).withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -744,6 +810,7 @@ class _ActionCard extends StatelessWidget {
                           )
                         : Column(
                             mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Container(
                                 padding: const EdgeInsets.all(12),
@@ -852,7 +919,15 @@ class _ComingSoonSheet extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(height: 20),
+          Align(
+            alignment: Alignment.centerRight,
+            child: IconButton(
+              icon: const Icon(Icons.close_rounded),
+              onPressed: () => Navigator.of(context).pop(),
+              tooltip: 'Close',
+            ),
+          ),
+          const SizedBox(height: 4),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
