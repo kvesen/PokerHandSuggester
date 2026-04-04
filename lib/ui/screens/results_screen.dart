@@ -345,13 +345,16 @@ class _ResultsScreenState extends State<ResultsScreen>
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        widget.decision.explanation,
-                        style: TextStyle(
-                          fontSize: 14,
-                          height: 1.5,
-                          color:
-                              isDark ? Colors.white70 : Colors.black87,
+                      Semantics(
+                        liveRegion: true,
+                        child: Text(
+                          widget.decision.explanation,
+                          style: TextStyle(
+                            fontSize: 14,
+                            height: 1.5,
+                            color:
+                                isDark ? Colors.white70 : Colors.black87,
+                          ),
                         ),
                       ),
                     ],
@@ -519,34 +522,37 @@ class _StatsRow extends StatelessWidget {
             (item) => Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 16, horizontal: 8),
-                  decoration: BoxDecoration(
-                    color: item.color.withAlpha(15),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: item.color.withAlpha(80)),
-                  ),
-                  child: Column(
-                    children: [
-                      Icon(item.icon, color: item.color, size: 22),
-                      const SizedBox(height: 4),
-                      Text(
-                        item.value,
-                        style: TextStyle(
-                          color: item.color,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                child: Semantics(
+                  label: '${item.label}: ${item.value}',
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 16, horizontal: 8),
+                    decoration: BoxDecoration(
+                      color: item.color.withAlpha(15),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: item.color.withAlpha(80)),
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(item.icon, color: item.color, size: 22),
+                        const SizedBox(height: 4),
+                        Text(
+                          item.value,
+                          style: TextStyle(
+                            color: item.color,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      Text(
-                        item.label,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: isDark ? Colors.white54 : Colors.black45,
+                        Text(
+                          item.label,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: isDark ? Colors.white54 : Colors.black45,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

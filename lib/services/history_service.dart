@@ -29,29 +29,46 @@ class HistoryService {
 
   /// Saves [record] to history. Auto-prunes oldest entries beyond [_kMaxHistory].
   Future<void> saveHand(HandRecord record) async {
-    final records = _loadAll();
-    records.insert(0, record);
-    if (records.length > _kMaxHistory) {
-      records.removeRange(_kMaxHistory, records.length);
+    try {
+      final records = _loadAll();
+      records.insert(0, record);
+      if (records.length > _kMaxHistory) {
+        records.removeRange(_kMaxHistory, records.length);
+      }
+      await _saveAll(records);
+    } catch (e, st) {
+      debugPrint('HistoryService.saveHand: error — $e\n$st');
     }
-    await _saveAll(records);
   }
 
   /// Returns all stored hand records, sorted newest first.
   Future<List<HandRecord>> getHistory() async {
-    return _loadAll();
+    try {
+      return _loadAll();
+    } catch (e, st) {
+      debugPrint('HistoryService.getHistory: error — $e\n$st');
+      return [];
+    }
   }
 
   /// Deletes all stored hand records.
   Future<void> clearHistory() async {
-    await _box.clear();
+    try {
+      await _box.clear();
+    } catch (e, st) {
+      debugPrint('HistoryService.clearHistory: error — $e\n$st');
+    }
   }
 
   /// Deletes a specific hand record by [id].
   Future<void> deleteHand(String id) async {
-    final records = _loadAll();
-    records.removeWhere((r) => r.id == id);
-    await _saveAll(records);
+    try {
+      final records = _loadAll();
+      records.removeWhere((r) => r.id == id);
+      await _saveAll(records);
+    } catch (e, st) {
+      debugPrint('HistoryService.deleteHand: error — $e\n$st');
+    }
   }
 
   // -------------------------------------------------------------------------

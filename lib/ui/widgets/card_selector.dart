@@ -286,7 +286,9 @@ class _CardSelectorState extends State<CardSelector> {
         const SizedBox(height: 6),
 
         // ── Card grid: 13 columns (rank 2→A) × 4 rows (suit ♠♥♦♣) ─────────
-        GridView.builder(
+        Semantics(
+          label: 'Card selection grid',
+          child: GridView.builder(
           shrinkWrap: true,
           padding: EdgeInsets.zero,
           physics: const NeverScrollableScrollPhysics(),
@@ -325,6 +327,7 @@ class _CardSelectorState extends State<CardSelector> {
               ),
             );
           },
+          ),
         ),
       ],
     );

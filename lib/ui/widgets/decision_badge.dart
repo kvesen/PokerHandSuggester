@@ -64,9 +64,12 @@ class _DecisionBadgeState extends State<DecisionBadge>
         ),
     };
 
-    return ScaleTransition(
-      scale: _scale,
-      child: Container(
+    return Semantics(
+      label: 'Decision: $label',
+      liveRegion: true,
+      child: ScaleTransition(
+        scale: _scale,
+        child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 54, vertical: 24),
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -103,6 +106,7 @@ class _DecisionBadgeState extends State<DecisionBadge>
             ),
           ],
         ),
+      ),
       ),
     );
   }

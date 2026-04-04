@@ -283,8 +283,20 @@ class _HistoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
-    return Padding(
+
+    final cardLabels = record.holeCards
+        .map((c) => '${c.rank.name} of ${c.suit.name}')
+        .join(', ');
+    final actionLabel = switch (record.action) {
+      PlayerAction.fold => 'FOLD',
+      PlayerAction.call => 'CALL',
+      PlayerAction.raise => 'RAISE',
+    };
+
+    return Semantics(
+      label: 'Hand: $cardLabels — $actionLabel — ${_formatRelative(record.timestamp)}. Swipe left to delete.',
+      button: true,
+      child: Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Dismissible(
         key: Key(record.id),
@@ -417,6 +429,7 @@ class _HistoryCard extends StatelessWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }
