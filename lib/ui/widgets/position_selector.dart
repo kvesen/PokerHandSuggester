@@ -129,7 +129,7 @@ class PositionSelector extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               // Glassmorphism base
-              color: isDark ? Colors.black54 : Colors.white.withOpacity(0.8),
+              color: isDark ? Colors.black54 : Colors.white.withValues(alpha: 0.8),
               border: Border.all(
                 color: borderColor,
                 width: (isHero || isVillain) ? 2.5 : 1.5,
@@ -137,13 +137,13 @@ class PositionSelector extends StatelessWidget {
               boxShadow: [
                 if (isHero || isVillain)
                   BoxShadow(
-                    color: shadowColor.withOpacity(isDark ? 0.5 : 0.6),
+                    color: shadowColor.withValues(alpha: isDark ? 0.5 : 0.6),
                     blurRadius: 10,
                     spreadRadius: 1,
                   ),
                 if (!isHero && !isVillain)
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -212,7 +212,7 @@ class _TableOutlinePainter extends CustomPainter {
 
     // Neon glowing rail border
     final outerGlowPaint = Paint()
-      ..color = const Color(0xFF10B981).withOpacity(isDark ? 0.3 : 0.15)
+      ..color = const Color(0xFF10B981).withValues(alpha: isDark ? 0.3 : 0.15)
       ..style = PaintingStyle.stroke
       ..strokeWidth = w * 0.035
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
@@ -241,7 +241,7 @@ class _TableOutlinePainter extends CustomPainter {
     final innerRect = Rect.fromLTWH(
         w * 0.12, h * 0.16, w * 0.76, h * 0.68);
     final innerPaint = Paint()
-      ..color = (isDark ? Colors.white : Colors.black).withOpacity(0.08)
+      ..color = (isDark ? Colors.white : Colors.black).withValues(alpha: 0.08)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
     canvas.drawOval(innerRect, innerPaint);
@@ -250,7 +250,7 @@ class _TableOutlinePainter extends CustomPainter {
     final textSpan = TextSpan(
       text: 'TABLE\nPOSITION',
       style: TextStyle(
-        color: (isDark ? Colors.white : Colors.black).withOpacity(0.2),
+        color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.2),
         fontSize: w * 0.040,
         fontWeight: FontWeight.w900,
         letterSpacing: 2.0,

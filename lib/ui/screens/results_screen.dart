@@ -181,7 +181,7 @@ class _ResultsScreenState extends State<ResultsScreen>
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         backgroundColor:
-            (isDark ? Colors.black : Colors.white).withOpacity(0.5),
+            (isDark ? Colors.black : Colors.white).withValues(alpha: 0.5),
         flexibleSpace: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),

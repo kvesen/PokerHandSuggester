@@ -253,7 +253,7 @@ class _CardSelectorState extends State<CardSelector> {
                   filled: true,
                   fillColor: isDark
                       ? Colors.white10
-                      : Colors.black.withOpacity(0.04),
+                      : Colors.black.withValues(alpha: 0.04),
                   errorText: _errorText,
                   errorStyle: const TextStyle(fontSize: 11),
                 ),

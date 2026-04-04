@@ -115,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 200,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: (isDark ? Colors.greenAccent : Colors.green).withOpacity(0.15),
+                    color: (isDark ? Colors.greenAccent : Colors.green).withValues(alpha: 0.15),
                   ),
                 ),
               ),
@@ -141,15 +141,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 100,
                         height: 100,
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.surface.withOpacity(isDark ? 0.1 : 0.5),
+                          color: theme.colorScheme.surface.withValues(alpha: isDark ? 0.1 : 0.5),
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: theme.colorScheme.primary.withOpacity(0.3),
+                            color: theme.colorScheme.primary.withValues(alpha: 0.3),
                             width: 1.5,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: theme.colorScheme.primary.withOpacity(0.2),
+                              color: theme.colorScheme.primary.withValues(alpha: 0.2),
                               blurRadius: 30,
                               offset: const Offset(0, 10),
                             ),
@@ -378,10 +378,10 @@ class _RecentActivity extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 32),
             decoration: BoxDecoration(
-              color: (isDark ? Colors.white : Colors.black).withOpacity(0.03),
+              color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.03),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+                color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
               ),
             ),
             child: Column(
@@ -389,7 +389,7 @@ class _RecentActivity extends StatelessWidget {
                 Icon(
                   Icons.receipt_long_rounded,
                   size: 32,
-                  color: (isDark ? Colors.white : Colors.black).withOpacity(0.2),
+                  color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.2),
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -427,14 +427,14 @@ class _RecentHandTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(isDark ? 0.4 : 0.8),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: isDark ? 0.4 : 0.8),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+          color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.2 : 0.03),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -464,9 +464,9 @@ class _RecentHandTile extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: color.withOpacity(0.3)),
+              border: Border.all(color: color.withValues(alpha: 0.3)),
             ),
             child: Text(
               label,
@@ -522,10 +522,10 @@ class _FeatureChip extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
-            color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+            color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
+              color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1),
             ),
           ),
           child: Row(
@@ -604,15 +604,15 @@ class _ActionCard extends StatelessWidget {
             filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
             child: Container(
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface.withOpacity(isDark ? 0.3 : 0.8),
+                color: Theme.of(context).colorScheme.surface.withValues(alpha: isDark ? 0.3 : 0.8),
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: (isDark ? Colors.white : Colors.black).withOpacity(0.08),
+                  color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.08),
                   width: 1.5,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: gradientColors.first.withOpacity(0.15),
+                    color: gradientColors.first.withValues(alpha: 0.15),
                     blurRadius: 20,
                     offset: const Offset(0, 8),
                   ),
@@ -639,7 +639,7 @@ class _ActionCard extends StatelessWidget {
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
-                                    colors: gradientColors.map((c) => c.withOpacity(0.15)).toList(),
+                                    colors: gradientColors.map((c) => c.withValues(alpha: 0.15)).toList(),
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
@@ -680,7 +680,7 @@ class _ActionCard extends StatelessWidget {
                               ),
                               Icon(
                                 Icons.chevron_right_rounded,
-                                color: gradientColors.last.withOpacity(0.7),
+                                color: gradientColors.last.withValues(alpha: 0.7),
                                 size: 24,
                               ),
                             ],
@@ -692,7 +692,7 @@ class _ActionCard extends StatelessWidget {
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
-                                    colors: gradientColors.map((c) => c.withOpacity(0.15)).toList(),
+                                    colors: gradientColors.map((c) => c.withValues(alpha: 0.15)).toList(),
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
@@ -737,7 +737,7 @@ class _ActionCard extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                           decoration: BoxDecoration(
-                            color: gradientColors.first.withOpacity(0.80),
+                            color: gradientColors.first.withValues(alpha: 0.80),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
@@ -800,7 +800,7 @@ class _ComingSoonSheet extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: gradientColors.map((c) => c.withOpacity(0.15)).toList(),
+                colors: gradientColors.map((c) => c.withValues(alpha: 0.15)).toList(),
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),

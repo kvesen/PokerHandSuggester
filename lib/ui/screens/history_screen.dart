@@ -129,7 +129,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           'Hand History',
           style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: -0.5),
         ),
-        backgroundColor: (isDark ? Colors.black : Colors.white).withOpacity(0.5),
+        backgroundColor: (isDark ? Colors.black : Colors.white).withValues(alpha: 0.5),
         flexibleSpace: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
@@ -216,10 +216,10 @@ class _EmptyState extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(32),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface.withOpacity(isDark ? 0.3 : 0.8),
+                color: Theme.of(context).colorScheme.surface.withValues(alpha: isDark ? 0.3 : 0.8),
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: (isDark ? Colors.white : Colors.black).withOpacity(0.08),
+                  color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.08),
                   width: 1.5,
                 ),
               ),
@@ -229,7 +229,7 @@ class _EmptyState extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+                      color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -294,7 +294,7 @@ class _HistoryCard extends StatelessWidget {
           alignment: Alignment.centerRight,
           padding: const EdgeInsets.only(right: 24),
           decoration: BoxDecoration(
-            color: const Color(0xFFEF4444).withOpacity(0.8),
+            color: const Color(0xFFEF4444).withValues(alpha: 0.8),
             borderRadius: BorderRadius.circular(24),
           ),
           child: const Icon(Icons.delete_rounded, color: Colors.white, size: 28),
@@ -307,14 +307,14 @@ class _HistoryCard extends StatelessWidget {
               color: Colors.transparent,
               child: InkWell(
                 onTap: onTap,
-                splashColor: theme.colorScheme.primary.withOpacity(0.1),
-                highlightColor: theme.colorScheme.primary.withOpacity(0.05),
+                splashColor: theme.colorScheme.primary.withValues(alpha: 0.1),
+                highlightColor: theme.colorScheme.primary.withValues(alpha: 0.05),
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.surface.withOpacity(isDark ? 0.4 : 0.8),
+                    color: theme.colorScheme.surface.withValues(alpha: isDark ? 0.4 : 0.8),
                     border: Border.all(
-                      color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+                      color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
                     ),
                     borderRadius: BorderRadius.circular(24),
                   ),
@@ -358,7 +358,7 @@ class _HistoryCard extends StatelessWidget {
                                 width: 2,
                                 height: 36,
                                 decoration: BoxDecoration(
-                                  color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
+                                  color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(1),
                                 ),
                               ),
@@ -376,10 +376,10 @@ class _HistoryCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                         decoration: BoxDecoration(
-                          color: (isDark ? Colors.white : Colors.black).withOpacity(0.03),
+                          color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.03),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+                            color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
                           ),
                         ),
                         child: Row(
@@ -394,7 +394,7 @@ class _HistoryCard extends StatelessWidget {
                             Container(
                               width: 1,
                               height: 20,
-                              color: (isDark ? Colors.white : Colors.black).withOpacity(0.1),
+                              color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1),
                             ),
                             _MiniStat(
                               label: 'EV',
@@ -448,8 +448,8 @@ class _SmallDecisionBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
-        border: Border.all(color: color.withOpacity(0.3)),
+        color: color.withValues(alpha: 0.15),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(

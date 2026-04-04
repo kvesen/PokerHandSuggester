@@ -1,0 +1,46 @@
+Poker Hand Suggester — Your Pocket Texas Hold'em Strategy Partner
+
+Stop guessing at the table. Poker Hand Suggester puts mathematically optimal Fold/Call/Raise decisions in your pocket, powered by real Monte Carlo equity simulation running entirely on your device.
+
+═══ HOW IT WORKS ═══
+
+Enter your hole cards and community cards manually, or scan them with your camera (coming soon — on-device ML). The app instantly runs thousands of Monte Carlo equity simulations to calculate your true winning probability against all opponent hand ranges.
+
+Combined with pot odds calculation and expected value (EV) math, the decision engine tells you exactly what to do:
+• FOLD — when continuing costs more than your equity justifies
+• CALL — when pot odds favour continuing
+• RAISE — when your equity supports building the pot
+
+═══ KEY FEATURES ═══
+
+🃏 Monte Carlo Equity Simulation — 10,000+ runout simulations give you statistically accurate equity percentages against the full range of opponent holdings.
+
+📐 Pot Odds Calculator — Instantly computes pot odds from the current pot size and bet facing you, so you never lose track of whether a call is mathematically correct.
+
+📊 EV Computation — Expected value calculation factors in your equity, pot size, and call amount to give a clear verdict on every decision.
+
+🎯 Position-Aware Thresholds — 9-seat position model adjusts decision thresholds based on where you sit at the table (UTG, MP, CO, BTN, BB), reflecting real game theory.
+
+🗂 Hand History — Review your past decisions with a full session log stored privately on your device.
+
+🌙 Dark & Light Mode — Polished dark and light themes for comfortable use in any environment.
+
+🔒 Privacy-First Design — All processing happens on your device. No accounts, no data collection, no ads. Your hand history never leaves your phone.
+
+📷 On-Device ML Card Scanning (Coming Soon) — TensorFlow Lite-powered camera scanner will recognise cards automatically — no manual entry needed.
+
+═══ WHO IS THIS FOR? ═══
+
+Whether you're a beginner learning pot odds for the first time or an experienced player who wants a second opinion in home games, Poker Hand Suggester gives you the mathematical edge — without requiring you to memorise equity charts or run mental arithmetic under pressure.
+
+═══ TECHNICAL DETAILS ═══
+
+• Texas Hold'em (all streets: pre-flop, flop, turn, river)
+• Supports 2–9 players
+• Monte Carlo simulation engine written in pure Dart for speed and accuracy
+• Runs fully offline — no internet connection required
+• Compatible with Android 5.0+
+
+═══ PRIVACY ═══
+
+Poker Hand Suggester collects no personal data. No ads. No tracking. Full privacy policy: https://kvesen.github.io/PokerHandSuggester/

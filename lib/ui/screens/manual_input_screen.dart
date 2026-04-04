@@ -293,7 +293,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
           style: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: -0.5),
         ),
         // Glassmorphism surface — intentionally differs between light/dark modes.
-        backgroundColor: (isDark ? Colors.black : Colors.white).withOpacity(0.5),
+        backgroundColor: (isDark ? Colors.black : Colors.white).withValues(alpha: 0.5),
         flexibleSpace: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
@@ -307,7 +307,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                 preferredSize: const Size.fromHeight(32),
                 child: Container(
                   width: double.infinity,
-                  color: _streetInfo.color.withOpacity(isDark ? 0.6 : 0.8),
+                  color: _streetInfo.color.withValues(alpha: isDark ? 0.6 : 0.8),
                   padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
                   child: Text(
                     _streetTitle.toUpperCase(),
@@ -460,11 +460,11 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         child: Container(
           decoration: BoxDecoration(
             // Glassmorphism surface — intentionally differs between light/dark modes.
-            color: theme.colorScheme.surface.withOpacity(isDark ? 0.3 : 0.8),
+            color: theme.colorScheme.surface.withValues(alpha: isDark ? 0.3 : 0.8),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
               // Glassmorphism surface — intentionally differs between light/dark modes.
-              color: (isDark ? Colors.white : Colors.black).withOpacity(0.08),
+              color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.08),
               width: 1.5,
             ),
           ),
@@ -475,7 +475,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                   border: Border(
                     bottom: BorderSide(
                       // Glassmorphism surface — intentionally differs between light/dark modes.
-                      color: (isDark ? Colors.white : Colors.black).withOpacity(0.05),
+                      color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
                     ),
                   ),
                 ),
@@ -553,11 +553,11 @@ class _ManualInputScreenState extends State<ManualInputScreen>
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               // Glassmorphism surface — intentionally differs between light/dark modes.
-              color: theme.colorScheme.surface.withOpacity(isDark ? 0.3 : 0.8),
+              color: theme.colorScheme.surface.withValues(alpha: isDark ? 0.3 : 0.8),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
                 // Glassmorphism surface — intentionally differs between light/dark modes.
-                color: (isDark ? Colors.white : Colors.black).withOpacity(0.08),
+                color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.08),
                 width: 1.5,
               ),
             ),
@@ -767,7 +767,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -845,7 +845,7 @@ class _SectionHeader extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: theme.colorScheme.onSurface.withOpacity(0.05),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
@@ -891,16 +891,16 @@ class _CardPreviewRow extends StatelessWidget {
                 height: 72,
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: theme.colorScheme.outline.withOpacity(0.4),
+                    color: theme.colorScheme.outline.withValues(alpha: 0.4),
                     width: 2,
                     style: BorderStyle.solid,
                   ),
                   borderRadius: BorderRadius.circular(8),
-                  color: theme.colorScheme.onSurface.withOpacity(0.03),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.03),
                 ),
                 child: Icon(
                   Icons.add_rounded,
-                  color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
+                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                   size: 24,
                 ),
               ),
@@ -946,13 +946,13 @@ class _NumericField extends StatelessWidget {
         hintText: hint,
         labelStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant),
         hintStyle:
-            TextStyle(color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5)),
+            TextStyle(color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
         filled: true,
-        fillColor: theme.colorScheme.onSurface.withOpacity(0.03),
+        fillColor: theme.colorScheme.onSurface.withValues(alpha: 0.03),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
-            color: theme.colorScheme.outline.withOpacity(0.5),
+            color: theme.colorScheme.outline.withValues(alpha: 0.5),
           ),
         ),
         focusedBorder: OutlineInputBorder(

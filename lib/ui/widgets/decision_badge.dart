@@ -76,11 +76,11 @@ class _DecisionBadgeState extends State<DecisionBadge>
           ),
           borderRadius: BorderRadius.circular(24),
           // Inner glowing border effect
-          border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1.5),
           boxShadow: [
             // Deep colored neon drop-shadow
             BoxShadow(
-              color: shadowColor.withOpacity(0.6),
+              color: shadowColor.withValues(alpha: 0.6),
               blurRadius: 24,
               spreadRadius: 4,
               offset: const Offset(0, 10),

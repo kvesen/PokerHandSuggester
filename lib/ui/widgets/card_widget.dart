@@ -67,14 +67,14 @@ class CardWidget extends StatelessWidget {
           boxShadow: [
             if (selected)
               BoxShadow(
-                color: theme.colorScheme.primary.withOpacity(0.4),
+                color: theme.colorScheme.primary.withValues(alpha: 0.4),
                 blurRadius: 12,
                 spreadRadius: 2,
                 offset: const Offset(0, 4),
               )
             else
               BoxShadow(
-                color: theme.shadowColor.withOpacity(isDark ? 0.3 : 0.08),
+                color: theme.shadowColor.withValues(alpha: isDark ? 0.3 : 0.08),
                 blurRadius: 6,
                 offset: const Offset(1, 3),
               ),
@@ -113,7 +113,7 @@ class CardWidget extends StatelessWidget {
                 suitSymbol,
                 style: TextStyle(
                   fontSize: fontSize * 0.9,
-                  color: color.withOpacity(0.9),
+                  color: color.withValues(alpha: 0.9),
                 ),
               ),
             ),

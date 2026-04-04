@@ -1,5 +1,7 @@
 # Privacy Policy
 
+> This policy is also available at https://kvesen.github.io/PokerHandSuggester/
+
 **Last updated: 2026**
 
 This Privacy Policy describes how the Poker Hand Suggester app ("the App") handles information.
