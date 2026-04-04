@@ -233,3 +233,15 @@ The required usage descriptions are already present in `ios/Runner/Info.plist`:
 - **Phase 4** ✅ Edge case testing + performance optimization
 - **Phase 5** ✅ Table position awareness — position-adjusted decision thresholds + visual seat selector
 - **Phase 6** 🔜 App Store / Google Play deployment
+
+## Privacy Policy
+
+The privacy policy is available at **https://kvesen.github.io/PokerHandSuggester/**
+
+To activate GitHub Pages hosting:
+1. Go to **Settings → Pages**
+2. Set **Source** to "Deploy from a branch"
+3. Select **Branch**: `main`, **Folder**: `/docs`
+4. Save — the policy will be live within a few minutes
+
+The policy source is also available in [`PRIVACY_POLICY.md`](PRIVACY_POLICY.md).

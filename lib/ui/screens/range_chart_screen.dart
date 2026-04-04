@@ -55,7 +55,7 @@ class _RangeChartScreenState extends State<RangeChartScreen> {
           'Hand Ranges',
           style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: -0.5),
         ),
-        backgroundColor: (isDark ? Colors.black : Colors.white).withOpacity(0.5),
+        backgroundColor: (isDark ? Colors.black : Colors.white).withValues(alpha: 0.5),
         flexibleSpace: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
@@ -196,11 +196,11 @@ class _PositionSelector extends StatelessWidget {
                     : null,
                 color: isSelected
                     ? null
-                    : (isDark ? Colors.white : Colors.black).withOpacity(0.08),
+                    : (isDark ? Colors.white : Colors.black).withValues(alpha: 0.08),
                 border: Border.all(
                   color: isSelected
                       ? Colors.transparent
-                      : (isDark ? Colors.white : Colors.black).withOpacity(0.12),
+                      : (isDark ? Colors.white : Colors.black).withValues(alpha: 0.12),
                 ),
               ),
               child: Text(
@@ -243,10 +243,10 @@ class _StatsBar extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: _kPurple.withOpacity(isDark ? 0.15 : 0.10),
+          color: _kPurple.withValues(alpha: isDark ? 0.15 : 0.10),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: _kPurple.withOpacity(0.25),
+            color: _kPurple.withValues(alpha: 0.25),
           ),
         ),
         child: Row(
@@ -278,7 +278,7 @@ class _StatsBar extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: _kPurple.withOpacity(0.2),
+                color: _kPurple.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -329,9 +329,9 @@ class _CellTooltip extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
-          color: actionColor.withOpacity(isDark ? 0.15 : 0.10),
+          color: actionColor.withValues(alpha: isDark ? 0.15 : 0.10),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: actionColor.withOpacity(0.35)),
+          border: Border.all(color: actionColor.withValues(alpha: 0.35)),
         ),
         child: Row(
           children: [
@@ -339,7 +339,7 @@ class _CellTooltip extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: actionColor.withOpacity(0.2),
+                color: actionColor.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Center(
@@ -380,7 +380,7 @@ class _CellTooltip extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                color: actionColor.withOpacity(0.2),
+                color: actionColor.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
@@ -450,10 +450,10 @@ class _RangeGrid extends StatelessWidget {
   Widget _buildGrid(double cellSize, double fontSize, double labelFontSize) {
     return Container(
       decoration: BoxDecoration(
-        color: (isDark ? Colors.white : Colors.black).withOpacity(0.03),
+        color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: (isDark ? Colors.white : Colors.black).withOpacity(0.07),
+          color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.07),
         ),
       ),
       padding: const EdgeInsets.all(6),
@@ -554,7 +554,7 @@ class _GridCell extends StatelessWidget {
     };
 
     // Suited cells get slightly lighter background; pairs get a bold border
-    final bgColor = color.withOpacity(opacity * (suited ? 0.85 : pair ? 0.95 : 0.75));
+    final bgColor = color.withValues(alpha: opacity * (suited ? 0.85 : pair ? 0.95 : 0.75));
 
     return GestureDetector(
       onTap: onTap,
@@ -570,12 +570,12 @@ class _GridCell extends StatelessWidget {
               ? Border.all(color: Colors.white, width: 1.5)
               : pair
                   ? Border.all(
-                      color: (isDark ? Colors.white : Colors.black).withOpacity(0.25),
+                      color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.25),
                       width: 1,
                     )
                   : null,
           boxShadow: isSelected
-              ? [BoxShadow(color: color.withOpacity(0.6), blurRadius: 4)]
+              ? [BoxShadow(color: color.withValues(alpha: 0.6), blurRadius: 4)]
               : null,
         ),
         child: Center(

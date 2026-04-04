@@ -5,8 +5,8 @@
 - [ ] Phone screenshots (minimum 2, 16:9 or 9:16)
 - [ ] 7-inch tablet screenshots (optional but recommended)
 - [ ] 10-inch tablet screenshots (optional but recommended)
-- [ ] Short description (max 80 characters)
-- [ ] Full description (max 4000 characters)
+- [x] Short description (max 80 characters) — see `descriptions/google_play_short.txt`
+- [x] Full description (max 4000 characters) — see `descriptions/google_play_full.txt`
 - [ ] App icon (512 x 512 px, already configured via flutter_launcher_icons)
 
 ## Required for App Store
@@ -14,9 +14,9 @@
 - [ ] 6.5" display screenshots (1284 x 2778 px)
 - [ ] 5.5" display screenshots (1242 x 2208 px)
 - [ ] iPad Pro 12.9" screenshots (2048 x 2732 px)
-- [ ] Promotional text (max 170 characters)
-- [ ] Description (max 4000 characters)
-- [ ] Keywords (max 100 characters)
+- [x] Promotional text (max 170 characters) — see `descriptions/app_store_promo.txt`
+- [x] Description (max 4000 characters) — see `descriptions/app_store_description.txt`
+- [x] Keywords (max 100 characters) — see `descriptions/app_store_keywords.txt`
 - [ ] App icon (1024 x 1024 px)
 
 ## Suggested Screenshots

@@ -139,7 +139,7 @@ class _CameraScreenState extends State<CameraScreen> {
           'Scan Table',
           style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: -0.5),
         ),
-        backgroundColor: Colors.black.withOpacity(0.4),
+        backgroundColor: Colors.black.withValues(alpha: 0.4),
         flexibleSpace: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -209,7 +209,7 @@ class _CameraScreenState extends State<CameraScreen> {
                 Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
@@ -324,7 +324,7 @@ class _CameraScreenState extends State<CameraScreen> {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
+              color: Colors.white.withValues(alpha: 0.05),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.no_photography_rounded, color: Colors.white54, size: 64),
@@ -371,7 +371,7 @@ class _CameraScreenState extends State<CameraScreen> {
               label: const Text('Pick from Gallery', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16)),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                side: BorderSide(color: Colors.white.withOpacity(0.2), width: 1.5),
+                side: BorderSide(color: Colors.white.withValues(alpha: 0.2), width: 1.5),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
               onPressed: _pickFromGallery,
@@ -386,7 +386,7 @@ class _CameraScreenState extends State<CameraScreen> {
               label: const Text('Manual Input', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16)),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                side: BorderSide(color: Colors.white.withOpacity(0.2), width: 1.5),
+                side: BorderSide(color: Colors.white.withValues(alpha: 0.2), width: 1.5),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               ),
               onPressed: () => Navigator.of(context).pushReplacement(
@@ -433,8 +433,8 @@ class _CircleIconButton extends StatelessWidget {
                 height: size,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.15),
-                  border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
+                  color: Colors.white.withValues(alpha: 0.15),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1.5),
                 ),
                 child: Icon(icon, color: Colors.white, size: size * 0.45),
               ),

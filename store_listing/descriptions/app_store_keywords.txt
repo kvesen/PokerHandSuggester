@@ -1,0 +1,1 @@
+poker,texas holdem,equity,pot odds,fold,call,raise,hand,calculator,strategy

@@ -1,0 +1,1 @@
+Get instant, data-driven poker decisions. Monte Carlo equity math tells you when to Fold, Call, or Raise — no guesswork.

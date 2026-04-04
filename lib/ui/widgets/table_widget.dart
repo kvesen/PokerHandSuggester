@@ -130,9 +130,9 @@ class PokerTableWidget extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.4),
+                color: Colors.black.withValues(alpha: 0.4),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white.withOpacity(0.1)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -190,9 +190,9 @@ class PokerTableWidget extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.white.withOpacity(0.1)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
             ),
             child: Text(
               heroPosition != null
@@ -232,12 +232,12 @@ class _OpponentSeat extends StatelessWidget {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.4),
+            color: Colors.black.withValues(alpha: 0.4),
             shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFFEF4444).withOpacity(0.6), width: 1.5),
+            border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.6), width: 1.5),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFFEF4444).withOpacity(0.2),
+                color: const Color(0xFFEF4444).withValues(alpha: 0.2),
                 blurRadius: 8,
                 spreadRadius: 1,
               ),
@@ -272,10 +272,10 @@ class _EmptyCardSlot extends StatelessWidget {
       width: 34,
       height: 48,
       decoration: BoxDecoration(
-        color: (isDark ? Colors.black : Colors.white).withOpacity(0.15),
+        color: (isDark ? Colors.black : Colors.white).withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(6),
         border: Border.all(
-          color: (isDark ? Colors.white : Colors.black).withOpacity(0.2), 
+          color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.2), 
           width: 1.5,
           style: BorderStyle.solid,
         ),
@@ -305,7 +305,7 @@ class _TablePainter extends CustomPainter {
 
     // Glowing Outer ring
     final outerGlowPaint = Paint()
-      ..color = const Color(0xFF10B981).withOpacity(isDark ? 0.3 : 0.15)
+      ..color = const Color(0xFF10B981).withValues(alpha: isDark ? 0.3 : 0.15)
       ..style = PaintingStyle.stroke
       ..strokeWidth = w * 0.04
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
@@ -337,7 +337,7 @@ class _TablePainter extends CustomPainter {
       height: h * 0.76,
     );
     final innerPaint = Paint()
-      ..color = (isDark ? Colors.white : Colors.black).withOpacity(0.08)
+      ..color = (isDark ? Colors.white : Colors.black).withValues(alpha: 0.08)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
     canvas.drawOval(innerRect, innerPaint);
