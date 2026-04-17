@@ -531,6 +531,10 @@ class _RecentHandTile extends StatelessWidget {
       PlayerAction.raise => ('RAISE', const Color(0xFF10B981), Icons.trending_up_rounded),
     };
 
+    final badgeColor = isDark ? color : HSLColor.fromColor(color)
+        .withLightness((HSLColor.fromColor(color).lightness * 0.8).clamp(0.0, 1.0))
+        .toColor();
+
     final cardLabels = record.holeCards
         .map((c) => '${c.rank.name} of ${c.suit.name}')
         .join(', ');
@@ -588,17 +592,13 @@ class _RecentHandTile extends StatelessWidget {
                 Icon(
                   actionIcon,
                   size: 11,
-                  color: isDark ? color : HSLColor.fromColor(color)
-                      .withLightness((HSLColor.fromColor(color).lightness * 0.8).clamp(0.0, 1.0))
-                      .toColor(),
+                  color: badgeColor,
                 ),
                 const SizedBox(width: 3),
                 Text(
                   label,
                   style: TextStyle(
-                    color: isDark ? color : HSLColor.fromColor(color)
-                        .withLightness((HSLColor.fromColor(color).lightness * 0.8).clamp(0.0, 1.0))
-                        .toColor(),
+                    color: badgeColor,
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.5,
