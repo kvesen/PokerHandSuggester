@@ -2,6 +2,7 @@
 library;
 
 import '../models/card.dart';
+import '../utils/constants.dart';
 import 'equity_calculator.dart';
 
 /// Serializable parameters for [runEquityCalculation].
@@ -11,12 +12,14 @@ class EquityIsolateParams {
     required this.communityCards,
     required this.numOpponents,
     this.iterations = 10000,
+    this.targetStandardError = kDefaultTargetStandardError,
   });
 
   final List<PokerCard> holeCards;
   final List<PokerCard> communityCards;
   final int numOpponents;
   final int iterations;
+  final double? targetStandardError;
 }
 
 /// Top-level function suitable for use with [Isolate.run].
@@ -33,5 +36,6 @@ EquityResult runEquityCalculation(EquityIsolateParams params) {
     communityCards: params.communityCards,
     numOpponents: params.numOpponents,
     iterations: params.iterations,
+    targetStandardError: params.targetStandardError,
   );
 }

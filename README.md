@@ -27,21 +27,13 @@ A Flutter mobile app (Android & iOS) that calculates the **mathematically optima
 - 🧪 **Comprehensive edge case tests** — straight flush vs. four-of-a-kind ranking, ace-low straight ordering, full house tie-breaking, pocket aces equity, river determinism, multi-opponent equity scaling, free-check never folds, extreme pot-odds scenarios, and more
 
 
-- 🎨 **Dark / Light mode toggle** — persisted via `SharedPreferences`
+- 🎨 **System / Light / Dark mode** — three-way theme selector, persisted via `SharedPreferences`
 - 🃏 **Poker table visualization** — oval felt table with player seat, community cards, opponent indicators, and pot display
 - 📜 **Hand history** — every analyzed hand is automatically saved; browse, delete, or clear all entries from the History screen
-- 🔔 **Animated decision badge** — bounce-in elastic scale animation on the FOLD/CALL/RAISE badge
+- 🔔 **Animated decision badge** — bounce-in elastic scale animation on the FOLD/CALL/RAISE badge with icon and haptic feedback
 - 📊 **Staggered results animation** — each result section fades and slides in sequentially
 - 📱 **Responsive Manual Input** — two-column layout on screens wider than 600px (tablet/desktop)
 - 🕐 **Recent Activity** — home screen shows the last 3 analyzed hands at a glance
-
-
-- 📸 **Scan Table** — take a photo (or pick from gallery) and have cards automatically detected
-- 🔍 **On-device ML** — TFLite object detection model runs entirely on device (no server required)
-- 🃏 **Visual card recognition** — detects playing cards by appearance, not OCR text; works with stylized fonts, suit graphics, and real table conditions
-- 🔎 **Detection Review Screen** — inspect detected cards, remove false positives, add missed cards, and assign each card to "My Hand" or "Community"
-- ⚡ **Pre-populated input** — confirmed cards flow directly into the Manual Input screen
-- 🏠 **Updated Home Screen** — two equal-prominence buttons: **📸 Scan Table** and **✍️ Manual Input**
 
 ## Tech Stack
 
@@ -50,13 +42,9 @@ A Flutter mobile app (Android & iOS) that calculates the **mathematically optima
 | Framework | Flutter (Dart 3) |
 | State | `StatefulWidget` + `ChangeNotifier` |
 | Poker math | Custom Dart engine (hand evaluator + Monte Carlo) |
-| Card recognition | TFLite Object Detection (custom playing card model) |
-| Camera | `camera` plugin |
-| Image processing | `image` package |
 | Persistence | Hive |
 | Crash reporting | Firebase Crashlytics (graceful no-op if unconfigured) |
 | Date formatting | `intl` |
-| Permissions | `permission_handler` |
 | UI | Material Design 3 |
 | Tests | `flutter_test` |
 
@@ -74,23 +62,19 @@ lib/
 ├── engine/
 │   ├── hand_evaluator.dart             # Best 5-card hand from up to 7 cards
 │   ├── equity_calculator.dart          # Monte Carlo equity simulation
+│   ├── equity_isolate.dart             # Background isolate helper
 │   ├── pot_odds.dart                   # Pot odds math
 │   └── decision_engine.dart            # Fold / Call / Raise recommendation
-├── recognition/
-│   ├── card_detector.dart              # TFLite object detection → PokerCard list
-│   └── image_processor.dart            # Grayscale, contrast, crop, rotate
 ├── services/
-│   ├── camera_service.dart             # Camera lifecycle & permissions
 │   ├── crash_reporting_service.dart    # Firebase Crashlytics wrapper
 │   ├── history_service.dart            # Hand history persistence
 │   └── theme_service.dart              # Theme mode persistence
 ├── ui/
 │   ├── screens/
-│   │   ├── home_screen.dart            # Landing screen (Scan + Manual + history)
-│   │   ├── camera_screen.dart          # Live preview, capture, gallery pick
-│   │   ├── detection_review_screen.dart# Review & assign detected cards
+│   │   ├── home_screen.dart            # Landing screen (Manual Input + history)
 │   │   ├── history_screen.dart         # Hand history browser
 │   │   ├── manual_input_screen.dart    # Card selection + game info (responsive)
+│   │   ├── range_chart_screen.dart     # Position-based hand range charts
 │   │   └── results_screen.dart         # Decision + stats + table visualization
 │   ├── utils/
 │   │   └── page_transitions.dart       # Slide-up / fade route helpers
@@ -101,6 +85,7 @@ lib/
 │       ├── position_selector.dart      # Oval table with 9 tappable seats
 │       └── table_widget.dart           # Oval poker table visualization
 └── utils/
+    ├── app_colors.dart                 # Shared color constants
     └── constants.dart                  # Suit symbols, rank labels, defaults
 test/
 ├── models/
@@ -114,8 +99,9 @@ test/
 │   └── decision_engine_position_test.dart
 ├── services/
 │   └── history_service_test.dart
-└── recognition/
-    └── card_detector_test.dart         # TFLite label-to-card mapping tests
+└── ui/
+    ├── screens/
+    └── widgets/
 ```
 
 ## Setup & Installation
@@ -170,30 +156,13 @@ storeFile=<absolute or relative path to your .jks/.keystore file>
 
 When `android/key.properties` is present, the release build type automatically uses the release signing config. Without it, the build falls back to debug keys (suitable for local testing only).
 
-## Camera Permissions Setup
-
-### Android
-
-The required permissions are already present in `android/app/src/main/AndroidManifest.xml`:
-
-```xml
-<uses-permission android:name="android.permission.CAMERA" />
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-```
-
-### iOS
-
-The required usage descriptions are already present in `ios/Runner/Info.plist`:
-
-```xml
-<key>NSCameraUsageDescription</key>
-<string>This app needs camera access to scan playing cards on the poker table.</string>
-<key>NSPhotoLibraryUsageDescription</key>
-<string>This app needs photo library access to select images of poker tables.</string>
-```
-
 ## How It Works
+
+### Home Screen
+The home screen shows:
+- A prominent **Manual Input** button — tap to start a new hand analysis
+- A **Hand Ranges** card — browse position-based opening range charts
+- **Recent Activity** — the last 3 analyzed hands at a glance
 
 ### Manual Input Flow
 1. Tap **✍️ Manual Input** on the home screen
@@ -201,19 +170,6 @@ The required usage descriptions are already present in `ios/Runner/Info.plist`:
 3. Optionally select 0–5 community cards
 4. Enter pot size, bet to call, and number of opponents
 5. Tap **"Calculate Best Move"** — the engine runs 10,000 simulations
-
-### Camera Scan Flow
-1. Tap **📸 Scan Table** on the home screen
-2. Point the camera at your poker table and tap the shutter button (or pick from gallery)
-3. The app pre-processes the image (grayscale + contrast enhancement) and runs on-device TFLite object detection
-4. Review detected cards on the **Detection Review** screen:
-   - Swipe left to remove false positives
-   - Tap the chip to toggle between **My Hand** and **Community**
-   - Tap **"Add Card Manually"** for any missed cards
-5. Tap **"Continue"** — cards are pre-populated in the Manual Input screen
-
-> **Note:** The TFLite model file (`assets/models/card_detection_model.tflite`) is a placeholder stub.
-> You must supply your own trained model. See [`assets/models/README.md`](assets/models/README.md) for instructions on obtaining or training one from Roboflow.
 
 ### Decision Logic
 
@@ -228,11 +184,16 @@ The required usage descriptions are already present in `ios/Runner/Info.plist`:
 ## Roadmap
 
 - **Phase 1** ✅ Poker math engine + manual input UI
-- **Phase 2** ✅ Camera integration + ML card detection + detection review
-- **Phase 3** ✅ UI polish — table visualization, hand history, dark/light theming, responsive layout
-- **Phase 4** ✅ Edge case testing + performance optimization
-- **Phase 5** ✅ Table position awareness — position-adjusted decision thresholds + visual seat selector
-- **Phase 6** 🔜 App Store / Google Play deployment
+- **Phase 2** ✅ UI polish — table visualization, hand history, dark/light/system theming, responsive layout
+- **Phase 3** ✅ Edge case testing + performance optimization
+- **Phase 4** ✅ Table position awareness — position-adjusted decision thresholds + visual seat selector
+- **Phase 5** 🔜 App Store / Google Play deployment
+
+## Contributing / Development
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions, code style notes, and PR guidelines.
+
+CI runs `flutter analyze && flutter test` on every pull request to `main`. Make sure both pass before opening a PR.
 
 ## Privacy Policy
 
@@ -245,13 +206,3 @@ To activate GitHub Pages hosting:
 4. Save — the policy will be live within a few minutes
 
 The policy source is also available in [`PRIVACY_POLICY.md`](PRIVACY_POLICY.md).
-
-## Contributing
-
-Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for:
-
-- How to set up the development environment
-- How to run tests (`flutter test`)
-- How to run the linter (`flutter analyze`)
-- Branch naming conventions and PR guidelines
-- Code style notes

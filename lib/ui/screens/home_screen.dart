@@ -12,7 +12,6 @@ import '../../services/history_service.dart';
 import '../../services/theme_service.dart';
 import '../utils/error_helpers.dart';
 import '../widgets/card_widget.dart';
-import 'camera_screen.dart';
 import 'history_screen.dart';
 import 'manual_input_screen.dart';
 import 'range_chart_screen.dart';
@@ -99,9 +98,25 @@ class _HomeScreenState extends State<HomeScreen> {
         .then((_) => _loadRecent());
   }
 
+  void _showAppearanceSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return _AppearanceSheet(themeService: widget.themeService);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isDark = widget.themeService.isDark;
+    final isDark = switch (widget.themeService.themeMode) {
+      ThemeMode.dark => true,
+      ThemeMode.light => false,
+      ThemeMode.system => MediaQuery.platformBrightnessOf(context) == Brightness.dark,
+    };
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -229,44 +244,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 48),
 
-                      // Primary action buttons
-                      IntrinsicHeight(
-                        child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            child: _ActionCard(
-                              icon: Icons.camera_alt_rounded,
-                              title: 'Scan Table',
-                              description: 'Auto-detect cards',
-                              gradientColors: const [Color(0xFF3B82F6), Color(0xFF2563EB)],
-                              enabled: false,
-                              comingSoonLabel: 'Coming Soon',
-                              onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute<void>(
-                                  builder: (_) => const CameraScreen(),
-                                ),
+                      // Primary action — Manual Input (full-width)
+                      _ActionCard(
+                        icon: Icons.grid_view_rounded,
+                        title: 'Manual Input',
+                        description: 'Select cards and get your optimal move',
+                        gradientColors: const [Color(0xFF10B981), Color(0xFF059669)],
+                        fullWidth: true,
+                        onTap: () => Navigator.of(context)
+                            .push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => const ManualInputScreen(),
                               ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _ActionCard(
-                              icon: Icons.grid_view_rounded,
-                              title: 'Manual',
-                              description: 'Select cards',
-                              gradientColors: const [Color(0xFF10B981), Color(0xFF059669)],
-                              onTap: () => Navigator.of(context)
-                                  .push(
-                                    MaterialPageRoute<void>(
-                                      builder: (_) => const ManualInputScreen(),
-                                    ),
-                                  )
-                                  .then((_) => _loadRecent()),
-                            ),
-                          ),
-                        ],
-                        ),
+                            )
+                            .then((_) => _loadRecent()),
                       ),
                       const SizedBox(height: 12),
 
@@ -329,20 +320,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              // Top-right: theme toggle
+              // Top-right: theme selector (System / Light / Dark)
               Positioned(
                 top: 12,
                 right: 12,
                 child: Semantics(
-                  label: isDark ? 'Switch to light mode' : 'Switch to dark mode',
+                  label: 'Change appearance',
                   button: true,
                   child: IconButton(
                     icon: Icon(
-                      isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                      switch (widget.themeService.themeMode) {
+                        ThemeMode.system => Icons.brightness_auto_rounded,
+                        ThemeMode.light => Icons.light_mode_rounded,
+                        ThemeMode.dark => Icons.dark_mode_rounded,
+                      },
                       color: isDark ? Colors.white : Colors.black87,
                     ),
-                    tooltip: isDark ? 'Light Mode' : 'Dark Mode',
-                    onPressed: () => widget.themeService.toggleTheme(),
+                    tooltip: 'Appearance',
+                    onPressed: () => _showAppearanceSheet(context),
                   ),
                 ),
               ),
@@ -530,10 +525,10 @@ class _RecentHandTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (label, color) = switch (record.action) {
-      PlayerAction.fold => ('FOLD', const Color(0xFFEF4444)),
-      PlayerAction.call => ('CALL', const Color(0xFFF59E0B)),
-      PlayerAction.raise => ('RAISE', const Color(0xFF10B981)),
+    final (label, color, actionIcon) = switch (record.action) {
+      PlayerAction.fold => ('FOLD', const Color(0xFFEF4444), Icons.block_rounded),
+      PlayerAction.call => ('CALL', const Color(0xFFF59E0B), Icons.pan_tool_alt_rounded),
+      PlayerAction.raise => ('RAISE', const Color(0xFF10B981), Icons.trending_up_rounded),
     };
 
     final cardLabels = record.holeCards
@@ -587,14 +582,29 @@ class _RecentHandTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(6),
               border: Border.all(color: color.withValues(alpha: 0.3)),
             ),
-            child: Text(
-              label,
-              style: TextStyle(
-                color: isDark ? color : color.withRed((color.red * 0.8).toInt()),
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.5,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  actionIcon,
+                  size: 11,
+                  color: isDark ? color : HSLColor.fromColor(color)
+                      .withLightness((HSLColor.fromColor(color).lightness * 0.8).clamp(0.0, 1.0))
+                      .toColor(),
+                ),
+                const SizedBox(width: 3),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: isDark ? color : HSLColor.fromColor(color)
+                        .withLightness((HSLColor.fromColor(color).lightness * 0.8).clamp(0.0, 1.0))
+                        .toColor(),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
             ),
           ),
           const Spacer(),
@@ -702,25 +712,7 @@ class _ActionCard extends StatelessWidget {
       label: '$title: $description',
       button: true,
       child: GestureDetector(
-        onTap: enabled
-            ? onTap
-            : () => showModalBottomSheet<void>(
-                  context: context,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-                  ),
-                  builder: (_) => _ComingSoonSheet(
-                    gradientColors: gradientColors,
-                    onManualInput: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                          builder: (_) => const ManualInputScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+        onTap: enabled ? onTap : null,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(24),
           child: BackdropFilter(
@@ -891,109 +883,73 @@ class _ActionCard extends StatelessWidget {
   }
 }
 
-/// Bottom sheet shown when the user taps the disabled "Scan Table" card.
-class _ComingSoonSheet extends StatelessWidget {
-  const _ComingSoonSheet({
-    required this.gradientColors,
-    required this.onManualInput,
-  });
+/// Bottom sheet for selecting System / Light / Dark theme mode.
+class _AppearanceSheet extends StatefulWidget {
+  const _AppearanceSheet({required this.themeService});
+  final ThemeService themeService;
 
-  final List<Color> gradientColors;
-  final VoidCallback onManualInput;
+  @override
+  State<_AppearanceSheet> createState() => _AppearanceSheetState();
+}
 
+class _AppearanceSheetState extends State<_AppearanceSheet> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final current = widget.themeService.themeMode;
+
+    final options = [
+      (ThemeMode.system, Icons.brightness_auto_rounded, 'System'),
+      (ThemeMode.light, Icons.light_mode_rounded, 'Light'),
+      (ThemeMode.dark, Icons.dark_mode_rounded, 'Dark'),
+    ];
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Drag handle
-          Container(
-            width: 40,
-            height: 4,
-            decoration: BoxDecoration(
-              color: isDark ? Colors.white24 : Colors.black26,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: IconButton(
-              icon: const Icon(Icons.close_rounded),
-              onPressed: () => Navigator.of(context).pop(),
-              tooltip: 'Close',
-            ),
-          ),
-          const SizedBox(height: 4),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: gradientColors.map((c) => c.withValues(alpha: 0.15)).toList(),
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: isDark ? Colors.white24 : Colors.black26,
+                borderRadius: BorderRadius.circular(2),
               ),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.camera_alt_rounded,
-              size: 36,
-              color: gradientColors.last,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           Text(
-            'Scan Table — Coming Soon',
+            'Appearance',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: isDark ? Colors.white : Colors.black87,
             ),
           ),
-          const SizedBox(height: 10),
-          Text(
-            'Automatic card detection is under development '
-            'and not yet available. In the meantime, use '
-            'Manual Input to enter your hand details.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 14,
-              color: isDark ? Colors.white60 : Colors.black54,
-              height: 1.4,
-            ),
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: onManualInput,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: gradientColors.first,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+          const SizedBox(height: 16),
+          for (final (mode, icon, label) in options)
+            RadioListTile<ThemeMode>(
+              value: mode,
+              groupValue: current,
+              onChanged: (m) async {
+                if (m != null) {
+                  await widget.themeService.setThemeMode(m);
+                  if (context.mounted) Navigator.of(context).pop();
+                }
+              },
+              secondary: Icon(icon, color: isDark ? Colors.white70 : Colors.black54),
+              title: Text(
+                label,
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black87,
+                  fontWeight: current == mode ? FontWeight.bold : FontWeight.normal,
                 ),
               ),
-              child: const Text(
-                'Go to Manual Input',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-              ),
+              activeColor: const Color(0xFF10B981),
             ),
-          ),
-          const SizedBox(height: 10),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(
-              'Dismiss',
-              style: TextStyle(
-                color: isDark ? Colors.white54 : Colors.black45,
-              ),
-            ),
-          ),
         ],
       ),
     );

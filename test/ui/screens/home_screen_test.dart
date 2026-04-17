@@ -24,7 +24,7 @@ void main() {
       expect(find.text('Poker\nBuddy'), findsOneWidget);
     });
 
-    testWidgets('renders Scan Table and Manual action buttons', (tester) async {
+    testWidgets('renders Manual Input action button', (tester) async {
       final themeService = await ThemeService.create();
 
       await tester.pumpWidget(
@@ -34,38 +34,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('Scan Table'), findsOneWidget);
-      expect(find.text('Manual'), findsOneWidget);
-    });
-
-    testWidgets('Scan Table card shows Coming Soon label', (tester) async {
-      final themeService = await ThemeService.create();
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: HomeScreen(themeService: themeService),
-        ),
-      );
-      await tester.pump();
-
-      expect(find.text('Coming Soon'), findsOneWidget);
-    });
-
-    testWidgets('Scan Table card shows coming soon bottom sheet when tapped', (tester) async {
-      final themeService = await ThemeService.create();
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: HomeScreen(themeService: themeService),
-        ),
-      );
-      await tester.pump();
-
-      await tester.tap(find.text('Scan Table'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Scan Table — Coming Soon'), findsOneWidget);
-      expect(find.text('Go to Manual Input'), findsOneWidget);
+      expect(find.text('Manual Input'), findsOneWidget);
     });
 
     testWidgets('renders version footer text', (tester) async {
