@@ -453,11 +453,14 @@ class _SmallDecisionBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (label, color) = switch (action) {
-      PlayerAction.fold => ('FOLD', const Color(0xFFEF4444)),
-      PlayerAction.call => ('CALL', const Color(0xFFF59E0B)),
-      PlayerAction.raise => ('RAISE', const Color(0xFF10B981)),
+    final (label, color, actionIcon) = switch (action) {
+      PlayerAction.fold => ('FOLD', const Color(0xFFEF4444), Icons.block_rounded),
+      PlayerAction.call => ('CALL', const Color(0xFFF59E0B), Icons.pan_tool_alt_rounded),
+      PlayerAction.raise => ('RAISE', const Color(0xFF10B981), Icons.trending_up_rounded),
     };
+    final displayColor = isDark ? color : HSLColor.fromColor(color)
+        .withLightness((HSLColor.fromColor(color).lightness * 0.8).clamp(0.0, 1.0))
+        .toColor();
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -465,14 +468,21 @@ class _SmallDecisionBadge extends StatelessWidget {
         border: Border.all(color: color.withValues(alpha: 0.3)),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: isDark ? color : color.withRed((color.red * 0.8).toInt()),
-          fontSize: 11,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 0.5,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(actionIcon, size: 11, color: displayColor),
+          const SizedBox(width: 3),
+          Text(
+            label,
+            style: TextStyle(
+              color: displayColor,
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ],
       ),
     );
   }

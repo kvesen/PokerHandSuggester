@@ -36,10 +36,10 @@ class ManualInputScreen extends StatefulWidget {
     this.preSelectedGameMode,
   });
 
-  /// Optional hole cards pre-populated from the camera/detection flow.
+  /// Optional pre-selected hole cards.
   final List<PokerCard>? preSelectedHoleCards;
 
-  /// Optional community cards pre-populated from the camera/detection flow.
+  /// Optional pre-selected community cards.
   final List<PokerCard>? preSelectedCommunityCards;
 
   /// Optional pre-filled pot size (for "Continue Hand" flow).

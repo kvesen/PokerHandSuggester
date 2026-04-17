@@ -56,3 +56,12 @@ const double kRaiseEquityMultiple = 1.5;
 /// The equity threshold for recommending a raise when there is no bet to call
 /// (free check scenario). Position-adjusted at call time.
 const double kFreeCheckRaiseEquityThreshold = 0.6;
+
+/// Default target standard error for adaptive Monte Carlo early termination.
+/// ≈ ±1% at 95% CI (2·SE). Pass to [EquityCalculator.calculate] as
+/// [targetStandardError] to enable early termination on obvious hands.
+const double kDefaultTargetStandardError = 0.005;
+
+/// Minimum number of Monte Carlo iterations before adaptive early termination
+/// is allowed to trigger.
+const int kMinAdaptiveIterations = 1000;

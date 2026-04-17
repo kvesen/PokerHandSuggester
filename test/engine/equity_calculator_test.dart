@@ -193,5 +193,58 @@ void main() {
       // which is the same for everyone → all ties.
       expect(result.tieProbability, greaterThan(0.0));
     });
+
+    group('adaptive early termination', () {
+      test('targetStandardError: null runs all iterations (current behavior)', () {
+        final result = EquityCalculator.calculate(
+          holeCards: [
+            const PokerCard(suit: Suit.spades, rank: Rank.ace),
+            const PokerCard(suit: Suit.hearts, rank: Rank.ace),
+          ],
+          communityCards: [],
+          numOpponents: 1,
+          iterations: 1000,
+          seed: 42,
+          targetStandardError: null,
+        );
+        expect(result.iterations, 1000);
+      });
+
+      test('loose targetStandardError stops early for obvious hand (pocket aces)', () {
+        final result = EquityCalculator.calculate(
+          holeCards: [
+            const PokerCard(suit: Suit.spades, rank: Rank.ace),
+            const PokerCard(suit: Suit.hearts, rank: Rank.ace),
+          ],
+          communityCards: [],
+          numOpponents: 1,
+          iterations: 10000,
+          seed: 42,
+          targetStandardError: 0.02,
+        );
+        // Pocket aces converges quickly; should stop well before 10000
+        expect(result.iterations, lessThan(10000));
+        // Equity should still be reasonable
+        expect(result.equity, greaterThan(0.75));
+      });
+
+      test('tight targetStandardError runs near ceiling for marginal hand', () {
+        // A marginal hand (2h-3h preflop) against one opponent should need
+        // many iterations to converge to a very tight SE of 0.001
+        final result = EquityCalculator.calculate(
+          holeCards: [
+            const PokerCard(suit: Suit.hearts, rank: Rank.two),
+            const PokerCard(suit: Suit.hearts, rank: Rank.three),
+          ],
+          communityCards: [],
+          numOpponents: 1,
+          iterations: 5000,
+          seed: 42,
+          targetStandardError: 0.001,
+        );
+        // With such a tight target, should run all 5000 iterations
+        expect(result.iterations, 5000);
+      });
+    });
   });
 }
