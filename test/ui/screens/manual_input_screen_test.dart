@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:poker_hand_suggester/models/card.dart';
+import 'package:poker_hand_suggester/models/game_mode.dart';
 import 'package:poker_hand_suggester/ui/screens/manual_input_screen.dart';
 import 'package:poker_hand_suggester/ui/widgets/card_selector.dart';
 
@@ -154,6 +155,76 @@ void main() {
 
       // The wide layout wraps content in a Row at the top level.
       expect(find.byType(Row), findsWidgets);
+    });
+
+    testWidgets('compact game mode selector shows current mode label',
+        (tester) async {
+      await tester.pumpWidget(buildScreen());
+      // Allow async service init to complete.
+      await tester.pumpAndSettle();
+
+      // The compact row shows "Game Mode: Cash Game" by default.
+      expect(find.textContaining('Game Mode:'), findsOneWidget);
+      expect(find.textContaining('Cash Game'), findsOneWidget);
+    });
+
+    testWidgets('tapping game mode selector opens bottom sheet',
+        (tester) async {
+      await tester.pumpWidget(buildScreen());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.bySemanticsLabel(
+        'Change game mode, currently Cash Game',
+      ));
+      await tester.pumpAndSettle();
+
+      // Bottom sheet should list all game modes.
+      expect(find.text('Game Mode'), findsOneWidget);
+      expect(find.byType(RadioListTile<GameMode>), findsNWidgets(6));
+    });
+
+    testWidgets('selecting a mode in the sheet updates the compact row',
+        (tester) async {
+      await tester.pumpWidget(buildScreen());
+      await tester.pumpAndSettle();
+
+      // Open the bottom sheet.
+      await tester.tap(find.bySemanticsLabel(
+        'Change game mode, currently Cash Game',
+      ));
+      await tester.pumpAndSettle();
+
+      // Pick "Heads-Up".
+      await tester.tap(find.text('Heads-Up'));
+      await tester.pumpAndSettle();
+
+      // Row should now reflect the new selection.
+      expect(find.textContaining('Heads-Up'), findsOneWidget);
+    });
+
+    testWidgets('preSelectedGameMode overrides persisted preference',
+        (tester) async {
+      // Persist turbo mode.
+      SharedPreferences.setMockInitialValues({'game_mode': 'turbo'});
+
+      await tester.pumpWidget(MaterialApp(
+        home: ManualInputScreen(
+          preSelectedGameMode: GameMode.headsUp,
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      // The pre-selected mode takes precedence over what's in prefs.
+      expect(find.textContaining('Heads-Up'), findsOneWidget);
+    });
+
+    testWidgets('loads persisted game mode on fresh open', (tester) async {
+      SharedPreferences.setMockInitialValues({'game_mode': 'turbo'});
+
+      await tester.pumpWidget(buildScreen());
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Turbo'), findsOneWidget);
     });
   });
 }
