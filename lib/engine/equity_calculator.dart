@@ -110,6 +110,13 @@ class EquityCalculator {
     // Check-interval for adaptive early termination (every N iterations).
     const int kCheckInterval = 500;
 
+    // Pre-allocate opponent result buffer to avoid per-iteration allocations.
+    final opponentResults = List<HandResult>.filled(
+      numOpponents,
+      const HandResult(ranking: HandRanking.highCard, score: 0),
+      growable: false,
+    );
+
     for (int i = 0; i < iterations; i++) {
       // Partial Fisher-Yates: only randomise the slots we actually use.
       // The list stays a permutation of the original deck across iterations,
@@ -128,7 +135,6 @@ class EquityCalculator {
       }
 
       // Deal opponent hole cards and evaluate.
-      final opponentResults = <HandResult>[];
       for (int o = 0; o < numOpponents; o++) {
         final start = communityNeeded + o * cardsPerOpponent;
         oppHand[0] = shuffled[start];
@@ -139,7 +145,7 @@ class EquityCalculator {
         for (int k = 0; k < communityCards.length; k++) {
           oppHand[2 + communityNeeded + k] = communityCards[k];
         }
-        opponentResults.add(HandEvaluator.evaluate(oppHand.sublist(0, 7)));
+        opponentResults[o] = HandEvaluator.evaluate(oppHand);
       }
 
       final playerResult = HandEvaluator.evaluate(playerHand);
@@ -164,12 +170,11 @@ class EquityCalculator {
         final p = (wins + ties * 0.5) / n;
         final se = sqrt(p * (1 - p) / n);
         if (se <= targetStandardError) {
-          final actualIter = n;
           return EquityResult(
-            winProbability: wins / actualIter,
-            tieProbability: ties / actualIter,
-            lossProbability: losses / actualIter,
-            iterations: actualIter,
+            winProbability: wins / n,
+            tieProbability: ties / n,
+            lossProbability: losses / n,
+            iterations: n,
           );
         }
       }
