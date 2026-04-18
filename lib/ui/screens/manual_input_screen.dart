@@ -14,6 +14,7 @@ import '../../models/game_mode.dart';
 import '../../models/game_state.dart';
 import '../../models/position.dart';
 import '../../services/crash_reporting_service.dart';
+import '../../services/game_mode_service.dart';
 import '../../utils/constants.dart';
 import '../utils/error_helpers.dart';
 import '../widgets/card_selector.dart';
@@ -82,6 +83,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
   TablePosition? _heroPosition;
   late List<TablePosition> _villainPositions;
   late GameMode _gameMode;
+  GameModeService _gameModeService = GameModeService.cashGameDefault();
 
   // Which section is the selector currently filling? 0 = hole, 1 = community.
   late int _activeSection;
@@ -117,6 +119,11 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         setState(() => _activeSection = _tabController.index);
       }
     });
+    // Load persisted game mode only when no mode is pre-selected (i.e. a fresh
+    // session, not a "Continue Hand" flow where the prior mode is carried over).
+    if (widget.preSelectedGameMode == null) {
+      _initGameModeService();
+    }
   }
 
   @override
@@ -125,6 +132,89 @@ class _ManualInputScreenState extends State<ManualInputScreen>
     _potController.dispose();
     _betController.dispose();
     super.dispose();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Game mode service
+  // ---------------------------------------------------------------------------
+
+  Future<void> _initGameModeService() async {
+    try {
+      final service = await GameModeService.create();
+      if (!mounted) return;
+      setState(() {
+        _gameModeService = service;
+        _gameMode = service.gameMode;
+      });
+    } catch (e, st) {
+      CrashReportingService.recordError(e, st);
+      // Keep default service and cashGame mode on failure.
+    }
+  }
+
+  void _showGameModeSheet(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    showModalBottomSheet<void>(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.white24 : Colors.black26,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Game Mode',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 8),
+            for (final mode in GameMode.values)
+              RadioListTile<GameMode>(
+                value: mode,
+                groupValue: _gameMode,
+                onChanged: (m) async {
+                  if (m != null) {
+                    setState(() => _gameMode = m);
+                    await _gameModeService.setGameMode(m);
+                    if (ctx.mounted) Navigator.of(ctx).pop();
+                  }
+                },
+                title: Text(
+                  gameModeLabel(mode),
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black87,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                subtitle: Text(
+                  gameModeDescription(mode),
+                  style: TextStyle(
+                    color: isDark ? Colors.white60 : Colors.black54,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -707,75 +797,40 @@ class _ManualInputScreenState extends State<ManualInputScreen>
   }
 
   Widget _buildGameModeSelector(bool isDark, ThemeData theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Game Mode:',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: theme.colorScheme.onSurface,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: GameMode.values.map((mode) {
-            final isSelected = _gameMode == mode;
-            return GestureDetector(
-              onTap: () => setState(() => _gameMode = mode),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  gradient: isSelected
-                      ? LinearGradient(
-                          colors: [
-                            theme.colorScheme.primary,
-                            theme.colorScheme.primary.withValues(alpha: 0.8),
-                          ],
-                        )
-                      : null,
-                  color: isSelected
-                      ? null
-                      : (isDark ? Colors.white : Colors.black).withValues(alpha: 0.06),
-                  border: Border.all(
-                    color: isSelected
-                        ? Colors.transparent
-                        : (isDark ? Colors.white : Colors.black).withValues(alpha: 0.12),
-                  ),
-                ),
-                child: Text(
-                  gameModeLabel(mode),
-                  style: TextStyle(
-                    color: isSelected
-                        ? Colors.white
-                        : (isDark ? Colors.white70 : Colors.black87),
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                    fontSize: 13,
-                  ),
+    return Semantics(
+      label: 'Change game mode, currently ${gameModeLabel(_gameMode)}',
+      button: true,
+      child: InkWell(
+        onTap: () => _showGameModeSheet(context),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              Icon(
+                Icons.sports_esports_rounded,
+                size: 18,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Game Mode: ${gameModeLabel(_gameMode)}',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 8),
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          child: Text(
-            gameModeDescription(_gameMode),
-            key: ValueKey(_gameMode),
-            style: TextStyle(
-              fontSize: 12,
-              color: theme.colorScheme.onSurfaceVariant,
-              height: 1.3,
-            ),
+              const Spacer(),
+              Icon(
+                Icons.edit_outlined,
+                size: 16,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 
