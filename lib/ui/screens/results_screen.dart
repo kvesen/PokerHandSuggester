@@ -1,6 +1,7 @@
 /// Results screen: shows the decision, equity, pot odds, and EV.
 library;
 
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -94,8 +95,8 @@ class _ResultsScreenState extends State<ResultsScreen>
 
   void _startStaggeredAnimations() async {
     for (var i = 0; i < _sectionCount; i++) {
-      await Future.delayed(Duration(milliseconds: i * _staggerMs));
-      if (mounted) _controllers[i].forward();
+      await Future<void>.delayed(Duration(milliseconds: i * _staggerMs));
+      if (mounted) unawaited(_controllers[i].forward());
     }
   }
 

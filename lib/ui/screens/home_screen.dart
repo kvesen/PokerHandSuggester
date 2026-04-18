@@ -230,11 +230,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 32),
 
                       // Modern Feature chips (Glassmorphism)
-                      Wrap(
+                      const Wrap(
                         spacing: 8,
                         runSpacing: 10,
                         alignment: WrapAlignment.center,
-                        children: const [
+                        children: [
                           _FeatureChip(icon: Icons.calculate_outlined, label: 'Equity'),
                           _FeatureChip(icon: Icons.pie_chart_outline, label: 'Pot Odds'),
                           _FeatureChip(icon: Icons.auto_graph_rounded, label: 'EV Math'),
@@ -690,8 +690,6 @@ class _ActionCard extends StatelessWidget {
     required this.description,
     required this.gradientColors,
     required this.onTap,
-    this.enabled = true,
-    this.comingSoonLabel,
     this.fullWidth = false,
   });
 
@@ -700,8 +698,6 @@ class _ActionCard extends StatelessWidget {
   final String description;
   final List<Color> gradientColors;
   final VoidCallback onTap;
-  final bool enabled;
-  final String? comingSoonLabel;
   final bool fullWidth;
 
   @override
@@ -712,7 +708,7 @@ class _ActionCard extends StatelessWidget {
       label: '$title: $description',
       button: true,
       child: GestureDetector(
-        onTap: enabled ? onTap : null,
+        onTap: onTap,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(24),
           child: BackdropFilter(
@@ -843,31 +839,6 @@ class _ActionCard extends StatelessWidget {
                             ],
                           ),
                   ),
-                  // "Coming Soon" ribbon badge — overlaid in top-right corner
-                  if (!enabled && comingSoonLabel != null)
-                    Positioned(
-                      top: 12,
-                      right: 4,
-                      child: Transform.rotate(
-                        angle: 0.3, // ~17° clockwise tilt
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: gradientColors.first.withValues(alpha: 0.80),
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            comingSoonLabel!,
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              letterSpacing: 0.2,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
                 ],
               ),
             ),
@@ -876,9 +847,6 @@ class _ActionCard extends StatelessWidget {
       ),
     );
 
-    if (!enabled) {
-      return Opacity(opacity: 0.6, child: card);
-    }
     return card;
   }
 }
@@ -930,26 +898,31 @@ class _AppearanceSheetState extends State<_AppearanceSheet> {
             ),
           ),
           const SizedBox(height: 16),
-          for (final (mode, icon, label) in options)
-            RadioListTile<ThemeMode>(
-              value: mode,
-              groupValue: current,
-              onChanged: (m) async {
-                if (m != null) {
-                  await widget.themeService.setThemeMode(m);
-                  if (context.mounted) Navigator.of(context).pop();
-                }
-              },
-              secondary: Icon(icon, color: isDark ? Colors.white70 : Colors.black54),
-              title: Text(
-                label,
-                style: TextStyle(
-                  color: isDark ? Colors.white : Colors.black87,
-                  fontWeight: current == mode ? FontWeight.bold : FontWeight.normal,
-                ),
-              ),
-              activeColor: const Color(0xFF10B981),
+          RadioGroup<ThemeMode>(
+            groupValue: current,
+            onChanged: (m) async {
+              await widget.themeService.setThemeMode(m);
+              if (context.mounted) Navigator.of(context).pop();
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final (mode, icon, label) in options)
+                  RadioListTile<ThemeMode>(
+                    value: mode,
+                    secondary: Icon(icon, color: isDark ? Colors.white70 : Colors.black54),
+                    title: Text(
+                      label,
+                      style: TextStyle(
+                        color: isDark ? Colors.white : Colors.black87,
+                        fontWeight: current == mode ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                    activeColor: const Color(0xFF10B981),
+                  ),
+              ],
             ),
+          ),
         ],
       ),
     );

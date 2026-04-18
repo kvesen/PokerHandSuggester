@@ -170,7 +170,7 @@ void main() {
     test('equity exactly at pot odds threshold recommends Call not Fold', () {
       // pot=100, call=50 → pot odds = 33.3%
       // equity exactly = 33.3% → marginally profitable → Call
-      final potOdds = 50 / (100 + 50); // ≈ 0.3333
+      const potOdds = 50 / (100 + 50); // ≈ 0.3333
       final decision = DecisionEngine.decide(
         equity: potOdds,
         pot: 100,

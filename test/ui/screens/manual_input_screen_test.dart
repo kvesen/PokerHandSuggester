@@ -207,7 +207,7 @@ void main() {
       // Persist turbo mode.
       SharedPreferences.setMockInitialValues({'game_mode': 'turbo'});
 
-      await tester.pumpWidget(MaterialApp(
+      await tester.pumpWidget(const MaterialApp(
         home: ManualInputScreen(
           preSelectedGameMode: GameMode.headsUp,
         ),

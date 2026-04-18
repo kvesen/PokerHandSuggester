@@ -74,7 +74,6 @@ class PositionSelector extends StatelessWidget {
     final seatSize = (w * 0.12).clamp(36.0, 48.0);
     final isHero = selectedPosition == pos;
     final isVillain = villainPositions.contains(pos);
-    final theme = Theme.of(context);
 
     // Dynamic colors based on state
     final Color borderColor;

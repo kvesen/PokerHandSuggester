@@ -71,7 +71,7 @@ class EquityCalculator {
         PokerCard.fullDeck().where((c) => !knownCards.contains(c)).toList();
 
     final int communityNeeded = 5 - communityCards.length;
-    final int cardsPerOpponent = 2;
+    const int cardsPerOpponent = 2;
     final int totalCardsNeeded = communityNeeded + numOpponents * cardsPerOpponent;
 
     // Guard: not enough cards to run simulation (degenerate state).

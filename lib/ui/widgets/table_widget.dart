@@ -92,7 +92,7 @@ class PokerTableWidget extends StatelessWidget {
     const cardW = 34.0;
     const cardH = 48.0;
     const spacing = 4.0;
-    final totalWidth = cardW * 5 + spacing * 4;
+    const double totalWidth = cardW * 5 + spacing * 4;
     final left = (w - totalWidth) / 2;
     final top = h * 0.32 - cardH / 2;
 
@@ -160,7 +160,7 @@ class PokerTableWidget extends StatelessWidget {
   Widget _buildPlayerSeat(double w, double h, bool isDark) {
     const cardSpacing = 4.0;
     const cardW = 34.0;
-    final totalCardsWidth = cardW * 2 + cardSpacing;
+    const double totalCardsWidth = cardW * 2 + cardSpacing;
     final left = (w - totalCardsWidth) / 2;
 
     return Positioned(

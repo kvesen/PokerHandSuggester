@@ -185,32 +185,37 @@ class _ManualInputScreenState extends State<ManualInputScreen>
               ),
             ),
             const SizedBox(height: 8),
-            for (final mode in GameMode.values)
-              RadioListTile<GameMode>(
-                value: mode,
-                groupValue: _gameMode,
-                onChanged: (m) async {
-                  if (m != null) {
-                    setState(() => _gameMode = m);
-                    await _gameModeService.setGameMode(m);
-                    if (ctx.mounted) Navigator.of(ctx).pop();
-                  }
-                },
-                title: Text(
-                  gameModeLabel(mode),
-                  style: TextStyle(
-                    color: isDark ? Colors.white : Colors.black87,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                subtitle: Text(
-                  gameModeDescription(mode),
-                  style: TextStyle(
-                    color: isDark ? Colors.white60 : Colors.black54,
-                    fontSize: 12,
-                  ),
-                ),
+            RadioGroup<GameMode>(
+              groupValue: _gameMode,
+              onChanged: (m) async {
+                setState(() => _gameMode = m);
+                await _gameModeService.setGameMode(m);
+                if (ctx.mounted) Navigator.of(ctx).pop();
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (final mode in GameMode.values)
+                    RadioListTile<GameMode>(
+                      value: mode,
+                      title: Text(
+                        gameModeLabel(mode),
+                        style: TextStyle(
+                          color: isDark ? Colors.white : Colors.black87,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      subtitle: Text(
+                        gameModeDescription(mode),
+                        style: TextStyle(
+                          color: isDark ? Colors.white60 : Colors.black54,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                ],
               ),
+            ),
           ],
         ),
       ),
@@ -257,7 +262,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
   Future<void> _calculate() async {
     if (_isCalculating) return; // Prevent multiple simultaneous calculations
     if (!_formKey.currentState!.validate()) return;
-    HapticFeedback.mediumImpact();
+    await HapticFeedback.mediumImpact();
     if (_holeCards.length < kMaxHoleCards) {
       _showError('Please select exactly 2 hole cards.');
       return;
@@ -993,14 +998,12 @@ class _NumericField extends StatelessWidget {
     required this.controller,
     required this.label,
     required this.hint,
-    this.minValue = 0,
     this.mustBePositive = false,
   });
 
   final TextEditingController controller;
   final String label;
   final String hint;
-  final double minValue;
   final bool mustBePositive;
 
   @override
@@ -1044,11 +1047,11 @@ class _NumericField extends StatelessWidget {
         if (value == null || value.isEmpty) return 'Required';
         final n = double.tryParse(value);
         if (n == null) return 'Enter a valid number';
-        if (mustBePositive && n <= minValue) {
-          return '>${minValue.toStringAsFixed(0)}';
+        if (mustBePositive && n <= 0) {
+          return '>0';
         }
-        if (!mustBePositive && n < minValue) {
-          return '≥${minValue.toStringAsFixed(0)}';
+        if (!mustBePositive && n < 0) {
+          return '≥0';
         }
         return null;
       },
