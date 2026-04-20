@@ -901,6 +901,7 @@ class _AppearanceSheetState extends State<_AppearanceSheet> {
           RadioGroup<ThemeMode>(
             groupValue: current,
             onChanged: (m) async {
+              if (m == null) return;
               await widget.themeService.setThemeMode(m);
               if (context.mounted) Navigator.of(context).pop();
             },
