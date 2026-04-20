@@ -20,7 +20,7 @@ void main() {
     PokerCard(suit: Suit.hearts, rank: Rank.king),
   ];
 
-  GameState _buildGameState({List<PokerCard> community = const []}) {
+  GameState buildGameState({List<PokerCard> community = const []}) {
     return GameState(
       holeCards: holeCards,
       communityCards: community,
@@ -30,7 +30,7 @@ void main() {
     );
   }
 
-  EquityResult _buildEquityResult({double win = 0.65, double tie = 0.05}) {
+  EquityResult buildEquityResult({double win = 0.65, double tie = 0.05}) {
     return EquityResult(
       winProbability: win,
       tieProbability: tie,
@@ -39,7 +39,7 @@ void main() {
     );
   }
 
-  Decision _buildDecision({PlayerAction action = PlayerAction.raise}) {
+  Decision buildDecision({PlayerAction action = PlayerAction.raise}) {
     return Decision(
       action: action,
       equity: 0.65,
@@ -53,9 +53,9 @@ void main() {
     PlayerAction action = PlayerAction.raise,
     TablePosition? heroPosition,
   }) {
-    final gameState = _buildGameState();
-    final equityResult = _buildEquityResult();
-    final decision = _buildDecision(action: action);
+    final gameState = buildGameState();
+    final equityResult = buildEquityResult();
+    final decision = buildDecision(action: action);
 
     return MaterialApp(
       home: ResultsScreen(
@@ -162,16 +162,16 @@ void main() {
 
     testWidgets('shows position info when hero position is in game state',
         (tester) async {
-      final gameState = GameState(
+      final gameState = const GameState(
         holeCards: holeCards,
-        communityCards: const [],
+        communityCards: [],
         potSize: 100,
         betToCall: 20,
         numberOfOpponents: 2,
         heroPosition: TablePosition.button,
       );
-      final equityResult = _buildEquityResult();
-      final decision = _buildDecision();
+      final equityResult = buildEquityResult();
+      final decision = buildDecision();
 
       await tester.pumpWidget(
         MaterialApp(
