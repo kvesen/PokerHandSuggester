@@ -643,12 +643,16 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            'Hole Cards (2)',
-                            style: TextStyle(
-                              color: widget.lockHoleCards
-                                  ? Colors.grey.shade500
-                                  : null,
+                          Flexible(
+                            child: Text(
+                              'Hole Cards (2)',
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: false,
+                              style: TextStyle(
+                                color: widget.lockHoleCards
+                                    ? Colors.grey.shade500
+                                    : null,
+                              ),
                             ),
                           ),
                           if (widget.lockHoleCards) ...[
@@ -996,13 +1000,16 @@ class _SectionHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.onSurface,
-            letterSpacing: -0.3,
+        Expanded(
+          child: Text(
+            title,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface,
+              letterSpacing: -0.3,
+            ),
           ),
         ),
         const SizedBox(width: 8),
