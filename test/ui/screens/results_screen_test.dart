@@ -162,7 +162,7 @@ void main() {
 
     testWidgets('shows position info when hero position is in game state',
         (tester) async {
-      final gameState = const GameState(
+      const gameState = GameState(
         holeCards: holeCards,
         communityCards: [],
         potSize: 100,

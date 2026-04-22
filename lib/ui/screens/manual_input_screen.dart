@@ -188,6 +188,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
             RadioGroup<GameMode>(
               groupValue: _gameMode,
               onChanged: (m) async {
+                if (m == null) return;
                 setState(() => _gameMode = m);
                 await _gameModeService.setGameMode(m);
                 if (ctx.mounted) Navigator.of(ctx).pop();
