@@ -9,17 +9,17 @@ import 'package:poker_hand_suggester/services/theme_service.dart';
 import 'package:poker_hand_suggester/ui/screens/home_screen.dart';
 
 void main() {
-  late Directory _tempDir;
+  late Directory tempDir;
 
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
-    _tempDir = await Directory.systemTemp.createTemp('hive_test_');
-    Hive.init(_tempDir.path);
+    tempDir = await Directory.systemTemp.createTemp('hive_test_');
+    Hive.init(tempDir.path);
   });
 
   tearDown(() async {
     await Hive.close();
-    await _tempDir.delete(recursive: true);
+    await tempDir.delete(recursive: true);
   });
 
   group('HomeScreen', () {
