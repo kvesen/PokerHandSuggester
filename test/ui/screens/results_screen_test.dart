@@ -133,6 +133,8 @@ void main() {
     });
 
     testWidgets('decision badge has Semantics liveRegion', (tester) async {
+      final semanticsHandle = tester.ensureSemantics();
+      addTearDown(semanticsHandle.dispose);
       await tester.pumpWidget(buildScreen(action: PlayerAction.raise));
       await tester.pumpAndSettle();
 
@@ -143,6 +145,8 @@ void main() {
     });
 
     testWidgets('stats have Semantics labels', (tester) async {
+      final semanticsHandle = tester.ensureSemantics();
+      addTearDown(semanticsHandle.dispose);
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
 

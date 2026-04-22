@@ -10,9 +10,6 @@ import 'package:poker_hand_suggester/ui/widgets/card_selector.dart';
 void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
-    final binding = TestWidgetsFlutterBinding.ensureInitialized();
-    addTearDown(() => binding.setSurfaceSize(null));
-    await binding.setSurfaceSize(const Size(390, 844));
   });
 
   Widget buildScreen({
@@ -29,24 +26,32 @@ void main() {
 
   group('ManualInputScreen', () {
     testWidgets('renders without errors', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
       expect(find.byType(ManualInputScreen), findsOneWidget);
     });
 
     testWidgets('renders the card selector grid', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
       expect(find.byType(CardSelector), findsOneWidget);
     });
 
     testWidgets('renders Hole Cards and Community tabs', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
       expect(find.text('Community (0–5)'), findsOneWidget);
     });
 
     testWidgets('"Calculate Best Move" button is present', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
       expect(find.text('Calculate Best Move'), findsOneWidget);
@@ -54,6 +59,8 @@ void main() {
 
     testWidgets('pot size field validates that value must be > 0',
         (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen(
         holeCards: [
           const PokerCard(suit: Suit.spades, rank: Rank.ace),
@@ -77,6 +84,8 @@ void main() {
 
     testWidgets('community card count validation shows SnackBar for count 1',
         (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen(
         holeCards: [
           const PokerCard(suit: Suit.spades, rank: Rank.ace),
@@ -98,6 +107,8 @@ void main() {
     });
 
     testWidgets('shows error when hole cards are missing', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
 
@@ -113,6 +124,8 @@ void main() {
 
     testWidgets('opponents increment and decrement buttons are present',
         (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
 
@@ -127,6 +140,8 @@ void main() {
     });
 
     testWidgets('opponents increment button is tappable', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
 
@@ -138,6 +153,8 @@ void main() {
     });
 
     testWidgets('opponents decrement button is tappable', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
 
@@ -162,6 +179,8 @@ void main() {
 
     testWidgets('compact game mode selector shows current mode label',
         (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen());
       // Allow async service init to complete.
       await tester.pumpAndSettle();
@@ -173,6 +192,8 @@ void main() {
 
     testWidgets('tapping game mode selector opens bottom sheet',
         (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
 
@@ -188,6 +209,8 @@ void main() {
 
     testWidgets('selecting a mode in the sheet updates the compact row',
         (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
 
@@ -207,6 +230,8 @@ void main() {
 
     testWidgets('preSelectedGameMode overrides persisted preference',
         (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       // Persist turbo mode.
       SharedPreferences.setMockInitialValues({'game_mode': 'turbo'});
 
@@ -222,6 +247,8 @@ void main() {
     });
 
     testWidgets('loads persisted game mode on fresh open', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(390, 844));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       SharedPreferences.setMockInitialValues({'game_mode': 'turbo'});
 
       await tester.pumpWidget(buildScreen());
