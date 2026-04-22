@@ -53,7 +53,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
         final isDark = Theme.of(ctx).brightness == Brightness.dark;
         return AlertDialog(
           backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-          title: Text('Clear History', style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+          title: Text(
+            'Clear History',
+            style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+          ),
           content: Text(
             'Delete all analyzed hands? This cannot be undone.',
             style: TextStyle(color: isDark ? Colors.white70 : Colors.black54),
@@ -61,12 +64,20 @@ class _HistoryScreenState extends State<HistoryScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(false),
-              child: Text('Cancel', style: TextStyle(color: isDark ? Colors.white54 : Colors.black54)),
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: isDark ? Colors.white54 : Colors.black54,
+                ),
+              ),
             ),
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(true),
               style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
-              child: const Text('Clear All', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: const Text(
+                'Clear All',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         );
@@ -96,7 +107,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
     final equityResult = EquityResult(
       winProbability: record.winProbability,
       tieProbability: record.tieProbability,
-      lossProbability: (1 - record.winProbability - record.tieProbability).clamp(0.0, 1.0),
+      lossProbability: (1 - record.winProbability - record.tieProbability)
+          .clamp(0.0, 1.0),
       iterations: 0,
     );
     final decision = Decision(
@@ -129,7 +141,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
           'Hand History',
           style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: -0.5),
         ),
-        backgroundColor: (isDark ? Colors.black : Colors.white).withValues(alpha: 0.5),
+        backgroundColor: (isDark ? Colors.black : Colors.white).withValues(
+          alpha: 0.5,
+        ),
         flexibleSpace: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
@@ -168,28 +182,41 @@ class _HistoryScreenState extends State<HistoryScreen> {
         child: SafeArea(
           bottom: false,
           child: _loading
-              ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary))
+              ? Center(
+                  child: CircularProgressIndicator(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                )
               : _records.isEmpty
-                  ? _EmptyState(isDark: isDark)
-                  : RefreshIndicator(
-                      onRefresh: _loadHistory,
-                      color: Theme.of(context).colorScheme.primary,
-                      backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-                      child: ListView.builder(
-                        padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).padding.bottom + 20),
-                        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                        itemCount: _records.length,
-                        itemBuilder: (context, index) {
-                          final record = _records[index];
-                          return _HistoryCard(
-                            record: record,
-                            isDark: isDark,
-                            onTap: () => _openRecord(record),
-                            onDismissed: () => _deleteRecord(record),
-                          );
-                        },
-                      ),
+              ? _EmptyState(isDark: isDark)
+              : RefreshIndicator(
+                  onRefresh: _loadHistory,
+                  color: Theme.of(context).colorScheme.primary,
+                  backgroundColor: isDark
+                      ? const Color(0xFF1E1E1E)
+                      : Colors.white,
+                  child: ListView.builder(
+                    padding: EdgeInsets.fromLTRB(
+                      16,
+                      16,
+                      16,
+                      MediaQuery.of(context).padding.bottom + 20,
                     ),
+                    physics: const AlwaysScrollableScrollPhysics(
+                      parent: BouncingScrollPhysics(),
+                    ),
+                    itemCount: _records.length,
+                    itemBuilder: (context, index) {
+                      final record = _records[index];
+                      return _HistoryCard(
+                        record: record,
+                        isDark: isDark,
+                        onTap: () => _openRecord(record),
+                        onDismissed: () => _deleteRecord(record),
+                      );
+                    },
+                  ),
+                ),
         ),
       ),
     );
@@ -216,10 +243,14 @@ class _EmptyState extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(32),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface.withValues(alpha: isDark ? 0.3 : 0.8),
+                color: Theme.of(
+                  context,
+                ).colorScheme.surface.withValues(alpha: isDark ? 0.3 : 0.8),
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.08),
+                  color: (isDark ? Colors.white : Colors.black).withValues(
+                    alpha: 0.08,
+                  ),
                   width: 1.5,
                 ),
               ),
@@ -229,7 +260,9 @@ class _EmptyState extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
+                      color: (isDark ? Colors.white : Colors.black).withValues(
+                        alpha: 0.05,
+                      ),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -294,142 +327,170 @@ class _HistoryCard extends StatelessWidget {
     };
 
     return Semantics(
-      label: 'Hand: $cardLabels — $actionLabel — ${_formatRelative(record.timestamp)}. Swipe left to delete.',
+      label:
+          'Hand: $cardLabels — $actionLabel — ${_formatRelative(record.timestamp)}. Swipe left to delete.',
       button: true,
       child: Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Dismissible(
-        key: Key(record.id),
-        direction: DismissDirection.endToStart,
-        onDismissed: (_) => onDismissed(),
-        background: Container(
-          alignment: Alignment.centerRight,
-          padding: const EdgeInsets.only(right: 24),
-          decoration: BoxDecoration(
-            color: const Color(0xFFEF4444).withValues(alpha: 0.8),
-            borderRadius: BorderRadius.circular(24),
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Dismissible(
+          key: Key(record.id),
+          direction: DismissDirection.endToStart,
+          onDismissed: (_) => onDismissed(),
+          background: Container(
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.only(right: 24),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEF4444).withValues(alpha: 0.8),
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: const Icon(
+              Icons.delete_rounded,
+              color: Colors.white,
+              size: 28,
+            ),
           ),
-          child: const Icon(Icons.delete_rounded, color: Colors.white, size: 28),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: onTap,
-                splashColor: theme.colorScheme.primary.withValues(alpha: 0.1),
-                highlightColor: theme.colorScheme.primary.withValues(alpha: 0.05),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surface.withValues(alpha: isDark ? 0.4 : 0.8),
-                    border: Border.all(
-                      color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
-                    ),
-                    borderRadius: BorderRadius.circular(24),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: onTap,
+                  splashColor: theme.colorScheme.primary.withValues(alpha: 0.1),
+                  highlightColor: theme.colorScheme.primary.withValues(
+                    alpha: 0.05,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.access_time_rounded,
-                            size: 14,
-                            color: isDark ? Colors.white38 : Colors.black38,
-                          ),
-                          const SizedBox(width: 6),
-                          Expanded(
-                            child: Text(
-                              _formatRelative(record.timestamp),
-                              style: TextStyle(
-                                color: isDark ? Colors.white54 : Colors.black54,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          _SmallDecisionBadge(action: record.action, isDark: isDark),
-                        ],
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surface.withValues(
+                        alpha: isDark ? 0.4 : 0.8,
                       ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          ...record.holeCards.map(
-                            (c) => Padding(
-                              padding: const EdgeInsets.only(right: 6),
-                              child: _MiniCard(card: c),
+                      border: Border.all(
+                        color: (isDark ? Colors.white : Colors.black)
+                            .withValues(alpha: 0.05),
+                      ),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.access_time_rounded,
+                              size: 14,
+                              color: isDark ? Colors.white38 : Colors.black38,
                             ),
-                          ),
-                          if (record.communityCards.isNotEmpty) ...[
-                            Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4),
-                              child: Container(
-                                width: 2,
-                                height: 36,
-                                decoration: BoxDecoration(
-                                  color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(1),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                _formatRelative(record.timestamp),
+                                style: TextStyle(
+                                  color: isDark
+                                      ? Colors.white54
+                                      : Colors.black54,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
-                            Wrap(
-                              spacing: 4,
-                              children: record.communityCards
-                                  .map((c) => _MiniCard(card: c))
-                                  .toList(),
+                            _SmallDecisionBadge(
+                              action: record.action,
+                              isDark: isDark,
                             ),
                           ],
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.03),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            ...record.holeCards.map(
+                              (c) => Padding(
+                                padding: const EdgeInsets.only(right: 6),
+                                child: _MiniCard(card: c),
+                              ),
+                            ),
+                            if (record.communityCards.isNotEmpty) ...[
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                ),
+                                child: Container(
+                                  width: 2,
+                                  height: 36,
+                                  decoration: BoxDecoration(
+                                    color:
+                                        (isDark ? Colors.white : Colors.black)
+                                            .withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(1),
+                                  ),
+                                ),
+                              ),
+                              Wrap(
+                                spacing: 4,
+                                children: record.communityCards
+                                    .map((c) => _MiniCard(card: c))
+                                    .toList(),
+                              ),
+                            ],
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
+                          decoration: BoxDecoration(
+                            color: (isDark ? Colors.white : Colors.black)
+                                .withValues(alpha: 0.03),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: (isDark ? Colors.white : Colors.black)
+                                  .withValues(alpha: 0.05),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              _MiniStat(
+                                label: 'Equity',
+                                value:
+                                    '${(record.equity * 100).toStringAsFixed(1)}%',
+                                isDark: isDark,
+                                icon: Icons.pie_chart_outline_rounded,
+                              ),
+                              Container(
+                                width: 1,
+                                height: 20,
+                                color: (isDark ? Colors.white : Colors.black)
+                                    .withValues(alpha: 0.1),
+                              ),
+                              _MiniStat(
+                                label: 'EV',
+                                value: record.expectedValue >= 0
+                                    ? '+${record.expectedValue.toStringAsFixed(1)}'
+                                    : record.expectedValue.toStringAsFixed(1),
+                                isDark: isDark,
+                                icon: Icons.trending_up_rounded,
+                                valueColor: record.expectedValue > 0
+                                    ? const Color(0xFF10B981)
+                                    : (record.expectedValue < 0
+                                          ? const Color(0xFFEF4444)
+                                          : null),
+                              ),
+                            ],
                           ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            _MiniStat(
-                              label: 'Equity',
-                              value: '${(record.equity * 100).toStringAsFixed(1)}%',
-                              isDark: isDark,
-                              icon: Icons.pie_chart_outline_rounded,
-                            ),
-                            Container(
-                              width: 1,
-                              height: 20,
-                              color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1),
-                            ),
-                            _MiniStat(
-                              label: 'EV',
-                              value: record.expectedValue >= 0
-                                  ? '+${record.expectedValue.toStringAsFixed(1)}'
-                                  : record.expectedValue.toStringAsFixed(1),
-                              isDark: isDark,
-                              icon: Icons.trending_up_rounded,
-                              valueColor: record.expectedValue > 0 
-                                  ? const Color(0xFF10B981) 
-                                  : (record.expectedValue < 0 ? const Color(0xFFEF4444) : null),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
         ),
-      ),
       ),
     );
   }
@@ -454,13 +515,29 @@ class _SmallDecisionBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (label, color, actionIcon) = switch (action) {
-      PlayerAction.fold => ('FOLD', const Color(0xFFEF4444), Icons.block_rounded),
-      PlayerAction.call => ('CALL', const Color(0xFFF59E0B), Icons.pan_tool_alt_rounded),
-      PlayerAction.raise => ('RAISE', const Color(0xFF10B981), Icons.trending_up_rounded),
+      PlayerAction.fold => (
+        'FOLD',
+        const Color(0xFFEF4444),
+        Icons.block_rounded,
+      ),
+      PlayerAction.call => (
+        'CALL',
+        const Color(0xFFF59E0B),
+        Icons.pan_tool_alt_rounded,
+      ),
+      PlayerAction.raise => (
+        'RAISE',
+        const Color(0xFF10B981),
+        Icons.trending_up_rounded,
+      ),
     };
-    final displayColor = isDark ? color : HSLColor.fromColor(color)
-        .withLightness((HSLColor.fromColor(color).lightness * 0.8).clamp(0.0, 1.0))
-        .toColor();
+    final displayColor = isDark
+        ? color
+        : HSLColor.fromColor(color)
+              .withLightness(
+                (HSLColor.fromColor(color).lightness * 0.8).clamp(0.0, 1.0),
+              )
+              .toColor();
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -490,8 +567,8 @@ class _SmallDecisionBadge extends StatelessWidget {
 
 class _MiniStat extends StatelessWidget {
   const _MiniStat({
-    required this.label, 
-    required this.value, 
+    required this.label,
+    required this.value,
     required this.isDark,
     required this.icon,
     this.valueColor,
@@ -513,7 +590,7 @@ class _MiniStat extends StatelessWidget {
         Text(
           '$label: ',
           style: TextStyle(
-            color: isDark ? Colors.white54 : Colors.black54, 
+            color: isDark ? Colors.white54 : Colors.black54,
             fontSize: 12,
             fontWeight: FontWeight.w500,
           ),
@@ -521,7 +598,7 @@ class _MiniStat extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-            fontSize: 13, 
+            fontSize: 13,
             fontWeight: FontWeight.bold,
             color: valueColor ?? (isDark ? Colors.white : Colors.black87),
           ),
@@ -542,7 +619,9 @@ class _MiniCard extends StatelessWidget {
     final isRed = card.suit == Suit.hearts || card.suit == Suit.diamonds;
     final color = isRed
         ? const Color(0xFFEF4444)
-        : isDark ? Colors.white : const Color(0xFF1C1C1E);
+        : isDark
+        ? Colors.white
+        : const Color(0xFF1C1C1E);
     final rank = kRankLabels[card.rank.name] ?? '';
     final suit = kSuitSymbols[card.suit.name] ?? '';
 
@@ -565,12 +644,14 @@ class _MiniCard extends StatelessWidget {
         children: [
           Text(
             rank,
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: color, height: 1.1),
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.bold,
+              color: color,
+              height: 1.1,
+            ),
           ),
-          Text(
-            suit,
-            style: TextStyle(fontSize: 9, color: color, height: 1.1),
-          ),
+          Text(suit, style: TextStyle(fontSize: 9, color: color, height: 1.1)),
         ],
       ),
     );

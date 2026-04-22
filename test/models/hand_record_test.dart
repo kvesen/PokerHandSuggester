@@ -80,22 +80,29 @@ void main() {
       expect(restored.communityCards[0].rank, Rank.ten);
     });
 
-    test('backward-compat: old JSON without winProbability falls back to equity', () {
-      final json = sample.toJson()
-        ..remove('winProbability')
-        ..remove('tieProbability');
-      final restored = HandRecord.fromJson(json);
-      expect(restored.winProbability, sample.equity);
-      expect(restored.tieProbability, 0.0);
-    });
+    test(
+      'backward-compat: old JSON without winProbability falls back to equity',
+      () {
+        final json = sample.toJson()
+          ..remove('winProbability')
+          ..remove('tieProbability');
+        final restored = HandRecord.fromJson(json);
+        expect(restored.winProbability, sample.equity);
+        expect(restored.tieProbability, 0.0);
+      },
+    );
   });
 
   group('HandRecord field access', () {
     test('id field is accessible', () => expect(sample.id, 'rec-1'));
-    test('timestamp field is accessible',
-        () => expect(sample.timestamp, isA<DateTime>()));
-    test('action field is accessible',
-        () => expect(sample.action, PlayerAction.raise));
+    test(
+      'timestamp field is accessible',
+      () => expect(sample.timestamp, isA<DateTime>()),
+    );
+    test(
+      'action field is accessible',
+      () => expect(sample.action, PlayerAction.raise),
+    );
     test('equity field is accessible', () => expect(sample.equity, 0.72));
   });
 }

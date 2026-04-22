@@ -94,8 +94,9 @@ class _ManualInputScreenState extends State<ManualInputScreen>
   void initState() {
     super.initState();
     _holeCards = List<PokerCard>.from(widget.preSelectedHoleCards ?? []);
-    _communityCards =
-        List<PokerCard>.from(widget.preSelectedCommunityCards ?? []);
+    _communityCards = List<PokerCard>.from(
+      widget.preSelectedCommunityCards ?? [],
+    );
     _potController = TextEditingController(
       text: widget.preFilledPot?.toStringAsFixed(0) ?? '100',
     );
@@ -104,8 +105,9 @@ class _ManualInputScreenState extends State<ManualInputScreen>
     );
     _opponents = widget.initialOpponents ?? 2;
     _heroPosition = widget.preSelectedHeroPosition;
-    _villainPositions =
-        List<TablePosition>.from(widget.preSelectedVillainPositions ?? []);
+    _villainPositions = List<TablePosition>.from(
+      widget.preSelectedVillainPositions ?? [],
+    );
     _gameMode = widget.preSelectedGameMode ?? GameMode.cashGame;
     // When hole cards are locked, open directly on the community cards tab.
     _activeSection = widget.lockHoleCards ? 1 : 0;
@@ -271,7 +273,8 @@ class _ManualInputScreenState extends State<ManualInputScreen>
     final communityCount = _communityCards.length;
     if (communityCount == 1 || communityCount == 2) {
       _showError(
-          'Community cards must be 0, 3, 4, or 5 — not $communityCount.');
+        'Community cards must be 0, 3, 4, or 5 — not $communityCount.',
+      );
       return;
     }
 
@@ -285,15 +288,20 @@ class _ManualInputScreenState extends State<ManualInputScreen>
       final communityCardsCopy = List<PokerCard>.from(_communityCards);
       final opponentsCopy = _opponents;
 
-      final equityResult =
-          await _runInIsolate(holeCardsCopy, communityCardsCopy, opponentsCopy);
+      final equityResult = await _runInIsolate(
+        holeCardsCopy,
+        communityCardsCopy,
+        opponentsCopy,
+      );
 
       final decision = DecisionEngine.decide(
         equity: equityResult.equity,
         pot: pot,
         costToCall: bet,
         heroPosition: _heroPosition,
-        villainPositions: _villainPositions.isNotEmpty ? _villainPositions : null,
+        villainPositions: _villainPositions.isNotEmpty
+            ? _villainPositions
+            : null,
         gameMode: _gameMode,
       );
 
@@ -304,7 +312,9 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         betToCall: bet,
         numberOfOpponents: _opponents,
         heroPosition: _heroPosition,
-        villainPositions: _villainPositions.isNotEmpty ? List.unmodifiable(_villainPositions) : null,
+        villainPositions: _villainPositions.isNotEmpty
+            ? List.unmodifiable(_villainPositions)
+            : null,
         gameMode: _gameMode,
       );
 
@@ -336,7 +346,11 @@ class _ManualInputScreenState extends State<ManualInputScreen>
 
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.redAccent, behavior: SnackBarBehavior.floating),
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+      ),
     );
   }
 
@@ -394,10 +408,15 @@ class _ManualInputScreenState extends State<ManualInputScreen>
       appBar: AppBar(
         title: Text(
           _streetTitle,
-          style: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: -0.5),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            letterSpacing: -0.5,
+          ),
         ),
         // Glassmorphism surface — intentionally differs between light/dark modes.
-        backgroundColor: (isDark ? Colors.black : Colors.white).withValues(alpha: 0.5),
+        backgroundColor: (isDark ? Colors.black : Colors.white).withValues(
+          alpha: 0.5,
+        ),
         flexibleSpace: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
@@ -413,7 +432,10 @@ class _ManualInputScreenState extends State<ManualInputScreen>
               _resetToNewHand();
             },
             icon: const Icon(Icons.refresh_rounded, size: 18),
-            label: const Text('Reset', style: TextStyle(fontWeight: FontWeight.bold)),
+            label: const Text(
+              'Reset',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             style: TextButton.styleFrom(
               foregroundColor: theme.colorScheme.onSurface,
             ),
@@ -424,8 +446,13 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                 preferredSize: const Size.fromHeight(32),
                 child: Container(
                   width: double.infinity,
-                  color: _streetInfo.color.withValues(alpha: isDark ? 0.6 : 0.8),
-                  padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+                  color: _streetInfo.color.withValues(
+                    alpha: isDark ? 0.6 : 0.8,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 6,
+                    horizontal: 16,
+                  ),
                   child: Text(
                     _streetTitle.toUpperCase(),
                     style: const TextStyle(
@@ -487,12 +514,14 @@ class _ManualInputScreenState extends State<ManualInputScreen>
             physics: const BouncingScrollPhysics(),
             children: [
               _SectionHeader(
-                  title: 'Your Hand',
-                  subtitle: '${_holeCards.length}/2 cards'),
+                title: 'Your Hand',
+                subtitle: '${_holeCards.length}/2 cards',
+              ),
               const SizedBox(height: 12),
               _CardPreviewRow(
-                  cards: _holeCards,
-                  emptySlots: kMaxHoleCards - _holeCards.length),
+                cards: _holeCards,
+                emptySlots: kMaxHoleCards - _holeCards.length,
+              ),
               const SizedBox(height: 24),
               _SectionHeader(
                 title: 'Community Cards',
@@ -531,12 +560,14 @@ class _ManualInputScreenState extends State<ManualInputScreen>
       physics: const BouncingScrollPhysics(),
       children: [
         _SectionHeader(
-            title: 'Your Hand',
-            subtitle: '${_holeCards.length}/2 cards'),
+          title: 'Your Hand',
+          subtitle: '${_holeCards.length}/2 cards',
+        ),
         const SizedBox(height: 12),
         _CardPreviewRow(
-            cards: _holeCards,
-            emptySlots: kMaxHoleCards - _holeCards.length),
+          cards: _holeCards,
+          emptySlots: kMaxHoleCards - _holeCards.length,
+        ),
         const SizedBox(height: 24),
         _SectionHeader(
           title: 'Community Cards',
@@ -566,11 +597,15 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         child: Container(
           decoration: BoxDecoration(
             // Glassmorphism surface — intentionally differs between light/dark modes.
-            color: theme.colorScheme.surface.withValues(alpha: isDark ? 0.3 : 0.8),
+            color: theme.colorScheme.surface.withValues(
+              alpha: isDark ? 0.3 : 0.8,
+            ),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
               // Glassmorphism surface — intentionally differs between light/dark modes.
-              color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.08),
+              color: (isDark ? Colors.white : Colors.black).withValues(
+                alpha: 0.08,
+              ),
               width: 1.5,
             ),
           ),
@@ -581,7 +616,9 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                   border: Border(
                     bottom: BorderSide(
                       // Glassmorphism surface — intentionally differs between light/dark modes.
-                      color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
+                      color: (isDark ? Colors.white : Colors.black).withValues(
+                        alpha: 0.05,
+                      ),
                     ),
                   ),
                 ),
@@ -591,7 +628,10 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                   unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
                   indicatorColor: theme.colorScheme.primary,
                   indicatorWeight: 3,
-                  labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  labelStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
                   dividerColor: Colors.transparent,
                   onTap: widget.lockHoleCards
                       ? (index) {
@@ -606,12 +646,18 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                           Text(
                             'Hole Cards (2)',
                             style: TextStyle(
-                              color: widget.lockHoleCards ? Colors.grey.shade500 : null,
+                              color: widget.lockHoleCards
+                                  ? Colors.grey.shade500
+                                  : null,
                             ),
                           ),
                           if (widget.lockHoleCards) ...[
                             const SizedBox(width: 4),
-                            Icon(Icons.lock_rounded, size: 14, color: Colors.grey.shade500),
+                            Icon(
+                              Icons.lock_rounded,
+                              size: 14,
+                              color: Colors.grey.shade500,
+                            ),
                           ],
                         ],
                       ),
@@ -623,12 +669,18 @@ class _ManualInputScreenState extends State<ManualInputScreen>
               Padding(
                 padding: const EdgeInsets.all(12),
                 child: CardSelector(
-                  selectedCards: _activeSection == 0 ? _holeCards : _communityCards,
+                  selectedCards: _activeSection == 0
+                      ? _holeCards
+                      : _communityCards,
                   onCardToggled: _activeSection == 0 && widget.lockHoleCards
                       ? _lockedCardToggle
                       : _onCardToggled,
-                  disabledCards: _activeSection == 0 ? _communityCards : _holeCards,
-                  maxSelectable: _activeSection == 0 ? kMaxHoleCards : kMaxCommunityCards,
+                  disabledCards: _activeSection == 0
+                      ? _communityCards
+                      : _holeCards,
+                  maxSelectable: _activeSection == 0
+                      ? kMaxHoleCards
+                      : kMaxCommunityCards,
                 ),
               ),
             ],
@@ -659,11 +711,15 @@ class _ManualInputScreenState extends State<ManualInputScreen>
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               // Glassmorphism surface — intentionally differs between light/dark modes.
-              color: theme.colorScheme.surface.withValues(alpha: isDark ? 0.3 : 0.8),
+              color: theme.colorScheme.surface.withValues(
+                alpha: isDark ? 0.3 : 0.8,
+              ),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
                 // Glassmorphism surface — intentionally differs between light/dark modes.
-                color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.08),
+                color: (isDark ? Colors.white : Colors.black).withValues(
+                  alpha: 0.08,
+                ),
                 width: 1.5,
               ),
             ),
@@ -692,11 +748,14 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                 const SizedBox(height: 24),
                 Row(
                   children: [
-                    Text('Opponents:',
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: theme.colorScheme.onSurface)),
+                    Text(
+                      'Opponents:',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
                     const Spacer(),
                     Semantics(
                       label: 'Decrease number of opponents',
@@ -709,12 +768,14 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                         ),
                         onPressed: _opponents > 1
                             ? () => setState(() {
-                                  _opponents--;
-                                  if (_villainPositions.length > _opponents) {
-                                    _villainPositions =
-                                        _villainPositions.sublist(0, _opponents);
-                                  }
-                                })
+                                _opponents--;
+                                if (_villainPositions.length > _opponents) {
+                                  _villainPositions = _villainPositions.sublist(
+                                    0,
+                                    _opponents,
+                                  );
+                                }
+                              })
                             : null,
                       ),
                     ),
@@ -739,7 +800,9 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                               ? theme.colorScheme.primary
                               : Colors.grey.shade500,
                         ),
-                        onPressed: _opponents < 9 ? () => setState(() => _opponents++) : null,
+                        onPressed: _opponents < 9
+                            ? () => setState(() => _opponents++)
+                            : null,
                       ),
                     ),
                   ],
@@ -754,15 +817,18 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                     title: Text(
                       'Table Position (optional)',
                       style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: theme.colorScheme.onSurface),
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurface,
+                      ),
                     ),
                     subtitle: Text(
                       _buildPositionSubtitle(),
                       style: TextStyle(
                         fontSize: 12,
-                        color: (_heroPosition != null || _villainPositions.isNotEmpty)
+                        color:
+                            (_heroPosition != null ||
+                                _villainPositions.isNotEmpty)
                             ? theme.colorScheme.primary
                             : theme.colorScheme.onSurfaceVariant,
                       ),
@@ -774,9 +840,10 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                           'Tap a seat to mark your position (green).\n'
                           'Tap other seats to mark opponents (red).',
                           style: TextStyle(
-                              fontSize: 12,
-                              color: theme.colorScheme.onSurfaceVariant,
-                              height: 1.4),
+                            fontSize: 12,
+                            color: theme.colorScheme.onSurfaceVariant,
+                            height: 1.4,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -784,7 +851,8 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                         padding: const EdgeInsets.only(bottom: 8),
                         child: PositionSelector(
                           selectedPosition: _heroPosition,
-                          onPositionChanged: (pos) => setState(() => _heroPosition = pos),
+                          onPositionChanged: (pos) =>
+                              setState(() => _heroPosition = pos),
                           villainPositions: _villainPositions,
                           onVillainPositionsChanged: (positions) =>
                               setState(() => _villainPositions = positions),
@@ -848,46 +916,57 @@ class _ManualInputScreenState extends State<ManualInputScreen>
       label: 'Calculate best poker move',
       button: true,
       child: Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: FilledButton(
-        style: FilledButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
-        onPressed: _isCalculating ? null : _calculate,
-        child: _isCalculating
-            ? const SizedBox(
-                height: 24,
-                width: 24,
-                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
-              )
-            : const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.auto_awesome_rounded, size: 22, color: Colors.white),
-                  SizedBox(width: 10),
-                  Text(
-                    'Calculate Best Move',
-                    style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
+        child: FilledButton(
+          style: FilledButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+          onPressed: _isCalculating ? null : _calculate,
+          child: _isCalculating
+              ? const SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2.5,
+                  ),
+                )
+              : const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.auto_awesome_rounded,
+                      size: 22,
                       color: Colors.white,
                     ),
-                  ),
-                ],
-              ),
-      ),
+                    SizedBox(width: 10),
+                    Text(
+                      'Calculate Best Move',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.5,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+        ),
       ),
     );
   }
@@ -985,7 +1064,9 @@ class _CardPreviewRow extends StatelessWidget {
                 ),
                 child: Icon(
                   Icons.add_rounded,
-                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                  color: theme.colorScheme.onSurfaceVariant.withValues(
+                    alpha: 0.5,
+                  ),
                   size: 24,
                 ),
               ),
@@ -1021,15 +1102,14 @@ class _NumericField extends StatelessWidget {
         fontWeight: FontWeight.w600,
         color: theme.colorScheme.onSurface,
       ),
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
-      ],
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
         labelStyle: TextStyle(color: theme.colorScheme.onSurfaceVariant),
-        hintStyle:
-            TextStyle(color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
+        hintStyle: TextStyle(
+          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+        ),
         filled: true,
         fillColor: theme.colorScheme.onSurface.withValues(alpha: 0.03),
         enabledBorder: OutlineInputBorder(
@@ -1040,12 +1120,12 @@ class _NumericField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: theme.colorScheme.primary,
-            width: 2,
-          ),
+          borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
       ),
       validator: (value) {
         if (value == null || value.isEmpty) return 'Required';

@@ -3,15 +3,15 @@ library;
 
 /// Table positions in Texas Hold'em (9-max table).
 enum TablePosition {
-  utg,        // Under the Gun (earliest, worst position)
-  utg1,       // UTG+1
-  mp,         // Middle Position
-  mp1,        // MP+1 (Lojack)
-  hijack,     // Hijack
-  cutoff,     // Cutoff
-  button,     // Button / Dealer (best position — acts last postflop)
+  utg, // Under the Gun (earliest, worst position)
+  utg1, // UTG+1
+  mp, // Middle Position
+  mp1, // MP+1 (Lojack)
+  hijack, // Hijack
+  cutoff, // Cutoff
+  button, // Button / Dealer (best position — acts last postflop)
   smallBlind, // Small Blind (forced bet, out of position postflop)
-  bigBlind,   // Big Blind (forced bet, out of position but already invested)
+  bigBlind, // Big Blind (forced bet, out of position but already invested)
 }
 
 /// Returns a positional multiplier for the raise/call thresholds.

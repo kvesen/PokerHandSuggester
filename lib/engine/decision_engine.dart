@@ -42,10 +42,9 @@ class Decision {
   String get potOddsPercent => '${(potOdds * 100).toStringAsFixed(1)}%';
 
   /// EV formatted as a rounded integer (e.g. "+15" or "-8").
-  String get evFormatted =>
-      expectedValue >= 0
-          ? '+${expectedValue.toStringAsFixed(1)}'
-          : expectedValue.toStringAsFixed(1);
+  String get evFormatted => expectedValue >= 0
+      ? '+${expectedValue.toStringAsFixed(1)}'
+      : expectedValue.toStringAsFixed(1);
 }
 
 /// Calculates the optimal poker decision.
@@ -69,17 +68,21 @@ class DecisionEngine {
     List<TablePosition>? villainPositions,
     GameMode? gameMode,
   }) {
-    final potOddsRequired =
-        PotOdds.requiredEquity(pot: pot, costToCall: costToCall);
+    final potOddsRequired = PotOdds.requiredEquity(
+      pot: pot,
+      costToCall: costToCall,
+    );
     final ev = equity * pot - (1 - equity) * costToCall;
 
     // Position multiplier: > 1.0 → play more aggressively (e.g. BTN),
     // < 1.0 → play tighter (e.g. UTG).
     // When a game mode is active its position scale is applied on top.
-    final double baseMultiplier =
-        heroPosition != null ? positionMultiplier(heroPosition) : 1.0;
-    final double positionScale =
-        gameMode != null ? gameModePositionScale(gameMode) : 1.0;
+    final double baseMultiplier = heroPosition != null
+        ? positionMultiplier(heroPosition)
+        : 1.0;
+    final double positionScale = gameMode != null
+        ? gameModePositionScale(gameMode)
+        : 1.0;
     final double multiplier = baseMultiplier * positionScale;
 
     // Villain range-pressure: average opponentRangePressure across all
@@ -87,9 +90,8 @@ class DecisionEngine {
     // < 1.0 means wider opponent range (can continue lighter).
     double villainPressure = 1.0;
     if (villainPositions != null && villainPositions.isNotEmpty) {
-      villainPressure = villainPositions
-              .map(opponentRangePressure)
-              .reduce((a, b) => a + b) /
+      villainPressure =
+          villainPositions.map(opponentRangePressure).reduce((a, b) => a + b) /
           villainPositions.length;
     }
 
@@ -146,14 +148,15 @@ class DecisionEngine {
     }
 
     // Append position note when a hero position is provided.
-    final String heroNote =
-        heroPosition != null ? ' ${_positionNote(heroPosition)}' : '';
+    final String heroNote = heroPosition != null
+        ? ' ${_positionNote(heroPosition)}'
+        : '';
 
     // Append villain position note when villain positions are provided.
     final String villainNote =
         (villainPositions != null && villainPositions.isNotEmpty)
-            ? ' ${_villainPositionNote(villainPositions)}'
-            : '';
+        ? ' ${_villainPositionNote(villainPositions)}'
+        : '';
 
     // Append game mode note when a mode is provided.
     final String gameModeNote = gameMode != null
@@ -247,7 +250,8 @@ class DecisionEngine {
     }
 
     final parts = <String>[];
-    if (tight > 0) parts.add('$tight tight-range opponent${tight > 1 ? 's' : ''}');
+    if (tight > 0)
+      parts.add('$tight tight-range opponent${tight > 1 ? 's' : ''}');
     if (wide > 0) parts.add('$wide wide-range opponent${wide > 1 ? 's' : ''}');
     if (mixed > 0) parts.add('$mixed neutral opponent${mixed > 1 ? 's' : ''}');
 

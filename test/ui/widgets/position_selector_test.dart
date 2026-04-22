@@ -46,8 +46,7 @@ void main() {
                 height: 200,
                 child: PositionSelector(
                   selectedPosition: selected,
-                  onPositionChanged: (pos) =>
-                      setState(() => selected = pos),
+                  onPositionChanged: (pos) => setState(() => selected = pos),
                 ),
               ),
             ),
@@ -75,8 +74,7 @@ void main() {
                 height: 200,
                 child: PositionSelector(
                   selectedPosition: selected,
-                  onPositionChanged: (pos) =>
-                      setState(() => selected = pos),
+                  onPositionChanged: (pos) => setState(() => selected = pos),
                 ),
               ),
             ),

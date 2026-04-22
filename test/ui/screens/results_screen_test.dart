@@ -138,10 +138,7 @@ void main() {
       await tester.pumpWidget(buildScreen(action: PlayerAction.raise));
       await tester.pumpAndSettle();
 
-      expect(
-        find.bySemanticsLabel('Decision: RAISE'),
-        findsOneWidget,
-      );
+      expect(find.bySemanticsLabel('Decision: RAISE'), findsOneWidget);
     });
 
     testWidgets('stats have Semantics labels', (tester) async {
@@ -150,22 +147,14 @@ void main() {
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
 
-      expect(
-        find.bySemanticsLabel(RegExp(r'^Equity:')),
-        findsOneWidget,
-      );
-      expect(
-        find.bySemanticsLabel(RegExp(r'^Pot Odds:')),
-        findsOneWidget,
-      );
-      expect(
-        find.bySemanticsLabel(RegExp(r'^EV:')),
-        findsOneWidget,
-      );
+      expect(find.bySemanticsLabel(RegExp(r'^Equity:')), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp(r'^Pot Odds:')), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp(r'^EV:')), findsOneWidget);
     });
 
-    testWidgets('shows position info when hero position is in game state',
-        (tester) async {
+    testWidgets('shows position info when hero position is in game state', (
+      tester,
+    ) async {
       const gameState = GameState(
         holeCards: holeCards,
         communityCards: [],

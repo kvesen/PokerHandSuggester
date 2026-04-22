@@ -179,14 +179,17 @@ void main() {
       expect(decision.action, isNot(PlayerAction.fold));
     });
 
-    test('all-in extreme pot odds — enormous pot, tiny call → always profitable', () {
-      // pot=10000, call=1 → pot odds ≈ 0.01%; any equity > 0.01% → Call/Raise
-      final decision = DecisionEngine.decide(
-        equity: 0.50,
-        pot: 10000,
-        costToCall: 1,
-      );
-      expect(decision.action, PlayerAction.raise);
-    });
+    test(
+      'all-in extreme pot odds — enormous pot, tiny call → always profitable',
+      () {
+        // pot=10000, call=1 → pot odds ≈ 0.01%; any equity > 0.01% → Call/Raise
+        final decision = DecisionEngine.decide(
+          equity: 0.50,
+          pot: 10000,
+          costToCall: 1,
+        );
+        expect(decision.action, PlayerAction.raise);
+      },
+    );
   });
 }

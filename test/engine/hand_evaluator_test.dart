@@ -285,19 +285,22 @@ void main() {
       expect(sixHighStraight.compareTo(aceLow), greaterThan(0));
     });
 
-    test('7-card hand: best 5-of-7 beats a lesser 5-card combo from same set', () {
-      // Hole: 9♥ 8♥   Board: 7♥ 6♥ 5♥ 2♦ 3♣ → best 5 is 9-8-7-6-5 straight flush
-      final cards = [
-        c(Rank.nine, Suit.hearts),
-        c(Rank.eight, Suit.hearts),
-        c(Rank.seven, Suit.hearts),
-        c(Rank.six, Suit.hearts),
-        c(Rank.five, Suit.hearts),
-        c(Rank.two, Suit.diamonds),
-        c(Rank.three, Suit.clubs),
-      ];
-      final result = HandEvaluator.evaluate(cards);
-      expect(result.ranking, HandRanking.straightFlush);
-    });
+    test(
+      '7-card hand: best 5-of-7 beats a lesser 5-card combo from same set',
+      () {
+        // Hole: 9♥ 8♥   Board: 7♥ 6♥ 5♥ 2♦ 3♣ → best 5 is 9-8-7-6-5 straight flush
+        final cards = [
+          c(Rank.nine, Suit.hearts),
+          c(Rank.eight, Suit.hearts),
+          c(Rank.seven, Suit.hearts),
+          c(Rank.six, Suit.hearts),
+          c(Rank.five, Suit.hearts),
+          c(Rank.two, Suit.diamonds),
+          c(Rank.three, Suit.clubs),
+        ];
+        final result = HandEvaluator.evaluate(cards);
+        expect(result.ranking, HandRanking.straightFlush);
+      },
+    );
   });
 }

@@ -69,13 +69,14 @@ class _CardSelectorState extends State<CardSelector> {
   /// Builds the 52-card deck in row-major order so that grid index [i] maps to
   /// `suit = _suitOrder[i ~/ 13]` (row) and `rank = _rankOrder[i % 13]` (column).
   List<PokerCard> _buildDeck() => [
-        for (final suit in _suitOrder)
-          for (final rank in _rankOrder) PokerCard(suit: suit, rank: rank),
-      ];
+    for (final suit in _suitOrder)
+      for (final rank in _rankOrder) PokerCard(suit: suit, rank: rank),
+  ];
 
   // Matches shorthand card notation, e.g. "Ah", "10s", "kD".
-  static final _cardNotationRegex =
-      RegExp(r'^(10|[2-9TtJjQqKkAa])([HhDdCcSs])$');
+  static final _cardNotationRegex = RegExp(
+    r'^(10|[2-9TtJjQqKkAa])([HhDdCcSs])$',
+  );
 
   /// Parses shorthand notation such as `Ah`, `Kd`, `10s`, `5c` into a
   /// [PokerCard]. Returns `null` if the input is not a valid card string.
@@ -224,8 +225,10 @@ class _CardSelectorState extends State<CardSelector> {
                     fontSize: 13,
                   ),
                   isDense: true,
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(
@@ -291,47 +294,52 @@ class _CardSelectorState extends State<CardSelector> {
         Semantics(
           label: 'Card selection grid',
           child: GridView.builder(
-          shrinkWrap: true,
-          padding: EdgeInsets.zero,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 13,
-            childAspectRatio: 34 / 48, // matches CardSize.tiny (34×48)
-            crossAxisSpacing: 2.0,
-            mainAxisSpacing: 2.0,
-          ),
-          itemCount: deck.length,
-          itemBuilder: (context, index) {
-            final card = deck[index];
-            final isSelected = widget.selectedCards.contains(card);
-            final isDisabled = widget.disabledCards.contains(card) ||
-                (!isSelected && widget.selectedCards.length >= widget.maxSelectable);
+            shrinkWrap: true,
+            padding: EdgeInsets.zero,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 13,
+              childAspectRatio: 34 / 48, // matches CardSize.tiny (34×48)
+              crossAxisSpacing: 2.0,
+              mainAxisSpacing: 2.0,
+            ),
+            itemCount: deck.length,
+            itemBuilder: (context, index) {
+              final card = deck[index];
+              final isSelected = widget.selectedCards.contains(card);
+              final isDisabled =
+                  widget.disabledCards.contains(card) ||
+                  (!isSelected &&
+                      widget.selectedCards.length >= widget.maxSelectable);
 
-            // Stagger the entry animation by varying duration per card index,
-            // so cards animate in sequentially rather than all at once.
-            return TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0.0, end: isDisabled ? 0.2 : 1.0),
-              duration:
-                  Duration(milliseconds: 250 + (index * 8).clamp(0, 200)),
-              curve: Curves.easeOutCubic,
-              builder: (context, opacity, child) =>
-                  Opacity(opacity: opacity, child: child),
-              child: AnimatedScale(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeOutBack,
-                scale: isSelected ? 1.08 : (isDisabled ? 0.95 : 1.0),
-                child: CardWidget(
-                  card: card,
-                  selected: isSelected,
-                  size: CardSize.tiny,
-                  onTap: isDisabled ? null : () {
-                    HapticFeedback.selectionClick();
-                    widget.onCardToggled(card);
-                  },
+              // Stagger the entry animation by varying duration per card index,
+              // so cards animate in sequentially rather than all at once.
+              return TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: isDisabled ? 0.2 : 1.0),
+                duration: Duration(
+                  milliseconds: 250 + (index * 8).clamp(0, 200),
                 ),
-              ),
-            );
-          },
+                curve: Curves.easeOutCubic,
+                builder: (context, opacity, child) =>
+                    Opacity(opacity: opacity, child: child),
+                child: AnimatedScale(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOutBack,
+                  scale: isSelected ? 1.08 : (isDisabled ? 0.95 : 1.0),
+                  child: CardWidget(
+                    card: card,
+                    selected: isSelected,
+                    size: CardSize.tiny,
+                    onTap: isDisabled
+                        ? null
+                        : () {
+                            HapticFeedback.selectionClick();
+                            widget.onCardToggled(card);
+                          },
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ],

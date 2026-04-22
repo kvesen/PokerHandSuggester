@@ -57,7 +57,9 @@ void main() {
       await tester.pumpWidget(buildTable(community: communityCards));
       await tester.pumpAndSettle();
       // With community cards there are more CardWidgets (hole + community).
-      final cardWidgets = tester.widgetList<CardWidget>(find.byType(CardWidget));
+      final cardWidgets = tester.widgetList<CardWidget>(
+        find.byType(CardWidget),
+      );
       expect(cardWidgets.length, greaterThanOrEqualTo(communityCards.length));
     });
 

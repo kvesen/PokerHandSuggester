@@ -8,10 +8,7 @@ class PotOdds {
   /// Formula: `costToCall / (pot + costToCall)`
   ///
   /// Example: pot = 100, costToCall = 50 → 50 / 150 ≈ 0.333 (33.3 %).
-  static double calculate({
-    required double pot,
-    required double costToCall,
-  }) {
+  static double calculate({required double pot, required double costToCall}) {
     if (costToCall <= 0) return 0;
     final total = pot + costToCall;
     if (total <= 0) return 0;

@@ -9,9 +9,7 @@ void main() {
     Widget buildBadge(PlayerAction action) {
       return MaterialApp(
         home: Scaffold(
-          body: Center(
-            child: DecisionBadge(action: action),
-          ),
+          body: Center(child: DecisionBadge(action: action)),
         ),
       );
     }

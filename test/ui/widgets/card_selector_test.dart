@@ -32,12 +32,16 @@ void main() {
       expect(cards.length, 52);
     });
 
-    testWidgets('selected cards are visually distinct (selected=true)', (tester) async {
+    testWidgets('selected cards are visually distinct (selected=true)', (
+      tester,
+    ) async {
       const selected = [PokerCard(suit: Suit.spades, rank: Rank.ace)];
       await tester.pumpWidget(buildSelector(selected: selected));
       await tester.pumpAndSettle();
 
-      final cardWidgets = tester.widgetList<CardWidget>(find.byType(CardWidget)).toList();
+      final cardWidgets = tester
+          .widgetList<CardWidget>(find.byType(CardWidget))
+          .toList();
       final selectedWidget = cardWidgets.firstWhere(
         (w) => w.card == selected.first,
       );
@@ -49,7 +53,9 @@ void main() {
       await tester.pumpWidget(buildSelector(selected: selected));
       await tester.pumpAndSettle();
 
-      final cardWidgets = tester.widgetList<CardWidget>(find.byType(CardWidget)).toList();
+      final cardWidgets = tester
+          .widgetList<CardWidget>(find.byType(CardWidget))
+          .toList();
       final unselected = cardWidgets.firstWhere(
         (w) => w.card != selected.first,
       );
@@ -87,10 +93,7 @@ void main() {
       await tester.pumpWidget(buildSelector());
       await tester.pumpAndSettle();
 
-      expect(
-        find.bySemanticsLabel('Card selection grid'),
-        findsOneWidget,
-      );
+      expect(find.bySemanticsLabel('Card selection grid'), findsOneWidget);
     });
 
     testWidgets('text input field is rendered', (tester) async {

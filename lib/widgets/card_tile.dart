@@ -26,7 +26,8 @@ class CardTile extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Semantics(
-      label: semanticLabel ??
+      label:
+          semanticLabel ??
           (card == null ? 'Empty card slot — tap to add' : 'Card slot'),
       button: true,
       child: GestureDetector(
@@ -49,8 +50,9 @@ class CardTile extends StatelessWidget {
                 ),
                 child: Icon(
                   Icons.add_rounded,
-                  color: theme.colorScheme.onSurfaceVariant
-                      .withValues(alpha: 0.5),
+                  color: theme.colorScheme.onSurfaceVariant.withValues(
+                    alpha: 0.5,
+                  ),
                   size: 24,
                 ),
               ),

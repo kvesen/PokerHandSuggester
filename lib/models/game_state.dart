@@ -65,8 +65,9 @@ class GameState {
       potSize: potSize ?? this.potSize,
       betToCall: betToCall ?? this.betToCall,
       numberOfOpponents: numberOfOpponents ?? this.numberOfOpponents,
-      heroPosition:
-          clearHeroPosition ? null : (heroPosition ?? this.heroPosition),
+      heroPosition: clearHeroPosition
+          ? null
+          : (heroPosition ?? this.heroPosition),
       villainPositions: clearVillainPositions
           ? null
           : (villainPositions ?? this.villainPositions),

@@ -55,7 +55,9 @@ class _RangeChartScreenState extends State<RangeChartScreen> {
           'Hand Ranges',
           style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: -0.5),
         ),
-        backgroundColor: (isDark ? Colors.black : Colors.white).withValues(alpha: 0.5),
+        backgroundColor: (isDark ? Colors.black : Colors.white).withValues(
+          alpha: 0.5,
+        ),
         flexibleSpace: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
@@ -100,10 +102,7 @@ class _RangeChartScreenState extends State<RangeChartScreen> {
               ),
 
               // Stats bar
-              _StatsBar(
-                position: _selectedPosition,
-                isDark: isDark,
-              ),
+              _StatsBar(position: _selectedPosition, isDark: isDark),
 
               // Tooltip (visible after a cell tap)
               AnimatedSwitcher(
@@ -194,11 +193,15 @@ class _PositionSelector extends StatelessWidget {
                     : null,
                 color: isSelected
                     ? null
-                    : (isDark ? Colors.white : Colors.black).withValues(alpha: 0.08),
+                    : (isDark ? Colors.white : Colors.black).withValues(
+                        alpha: 0.08,
+                      ),
                 border: Border.all(
                   color: isSelected
                       ? Colors.transparent
-                      : (isDark ? Colors.white : Colors.black).withValues(alpha: 0.12),
+                      : (isDark ? Colors.white : Colors.black).withValues(
+                          alpha: 0.12,
+                        ),
                 ),
               ),
               child: Text(
@@ -242,9 +245,7 @@ class _StatsBar extends StatelessWidget {
         decoration: BoxDecoration(
           color: _kPurple.withValues(alpha: isDark ? 0.15 : 0.10),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: _kPurple.withValues(alpha: 0.25),
-          ),
+          border: Border.all(color: _kPurple.withValues(alpha: 0.25)),
         ),
         child: Row(
           children: [
@@ -434,7 +435,10 @@ class _RangeGrid extends StatelessWidget {
       builder: (context, constraints) {
         // Container padding: EdgeInsets.all(4) => 4px on each side × 2 = 8px total
         // Cell margins: EdgeInsets.all(0.5) × 2 sides × 14 columns = 14px
-        final cellSize = ((constraints.maxWidth - 8 - 14) / 14).clamp(12.0, double.infinity);
+        final cellSize = ((constraints.maxWidth - 8 - 14) / 14).clamp(
+          12.0,
+          double.infinity,
+        );
         final fontSize = (cellSize * 0.36).clamp(6.0, 12.0);
         final labelFontSize = (cellSize * 0.40).clamp(6.5, 13.0);
 
@@ -501,7 +505,21 @@ class _RangeGrid extends StatelessWidget {
   }
 
   static String _rankChar(int index) {
-    const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+    const ranks = [
+      'A',
+      'K',
+      'Q',
+      'J',
+      'T',
+      '9',
+      '8',
+      '7',
+      '6',
+      '5',
+      '4',
+      '3',
+      '2',
+    ];
     return ranks[index];
   }
 }
@@ -548,7 +566,15 @@ class _GridCell extends StatelessWidget {
     };
 
     // Suited cells get slightly lighter background; pairs get a bold border
-    final bgColor = color.withValues(alpha: opacity * (suited ? 0.85 : pair ? 0.95 : 0.75));
+    final bgColor = color.withValues(
+      alpha:
+          opacity *
+          (suited
+              ? 0.85
+              : pair
+              ? 0.95
+              : 0.75),
+    );
 
     final actionText = switch (action) {
       RangeAction.raise => 'Raise',
@@ -560,43 +586,50 @@ class _GridCell extends StatelessWidget {
       label: '$label: $actionText from ${positionLabel(position)}',
       button: true,
       child: GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        width: size,
-        height: size,
-        margin: const EdgeInsets.all(0.5),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(3),
-          border: isSelected
-              ? Border.all(color: Colors.white, width: 1.5)
-              : pair
-                  ? Border.all(
-                      color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.25),
-                      width: 1,
-                    )
-                  : null,
-          boxShadow: isSelected
-              ? [BoxShadow(color: color.withValues(alpha: 0.6), blurRadius: 4)]
-              : null,
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: fontSize,
-              fontWeight: pair ? FontWeight.bold : FontWeight.w500,
-              color: action == RangeAction.fold
-                  ? (isDark ? Colors.white38 : Colors.black38)
-                  : Colors.white,
-              letterSpacing: -0.3,
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          width: size,
+          height: size,
+          margin: const EdgeInsets.all(0.5),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(3),
+            border: isSelected
+                ? Border.all(color: Colors.white, width: 1.5)
+                : pair
+                ? Border.all(
+                    color: (isDark ? Colors.white : Colors.black).withValues(
+                      alpha: 0.25,
+                    ),
+                    width: 1,
+                  )
+                : null,
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: color.withValues(alpha: 0.6),
+                      blurRadius: 4,
+                    ),
+                  ]
+                : null,
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: fontSize,
+                fontWeight: pair ? FontWeight.bold : FontWeight.w500,
+                color: action == RangeAction.fold
+                    ? (isDark ? Colors.white38 : Colors.black38)
+                    : Colors.white,
+                letterSpacing: -0.3,
+              ),
+              overflow: TextOverflow.clip,
+              maxLines: 1,
             ),
-            overflow: TextOverflow.clip,
-            maxLines: 1,
           ),
         ),
-      ),
       ),
     );
   }

@@ -57,16 +57,19 @@ void main() {
       expect(find.text('Calculate Best Move'), findsOneWidget);
     });
 
-    testWidgets('pot size field validates that value must be > 0',
-        (tester) async {
+    testWidgets('pot size field validates that value must be > 0', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
-      await tester.pumpWidget(buildScreen(
-        holeCards: [
-          const PokerCard(suit: Suit.spades, rank: Rank.ace),
-          const PokerCard(suit: Suit.hearts, rank: Rank.king),
-        ],
-      ));
+      await tester.pumpWidget(
+        buildScreen(
+          holeCards: [
+            const PokerCard(suit: Suit.spades, rank: Rank.ace),
+            const PokerCard(suit: Suit.hearts, rank: Rank.king),
+          ],
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Clear the default pot value and enter 0.
@@ -82,19 +85,20 @@ void main() {
       expect(find.text('>0'), findsOneWidget);
     });
 
-    testWidgets('community card count validation shows SnackBar for count 1',
-        (tester) async {
+    testWidgets('community card count validation shows SnackBar for count 1', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
-      await tester.pumpWidget(buildScreen(
-        holeCards: [
-          const PokerCard(suit: Suit.spades, rank: Rank.ace),
-          const PokerCard(suit: Suit.hearts, rank: Rank.king),
-        ],
-        communityCards: [
-          const PokerCard(suit: Suit.clubs, rank: Rank.ten),
-        ],
-      ));
+      await tester.pumpWidget(
+        buildScreen(
+          holeCards: [
+            const PokerCard(suit: Suit.spades, rank: Rank.ace),
+            const PokerCard(suit: Suit.hearts, rank: Rank.king),
+          ],
+          communityCards: [const PokerCard(suit: Suit.clubs, rank: Rank.ten)],
+        ),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Calculate Best Move'));
@@ -122,8 +126,9 @@ void main() {
       );
     });
 
-    testWidgets('opponents increment and decrement buttons are present',
-        (tester) async {
+    testWidgets('opponents increment and decrement buttons are present', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen());
@@ -145,9 +150,7 @@ void main() {
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
 
-      await tester.tap(
-        find.bySemanticsLabel('Increase number of opponents'),
-      );
+      await tester.tap(find.bySemanticsLabel('Increase number of opponents'));
       await tester.pumpAndSettle();
       // No exception means the button works as expected.
     });
@@ -158,9 +161,7 @@ void main() {
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
 
-      await tester.tap(
-        find.bySemanticsLabel('Decrease number of opponents'),
-      );
+      await tester.tap(find.bySemanticsLabel('Decrease number of opponents'));
       await tester.pumpAndSettle();
       // No exception means the button works as expected.
     });
@@ -177,8 +178,9 @@ void main() {
       expect(find.byType(Row), findsWidgets);
     });
 
-    testWidgets('compact game mode selector shows current mode label',
-        (tester) async {
+    testWidgets('compact game mode selector shows current mode label', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen());
@@ -190,16 +192,17 @@ void main() {
       expect(find.textContaining('Cash Game'), findsOneWidget);
     });
 
-    testWidgets('tapping game mode selector opens bottom sheet',
-        (tester) async {
+    testWidgets('tapping game mode selector opens bottom sheet', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
 
-      await tester.tap(find.bySemanticsLabel(
-        'Change game mode, currently Cash Game',
-      ));
+      await tester.tap(
+        find.bySemanticsLabel('Change game mode, currently Cash Game'),
+      );
       await tester.pumpAndSettle();
 
       // Bottom sheet should list all game modes.
@@ -207,17 +210,18 @@ void main() {
       expect(find.byType(RadioListTile<GameMode>), findsNWidgets(6));
     });
 
-    testWidgets('selecting a mode in the sheet updates the compact row',
-        (tester) async {
+    testWidgets('selecting a mode in the sheet updates the compact row', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
 
       // Open the bottom sheet.
-      await tester.tap(find.bySemanticsLabel(
-        'Change game mode, currently Cash Game',
-      ));
+      await tester.tap(
+        find.bySemanticsLabel('Change game mode, currently Cash Game'),
+      );
       await tester.pumpAndSettle();
 
       // Pick "Heads-Up".
@@ -228,18 +232,19 @@ void main() {
       expect(find.textContaining('Heads-Up'), findsOneWidget);
     });
 
-    testWidgets('preSelectedGameMode overrides persisted preference',
-        (tester) async {
+    testWidgets('preSelectedGameMode overrides persisted preference', (
+      tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       // Persist turbo mode.
       SharedPreferences.setMockInitialValues({'game_mode': 'turbo'});
 
-      await tester.pumpWidget(const MaterialApp(
-        home: ManualInputScreen(
-          preSelectedGameMode: GameMode.headsUp,
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: ManualInputScreen(preSelectedGameMode: GameMode.headsUp),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // The pre-selected mode takes precedence over what's in prefs.
