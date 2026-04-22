@@ -7,6 +7,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'services/crash_reporting_service.dart';
 import 'services/theme_service.dart';
+import 'theme/app_theme.dart';
 import 'ui/screens/home_screen.dart';
 
 void main() {
@@ -83,22 +84,8 @@ class _PokerHandSuggesterAppState extends State<PokerHandSuggesterApp> {
     return MaterialApp(
       title: 'Poker Buddy',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0F9D58), // Vibrant modern green
-          brightness: Brightness.light,
-          surface: const Color(0xFFF8F9FA),
-        ),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1CE885), // Neon accent
-          brightness: Brightness.dark,
-          surface: const Color(0xFF121212),
-        ),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
       themeMode: widget.themeService.themeMode,
       home: HomeScreen(themeService: widget.themeService),
     );
