@@ -208,7 +208,7 @@ void main() {
   group('Suggestion card', () {
     testWidgets('SuggestionCard shows RAISE label for raise decision',
         (tester) async {
-      final decision = Decision(
+      const decision = Decision(
         action: PlayerAction.raise,
         equity: 0.65,
         potOdds: 0.17,
@@ -230,7 +230,7 @@ void main() {
 
     testWidgets('SuggestionCard shows FOLD label for fold decision',
         (tester) async {
-      final decision = Decision(
+      const decision = Decision(
         action: PlayerAction.fold,
         equity: 0.20,
         potOdds: 0.50,
@@ -264,21 +264,21 @@ void main() {
         betToCall: 20,
         numberOfOpponents: 2,
       );
-      final foldDecision = Decision(
+      const foldDecision = Decision(
         action: PlayerAction.fold,
         equity: 0.20,
         potOdds: 0.17,
         expectedValue: -10.0,
         explanation: 'Weak — fold.',
       );
-      final raiseDecision = Decision(
+      const raiseDecision = Decision(
         action: PlayerAction.raise,
         equity: 0.75,
         potOdds: 0.17,
         expectedValue: 55.0,
         explanation: 'Strong — raise.',
       );
-      final equity = EquityResult(
+      const equity = EquityResult(
         winProbability: 0.20,
         tieProbability: 0.05,
         lossProbability: 0.75,
