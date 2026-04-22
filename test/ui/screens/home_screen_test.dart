@@ -1,13 +1,25 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:poker_hand_suggester/services/theme_service.dart';
 import 'package:poker_hand_suggester/ui/screens/home_screen.dart';
 
 void main() {
-  setUp(() {
+  late Directory _tempDir;
+
+  setUp(() async {
     SharedPreferences.setMockInitialValues({});
+    _tempDir = await Directory.systemTemp.createTemp('hive_test_');
+    Hive.init(_tempDir.path);
+  });
+
+  tearDown(() async {
+    await Hive.close();
+    await _tempDir.delete(recursive: true);
   });
 
   group('HomeScreen', () {
@@ -19,7 +31,7 @@ void main() {
           home: HomeScreen(themeService: themeService),
         ),
       );
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.text('Poker\nBuddy'), findsOneWidget);
     });
@@ -32,7 +44,7 @@ void main() {
           home: HomeScreen(themeService: themeService),
         ),
       );
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.text('Manual Input'), findsOneWidget);
     });
@@ -45,7 +57,7 @@ void main() {
           home: HomeScreen(themeService: themeService),
         ),
       );
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // Before PackageInfo resolves, the footer shows just 'Texas Hold\'em'
       expect(find.text('Texas Hold\'em'), findsOneWidget);

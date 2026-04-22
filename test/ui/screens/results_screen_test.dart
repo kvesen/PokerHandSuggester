@@ -70,7 +70,7 @@ void main() {
   group('ResultsScreen', () {
     testWidgets('displays the RAISE decision badge', (tester) async {
       await tester.pumpWidget(buildScreen(action: PlayerAction.raise));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.byType(DecisionBadge), findsOneWidget);
       expect(find.text('RAISE'), findsOneWidget);
@@ -78,63 +78,63 @@ void main() {
 
     testWidgets('displays the FOLD decision badge', (tester) async {
       await tester.pumpWidget(buildScreen(action: PlayerAction.fold));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.text('FOLD'), findsOneWidget);
     });
 
     testWidgets('displays the CALL decision badge', (tester) async {
       await tester.pumpWidget(buildScreen(action: PlayerAction.call));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.text('CALL'), findsOneWidget);
     });
 
     testWidgets('shows equity stat label', (tester) async {
       await tester.pumpWidget(buildScreen());
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.text('Equity'), findsOneWidget);
     });
 
     testWidgets('shows pot odds stat label', (tester) async {
       await tester.pumpWidget(buildScreen());
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.text('Pot Odds'), findsOneWidget);
     });
 
     testWidgets('shows EV stat label', (tester) async {
       await tester.pumpWidget(buildScreen());
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.text('EV'), findsOneWidget);
     });
 
     testWidgets('displays the explanation text', (tester) async {
       await tester.pumpWidget(buildScreen());
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.text('Strong hand, raise for value.'), findsOneWidget);
     });
 
     testWidgets('shows "Why this decision?" heading', (tester) async {
       await tester.pumpWidget(buildScreen());
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.text('Why this decision?'), findsOneWidget);
     });
 
     testWidgets('shows Continue Hand button when not showdown', (tester) async {
       await tester.pumpWidget(buildScreen());
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.text('Continue Hand'), findsOneWidget);
     });
 
     testWidgets('decision badge has Semantics liveRegion', (tester) async {
       await tester.pumpWidget(buildScreen(action: PlayerAction.raise));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(
         find.bySemanticsLabel('Decision: RAISE'),
@@ -144,7 +144,7 @@ void main() {
 
     testWidgets('stats have Semantics labels', (tester) async {
       await tester.pumpWidget(buildScreen());
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(
         find.bySemanticsLabel(RegExp(r'^Equity:')),
@@ -183,7 +183,7 @@ void main() {
           ),
         ),
       );
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.text('Position'), findsOneWidget);
       expect(find.text('BTN'), findsOneWidget);

@@ -25,7 +25,7 @@ void main() {
   group('CardSelector', () {
     testWidgets('renders all 52 cards', (tester) async {
       await tester.pumpWidget(buildSelector());
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // 52 CardWidget instances from the grid (plus 0 selected chips).
       final cards = tester.widgetList<CardWidget>(find.byType(CardWidget));
@@ -35,7 +35,7 @@ void main() {
     testWidgets('selected cards are visually distinct (selected=true)', (tester) async {
       const selected = [PokerCard(suit: Suit.spades, rank: Rank.ace)];
       await tester.pumpWidget(buildSelector(selected: selected));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       final cardWidgets = tester.widgetList<CardWidget>(find.byType(CardWidget)).toList();
       final selectedWidget = cardWidgets.firstWhere(
@@ -47,7 +47,7 @@ void main() {
     testWidgets('non-selected cards have selected=false', (tester) async {
       const selected = [PokerCard(suit: Suit.spades, rank: Rank.ace)];
       await tester.pumpWidget(buildSelector(selected: selected));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       final cardWidgets = tester.widgetList<CardWidget>(find.byType(CardWidget)).toList();
       final unselected = cardWidgets.firstWhere(
@@ -71,21 +71,21 @@ void main() {
           ),
         ),
       );
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // Tap the first card widget that has a tap handler (onTap != null).
       final firstTappable = find.byWidgetPredicate(
         (w) => w is CardWidget && w.onTap != null,
       );
       await tester.tap(firstTappable.first);
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(toggled, isNotNull);
     });
 
     testWidgets('grid has a Semantics label', (tester) async {
       await tester.pumpWidget(buildSelector());
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(
         find.bySemanticsLabel('Card selection grid'),
@@ -95,7 +95,7 @@ void main() {
 
     testWidgets('text input field is rendered', (tester) async {
       await tester.pumpWidget(buildSelector());
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(find.byType(TextField), findsOneWidget);
     });

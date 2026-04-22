@@ -8,8 +8,11 @@ import 'package:poker_hand_suggester/ui/screens/manual_input_screen.dart';
 import 'package:poker_hand_suggester/ui/widgets/card_selector.dart';
 
 void main() {
-  setUp(() {
+  setUp(() async {
     SharedPreferences.setMockInitialValues({});
+    final binding = TestWidgetsFlutterBinding.ensureInitialized();
+    addTearDown(() => binding.setSurfaceSize(null));
+    await binding.setSurfaceSize(const Size(390, 844));
   });
 
   Widget buildScreen({
@@ -27,25 +30,25 @@ void main() {
   group('ManualInputScreen', () {
     testWidgets('renders without errors', (tester) async {
       await tester.pumpWidget(buildScreen());
-      await tester.pump();
+      await tester.pumpAndSettle();
       expect(find.byType(ManualInputScreen), findsOneWidget);
     });
 
     testWidgets('renders the card selector grid', (tester) async {
       await tester.pumpWidget(buildScreen());
-      await tester.pump();
+      await tester.pumpAndSettle();
       expect(find.byType(CardSelector), findsOneWidget);
     });
 
     testWidgets('renders Hole Cards and Community tabs', (tester) async {
       await tester.pumpWidget(buildScreen());
-      await tester.pump();
+      await tester.pumpAndSettle();
       expect(find.text('Community (0–5)'), findsOneWidget);
     });
 
     testWidgets('"Calculate Best Move" button is present', (tester) async {
       await tester.pumpWidget(buildScreen());
-      await tester.pump();
+      await tester.pumpAndSettle();
       expect(find.text('Calculate Best Move'), findsOneWidget);
     });
 
@@ -57,16 +60,16 @@ void main() {
           const PokerCard(suit: Suit.hearts, rank: Rank.king),
         ],
       ));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // Clear the default pot value and enter 0.
       final potField = find.widgetWithText(TextFormField, 'Pot Size');
       await tester.enterText(potField, '0');
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // Tap the calculate button — form should fail validation.
       await tester.tap(find.text('Calculate Best Move'));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // The validator returns '>0' for non-positive values.
       expect(find.text('>0'), findsOneWidget);
@@ -83,10 +86,10 @@ void main() {
           const PokerCard(suit: Suit.clubs, rank: Rank.ten),
         ],
       ));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Calculate Best Move'));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(
         find.textContaining('Community cards must be 0, 3, 4, or 5'),
@@ -96,11 +99,11 @@ void main() {
 
     testWidgets('shows error when hole cards are missing', (tester) async {
       await tester.pumpWidget(buildScreen());
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // Default pot is valid; no hole cards selected — validation should fail.
       await tester.tap(find.text('Calculate Best Move'));
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(
         find.textContaining('Please select exactly 2 hole cards'),
@@ -111,7 +114,7 @@ void main() {
     testWidgets('opponents increment and decrement buttons are present',
         (tester) async {
       await tester.pumpWidget(buildScreen());
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       expect(
         find.bySemanticsLabel('Increase number of opponents'),
@@ -125,23 +128,23 @@ void main() {
 
     testWidgets('opponents increment button is tappable', (tester) async {
       await tester.pumpWidget(buildScreen());
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       await tester.tap(
         find.bySemanticsLabel('Increase number of opponents'),
       );
-      await tester.pump();
+      await tester.pumpAndSettle();
       // No exception means the button works as expected.
     });
 
     testWidgets('opponents decrement button is tappable', (tester) async {
       await tester.pumpWidget(buildScreen());
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       await tester.tap(
         find.bySemanticsLabel('Decrease number of opponents'),
       );
-      await tester.pump();
+      await tester.pumpAndSettle();
       // No exception means the button works as expected.
     });
 
