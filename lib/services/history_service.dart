@@ -81,9 +81,9 @@ class HistoryService {
       final jsonStr = _box.getAt(i);
       if (jsonStr != null) {
         try {
-          entries.add(HandRecord.fromJson(
-            jsonDecode(jsonStr) as Map<String, dynamic>,
-          ));
+          entries.add(
+            HandRecord.fromJson(jsonDecode(jsonStr) as Map<String, dynamic>),
+          );
         } catch (e, st) {
           // Skip corrupted entries; this can occur if the serialisation format
           // changes between app versions or the on-disk data is truncated.

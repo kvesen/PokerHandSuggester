@@ -7,7 +7,10 @@ void main() {
       expect(gameModeLabel(GameMode.cashGame), 'Cash Game');
       expect(gameModeLabel(GameMode.tournamentEarly), 'Tournament (Early)');
       expect(gameModeLabel(GameMode.tournamentBubble), 'Tournament (Bubble)');
-      expect(gameModeLabel(GameMode.tournamentFinalTable), 'Tournament (Final Table)');
+      expect(
+        gameModeLabel(GameMode.tournamentFinalTable),
+        'Tournament (Final Table)',
+      );
       expect(gameModeLabel(GameMode.turbo), 'Turbo / Speed');
       expect(gameModeLabel(GameMode.headsUp), 'Heads-Up');
     });

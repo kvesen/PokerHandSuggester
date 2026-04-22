@@ -41,9 +41,9 @@ void main() {
   // ---------------------------------------------------------------------------
   group('isSuited', () {
     test('returns true for cells above the diagonal', () {
-      expect(isSuited(0, 1), isTrue);  // AKs
+      expect(isSuited(0, 1), isTrue); // AKs
       expect(isSuited(0, 12), isTrue); // A2s
-      expect(isSuited(3, 4), isTrue);  // JTs
+      expect(isSuited(3, 4), isTrue); // JTs
       expect(isSuited(11, 12), isTrue); // 32s
     });
 
@@ -57,7 +57,11 @@ void main() {
   group('isPocketPair', () {
     test('returns true on the diagonal', () {
       for (int i = 0; i < 13; i++) {
-        expect(isPocketPair(i, i), isTrue, reason: 'cell ($i,$i) should be a pair');
+        expect(
+          isPocketPair(i, i),
+          isTrue,
+          reason: 'cell ($i,$i) should be a pair',
+        );
       }
     });
 
@@ -80,7 +84,8 @@ void main() {
             expect(
               RangeAction.values.contains(action),
               isTrue,
-              reason: 'getAction($pos, $r, $c) should return a valid RangeAction',
+              reason:
+                  'getAction($pos, $r, $c) should return a valid RangeAction',
             );
           }
         }
@@ -89,15 +94,21 @@ void main() {
 
     test('AA is always a raise from every position', () {
       for (final pos in TablePosition.values) {
-        expect(getAction(pos, 0, 0), RangeAction.raise,
-            reason: 'AA should be a raise from $pos');
+        expect(
+          getAction(pos, 0, 0),
+          RangeAction.raise,
+          reason: 'AA should be a raise from $pos',
+        );
       }
     });
 
     test('KK is always a raise from every position', () {
       for (final pos in TablePosition.values) {
-        expect(getAction(pos, 1, 1), RangeAction.raise,
-            reason: 'KK should be a raise from $pos');
+        expect(
+          getAction(pos, 1, 1),
+          RangeAction.raise,
+          reason: 'KK should be a raise from $pos',
+        );
       }
     });
 
@@ -111,16 +122,22 @@ void main() {
     test('AKs is raise from all positions', () {
       // AKs = row 0, col 1
       for (final pos in TablePosition.values) {
-        expect(getAction(pos, 0, 1), RangeAction.raise,
-            reason: 'AKs should be raise from $pos');
+        expect(
+          getAction(pos, 0, 1),
+          RangeAction.raise,
+          reason: 'AKs should be raise from $pos',
+        );
       }
     });
 
     test('AKo is raise from all positions', () {
       // AKo = row 1, col 0
       for (final pos in TablePosition.values) {
-        expect(getAction(pos, 1, 0), RangeAction.raise,
-            reason: 'AKo should be raise from $pos');
+        expect(
+          getAction(pos, 1, 0),
+          RangeAction.raise,
+          reason: 'AKo should be raise from $pos',
+        );
       }
     });
   });
@@ -134,12 +151,17 @@ void main() {
       int btnRaise = 0;
       for (int r = 0; r < 13; r++) {
         for (int c = 0; c < 13; c++) {
-          if (getAction(TablePosition.utg, r, c) == RangeAction.raise) utgRaise++;
-          if (getAction(TablePosition.button, r, c) == RangeAction.raise) btnRaise++;
+          if (getAction(TablePosition.utg, r, c) == RangeAction.raise)
+            utgRaise++;
+          if (getAction(TablePosition.button, r, c) == RangeAction.raise)
+            btnRaise++;
         }
       }
-      expect(btnRaise, greaterThan(utgRaise),
-          reason: 'BTN should raise more hands than UTG');
+      expect(
+        btnRaise,
+        greaterThan(utgRaise),
+        reason: 'BTN should raise more hands than UTG',
+      );
     });
 
     test('BTN plays more hands (raise+call) than UTG', () {
@@ -153,8 +175,11 @@ void main() {
           if (btnAction != RangeAction.fold) btnPlay++;
         }
       }
-      expect(btnPlay, greaterThan(utgPlay),
-          reason: 'BTN should play more hands than UTG');
+      expect(
+        btnPlay,
+        greaterThan(utgPlay),
+        reason: 'BTN should play more hands than UTG',
+      );
     });
 
     test('CO plays more hands than UTG', () {
@@ -163,7 +188,8 @@ void main() {
       for (int r = 0; r < 13; r++) {
         for (int c = 0; c < 13; c++) {
           if (getAction(TablePosition.utg, r, c) != RangeAction.fold) utgPlay++;
-          if (getAction(TablePosition.cutoff, r, c) != RangeAction.fold) coPlay++;
+          if (getAction(TablePosition.cutoff, r, c) != RangeAction.fold)
+            coPlay++;
         }
       }
       expect(coPlay, greaterThan(utgPlay));
@@ -184,8 +210,11 @@ void main() {
 
     test('returns non-zero for every position', () {
       for (final pos in TablePosition.values) {
-        expect(openingPercentage(pos), greaterThan(0),
-            reason: 'openingPercentage($pos) should be > 0');
+        expect(
+          openingPercentage(pos),
+          greaterThan(0),
+          reason: 'openingPercentage($pos) should be > 0',
+        );
       }
     });
 

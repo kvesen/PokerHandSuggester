@@ -45,84 +45,49 @@ class CardWidget extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOutCubic,
-        width: cardWidth,
-        height: cardHeight,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: selected
-                ? [Colors.white, const Color(0xFFFFF9C4)] // Soft warm glow
-                : [Colors.white, const Color(0xFFE2E8F0)], // Cool crisp white
-          ),
-          borderRadius: BorderRadius.circular(size.borderRadius),
-          border: Border.all(
-            color: selected
-                ? theme.colorScheme.primary
-                : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
-            width: selected ? 2.5 : 1.5,
-          ),
-          boxShadow: [
-            if (selected)
-              BoxShadow(
-                color: theme.colorScheme.primary.withValues(alpha: 0.4),
-                blurRadius: 12,
-                spreadRadius: 2,
-                offset: const Offset(0, 4),
-              )
-            else
-              BoxShadow(
-                color: theme.shadowColor.withValues(alpha: isDark ? 0.3 : 0.08),
-                blurRadius: 6,
-                offset: const Offset(1, 3),
-              ),
-          ],
-        ),
-        child: Stack(
-          children: [
-            // Top-left rank + suit
-            Positioned(
-              top: size.padding,
-              left: size.padding,
-              child: _RankSuit(
-                rank: rankLabel,
-                suit: suitSymbol,
-                color: color,
-                fontSize: fontSize,
-              ),
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutCubic,
+          width: cardWidth,
+          height: cardHeight,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: selected
+                  ? [Colors.white, const Color(0xFFFFF9C4)] // Soft warm glow
+                  : [Colors.white, const Color(0xFFE2E8F0)], // Cool crisp white
             ),
-            // Center suit watermark
-            Center(
-              child: Opacity(
-                opacity: 0.10,
-                child: Text(
-                  suitSymbol,
-                  style: TextStyle(
-                    fontSize: fontSize * 1.2,
-                    color: color,
-                    height: 1.0,
+            borderRadius: BorderRadius.circular(size.borderRadius),
+            border: Border.all(
+              color: selected
+                  ? theme.colorScheme.primary
+                  : (isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+              width: selected ? 2.5 : 1.5,
+            ),
+            boxShadow: [
+              if (selected)
+                BoxShadow(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.4),
+                  blurRadius: 12,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 4),
+                )
+              else
+                BoxShadow(
+                  color: theme.shadowColor.withValues(
+                    alpha: isDark ? 0.3 : 0.08,
                   ),
+                  blurRadius: 6,
+                  offset: const Offset(1, 3),
                 ),
-              ),
-            ),
-            // Center primary suit
-            Center(
-              child: Text(
-                suitSymbol,
-                style: TextStyle(
-                  fontSize: fontSize * 0.9,
-                  color: color.withValues(alpha: 0.9),
-                ),
-              ),
-            ),
-            // Bottom-right rank + suit (rotated)
-            Positioned(
-              bottom: size.padding,
-              right: size.padding,
-              child: RotatedBox(
-                quarterTurns: 2,
+            ],
+          ),
+          child: Stack(
+            children: [
+              // Top-left rank + suit
+              Positioned(
+                top: size.padding,
+                left: size.padding,
                 child: _RankSuit(
                   rank: rankLabel,
                   suit: suitSymbol,
@@ -130,9 +95,46 @@ class CardWidget extends StatelessWidget {
                   fontSize: fontSize,
                 ),
               ),
-            ),
-          ],
-        ),
+              // Center suit watermark
+              Center(
+                child: Opacity(
+                  opacity: 0.10,
+                  child: Text(
+                    suitSymbol,
+                    style: TextStyle(
+                      fontSize: fontSize * 1.2,
+                      color: color,
+                      height: 1.0,
+                    ),
+                  ),
+                ),
+              ),
+              // Center primary suit
+              Center(
+                child: Text(
+                  suitSymbol,
+                  style: TextStyle(
+                    fontSize: fontSize * 0.9,
+                    color: color.withValues(alpha: 0.9),
+                  ),
+                ),
+              ),
+              // Bottom-right rank + suit (rotated)
+              Positioned(
+                bottom: size.padding,
+                right: size.padding,
+                child: RotatedBox(
+                  quarterTurns: 2,
+                  child: _RankSuit(
+                    rank: rankLabel,
+                    suit: suitSymbol,
+                    color: color,
+                    fontSize: fontSize,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

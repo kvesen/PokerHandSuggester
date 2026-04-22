@@ -67,9 +67,10 @@ class _ResultsScreenState extends State<ResultsScreen>
 
     _fadeAnims = _controllers
         .map(
-          (c) => Tween<double>(begin: 0, end: 1).animate(
-            CurvedAnimation(parent: c, curve: Curves.easeOut),
-          ),
+          (c) => Tween<double>(
+            begin: 0,
+            end: 1,
+          ).animate(CurvedAnimation(parent: c, curve: Curves.easeOut)),
         )
         .toList();
 
@@ -146,7 +147,8 @@ class _ResultsScreenState extends State<ResultsScreen>
           preFilledBet: 0,
           initialOpponents: widget.gameState.numberOfOpponents,
           preSelectedHeroPosition: widget.gameState.heroPosition,
-          preSelectedVillainPositions: widget.gameState.villainPositions?.toList(),
+          preSelectedVillainPositions: widget.gameState.villainPositions
+              ?.toList(),
           lockHoleCards: true,
           preSelectedGameMode: widget.gameState.gameMode,
         ),
@@ -181,8 +183,9 @@ class _ResultsScreenState extends State<ResultsScreen>
           'Recommendation',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
-        backgroundColor:
-            (isDark ? Colors.black : Colors.white).withValues(alpha: 0.5),
+        backgroundColor: (isDark ? Colors.black : Colors.white).withValues(
+          alpha: 0.5,
+        ),
         flexibleSpace: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
@@ -217,9 +220,7 @@ class _ResultsScreenState extends State<ResultsScreen>
             children: [
               // Space below the AppBar (SafeArea top + AppBar height)
               SizedBox(
-                height: MediaQuery.of(context).padding.top +
-                    kToolbarHeight +
-                    8,
+                height: MediaQuery.of(context).padding.top + kToolbarHeight + 8,
               ),
 
               // Section 0 — Decision badge
@@ -322,9 +323,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                           Icon(
                             Icons.info_outline,
                             size: 20,
-                            color: isDark
-                                ? kPrimaryGreenDark
-                                : kPrimaryGreen,
+                            color: isDark ? kPrimaryGreenDark : kPrimaryGreen,
                           ),
                           const SizedBox(width: 6),
                           Text(
@@ -345,8 +344,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                           style: TextStyle(
                             fontSize: 14,
                             height: 1.5,
-                            color:
-                                isDark ? Colors.white70 : Colors.black87,
+                            color: isDark ? Colors.white70 : Colors.black87,
                           ),
                         ),
                       ),
@@ -376,8 +374,7 @@ class _ResultsScreenState extends State<ResultsScreen>
                           .map(
                             (c) => Padding(
                               padding: const EdgeInsets.only(right: 8),
-                              child:
-                                  CardWidget(card: c, size: CardSize.large),
+                              child: CardWidget(card: c, size: CardSize.large),
                             ),
                           )
                           .toList(),
@@ -396,8 +393,9 @@ class _ResultsScreenState extends State<ResultsScreen>
                       Wrap(
                         spacing: 8,
                         children: widget.gameState.communityCards
-                            .map((c) =>
-                                CardWidget(card: c, size: CardSize.large))
+                            .map(
+                              (c) => CardWidget(card: c, size: CardSize.large),
+                            )
                             .toList(),
                       ),
                     ],
@@ -417,7 +415,9 @@ class _ResultsScreenState extends State<ResultsScreen>
                   width: double.infinity,
                   margin: const EdgeInsets.symmetric(vertical: 4),
                   padding: const EdgeInsets.symmetric(
-                      vertical: 10, horizontal: 16),
+                    vertical: 10,
+                    horizontal: 16,
+                  ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: isDark
@@ -429,8 +429,11 @@ class _ResultsScreenState extends State<ResultsScreen>
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.emoji_events,
-                          color: Colors.amber, size: 20),
+                      const Icon(
+                        Icons.emoji_events,
+                        color: Colors.amber,
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'Hand Complete — Showdown',
@@ -449,22 +452,18 @@ class _ResultsScreenState extends State<ResultsScreen>
               SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(
-                  icon: Icon(
-                      _isShowdown ? Icons.refresh : Icons.arrow_forward),
-                  label:
-                      Text(_isShowdown ? 'New Hand' : 'Continue Hand'),
+                  icon: Icon(_isShowdown ? Icons.refresh : Icons.arrow_forward),
+                  label: Text(_isShowdown ? 'New Hand' : 'Continue Hand'),
                   style: FilledButton.styleFrom(
                     backgroundColor: theme.colorScheme.primary,
-                    foregroundColor:
-                        isDark ? Colors.black : Colors.white,
+                    foregroundColor: isDark ? Colors.black : Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     textStyle: const TextStyle(fontSize: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
-                  onPressed:
-                      _isShowdown ? _startNewHand : _continueHand,
+                  onPressed: _isShowdown ? _startNewHand : _continueHand,
                 ),
               ),
               const SizedBox(height: 12),
@@ -478,7 +477,9 @@ class _ResultsScreenState extends State<ResultsScreen>
                   style: OutlinedButton.styleFrom(
                     foregroundColor: theme.colorScheme.primary,
                     side: BorderSide(
-                        color: theme.colorScheme.primary, width: 1.5),
+                      color: theme.colorScheme.primary,
+                      width: 1.5,
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     textStyle: const TextStyle(fontSize: 16),
                     shape: RoundedRectangleBorder(
@@ -519,7 +520,9 @@ class _StatsRow extends StatelessWidget {
                   label: '${item.label}: ${item.value}',
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        vertical: 16, horizontal: 8),
+                      vertical: 16,
+                      horizontal: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: item.color.withAlpha(15),
                       borderRadius: BorderRadius.circular(16),
@@ -595,44 +598,53 @@ class _EquityBreakdown extends StatelessWidget {
         child: Column(
           children: [
             // Green top strip
-            Container(
-              height: 4,
-              color: const Color(0xFF388E3C),
-            ),
+            Container(height: 4, color: const Color(0xFF388E3C)),
             Padding(
               padding: const EdgeInsets.all(16),
               child: IntrinsicHeight(
                 child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _BreakdownItem(
-                    label: 'Win',
-                    value: '${(result.winProbability * 100).toStringAsFixed(1)}%',
-                    color: const Color(0xFF388E3C),
-                    isDark: isDark,
-                  ),
-                  VerticalDivider(thickness: 1, color: isDark ? Colors.white24 : Colors.black12),
-                  _BreakdownItem(
-                    label: 'Tie',
-                    value: '${(result.tieProbability * 100).toStringAsFixed(1)}%',
-                    color: const Color(0xFFF9A825),
-                    isDark: isDark,
-                  ),
-                  VerticalDivider(thickness: 1, color: isDark ? Colors.white24 : Colors.black12),
-                  _BreakdownItem(
-                    label: 'Loss',
-                    value: '${(result.lossProbability * 100).toStringAsFixed(1)}%',
-                    color: const Color(0xFFD32F2F),
-                    isDark: isDark,
-                  ),
-                  VerticalDivider(thickness: 1, color: isDark ? Colors.white24 : Colors.black12),
-                  _BreakdownItem(
-                    label: 'Iterations',
-                    value: result.iterations.toString(),
-                    color: Colors.grey,
-                    isDark: isDark,
-                  ),
-                ],
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _BreakdownItem(
+                      label: 'Win',
+                      value:
+                          '${(result.winProbability * 100).toStringAsFixed(1)}%',
+                      color: const Color(0xFF388E3C),
+                      isDark: isDark,
+                    ),
+                    VerticalDivider(
+                      thickness: 1,
+                      color: isDark ? Colors.white24 : Colors.black12,
+                    ),
+                    _BreakdownItem(
+                      label: 'Tie',
+                      value:
+                          '${(result.tieProbability * 100).toStringAsFixed(1)}%',
+                      color: const Color(0xFFF9A825),
+                      isDark: isDark,
+                    ),
+                    VerticalDivider(
+                      thickness: 1,
+                      color: isDark ? Colors.white24 : Colors.black12,
+                    ),
+                    _BreakdownItem(
+                      label: 'Loss',
+                      value:
+                          '${(result.lossProbability * 100).toStringAsFixed(1)}%',
+                      color: const Color(0xFFD32F2F),
+                      isDark: isDark,
+                    ),
+                    VerticalDivider(
+                      thickness: 1,
+                      color: isDark ? Colors.white24 : Colors.black12,
+                    ),
+                    _BreakdownItem(
+                      label: 'Iterations',
+                      value: result.iterations.toString(),
+                      color: Colors.grey,
+                      isDark: isDark,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -663,7 +675,10 @@ class _BreakdownItem extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-              color: color, fontWeight: FontWeight.bold, fontSize: 17),
+            color: color,
+            fontWeight: FontWeight.bold,
+            fontSize: 17,
+          ),
         ),
         Text(
           label,
@@ -732,7 +747,9 @@ class _GameInfoSummary extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: (isDark ? kPrimaryGreenDark : kPrimaryGreen).withAlpha(25),
+                color: (isDark ? kPrimaryGreenDark : kPrimaryGreen).withAlpha(
+                  25,
+                ),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -799,17 +816,17 @@ class _InfoItem extends StatelessWidget {
 
 /// Maps a [HandRanking] enum value to a readable label.
 String _handRankLabel(HandRanking rank) => switch (rank) {
-      HandRanking.highCard => 'High Card',
-      HandRanking.onePair => 'One Pair',
-      HandRanking.twoPair => 'Two Pair',
-      HandRanking.threeOfAKind => 'Three of a Kind',
-      HandRanking.straight => 'Straight',
-      HandRanking.flush => 'Flush',
-      HandRanking.fullHouse => 'Full House',
-      HandRanking.fourOfAKind => 'Four of a Kind',
-      HandRanking.straightFlush => 'Straight Flush',
-      HandRanking.royalFlush => 'Royal Flush',
-    };
+  HandRanking.highCard => 'High Card',
+  HandRanking.onePair => 'One Pair',
+  HandRanking.twoPair => 'Two Pair',
+  HandRanking.threeOfAKind => 'Three of a Kind',
+  HandRanking.straight => 'Straight',
+  HandRanking.flush => 'Flush',
+  HandRanking.fullHouse => 'Full House',
+  HandRanking.fourOfAKind => 'Four of a Kind',
+  HandRanking.straightFlush => 'Straight Flush',
+  HandRanking.royalFlush => 'Royal Flush',
+};
 
 /// Animated equity bar shown below the stats row.
 class _EquityBar extends StatelessWidget {
@@ -824,8 +841,8 @@ class _EquityBar extends StatelessWidget {
     final barColor = equity >= 0.5
         ? const Color(0xFF22C55E)
         : equity >= 0.3
-            ? const Color(0xFFF59E0B)
-            : const Color(0xFFEF4444);
+        ? const Color(0xFFF59E0B)
+        : const Color(0xFFEF4444);
 
     return Semantics(
       label: 'Equity ${equityPct.toStringAsFixed(1)} percent',
@@ -866,8 +883,7 @@ class _EquityBar extends StatelessWidget {
                 child: LinearProgressIndicator(
                   value: value,
                   minHeight: 14,
-                  backgroundColor:
-                      isDark ? Colors.white12 : Colors.black12,
+                  backgroundColor: isDark ? Colors.white12 : Colors.black12,
                   valueColor: AlwaysStoppedAnimation<Color>(barColor),
                 ),
               ),

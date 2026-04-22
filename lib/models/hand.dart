@@ -17,10 +17,7 @@ class Hand {
   List<PokerCard> get allCards => [...holeCards, ...communityCards];
 
   /// Creates a copy with optional overrides.
-  Hand copyWith({
-    List<PokerCard>? holeCards,
-    List<PokerCard>? communityCards,
-  }) {
+  Hand copyWith({List<PokerCard>? holeCards, List<PokerCard>? communityCards}) {
     return Hand(
       holeCards: holeCards ?? this.holeCards,
       communityCards: communityCards ?? this.communityCards,

@@ -54,10 +54,7 @@ class SectionHeader extends StatelessWidget {
             ),
           ),
         ],
-        if (trailing != null) ...[
-          const Spacer(),
-          trailing!,
-        ],
+        if (trailing != null) ...[const Spacer(), trailing!],
       ],
     );
   }

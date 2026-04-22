@@ -27,9 +27,7 @@ void main() {
       final themeService = await ThemeService.create();
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: HomeScreen(themeService: themeService),
-        ),
+        MaterialApp(home: HomeScreen(themeService: themeService)),
       );
       await tester.pump();
       await tester.pump(const Duration(seconds: 2));
@@ -41,9 +39,7 @@ void main() {
       final themeService = await ThemeService.create();
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: HomeScreen(themeService: themeService),
-        ),
+        MaterialApp(home: HomeScreen(themeService: themeService)),
       );
       await tester.pump();
       await tester.pump(const Duration(seconds: 2));
@@ -55,9 +51,7 @@ void main() {
       final themeService = await ThemeService.create();
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: HomeScreen(themeService: themeService),
-        ),
+        MaterialApp(home: HomeScreen(themeService: themeService)),
       );
       await tester.pump();
       await tester.pump(const Duration(seconds: 2));

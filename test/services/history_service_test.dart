@@ -60,14 +60,8 @@ void main() {
 
     test('history is sorted newest first', () async {
       final service = await HistoryService.create();
-      final older = _makeRecord(
-        id: 'old',
-        timestamp: DateTime(2024, 1, 1),
-      );
-      final newer = _makeRecord(
-        id: 'new',
-        timestamp: DateTime(2025, 1, 1),
-      );
+      final older = _makeRecord(id: 'old', timestamp: DateTime(2024, 1, 1));
+      final newer = _makeRecord(id: 'new', timestamp: DateTime(2025, 1, 1));
 
       await service.saveHand(older);
       await service.saveHand(newer);

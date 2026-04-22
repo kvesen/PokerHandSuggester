@@ -7,10 +7,7 @@ import '../engine/decision_engine.dart';
 
 /// Displays the recommended action (Fold / Call / Raise) as a prominent card.
 class SuggestionCard extends StatelessWidget {
-  const SuggestionCard({
-    super.key,
-    required this.decision,
-  });
+  const SuggestionCard({super.key, required this.decision});
 
   final Decision decision;
 
@@ -19,20 +16,20 @@ class SuggestionCard extends StatelessWidget {
     final theme = Theme.of(context);
     final (label, bgColor, icon) = switch (decision.action) {
       PlayerAction.fold => (
-          'FOLD',
-          const Color(0xFFF43F5E),
-          Icons.close_rounded,
-        ),
+        'FOLD',
+        const Color(0xFFF43F5E),
+        Icons.close_rounded,
+      ),
       PlayerAction.call => (
-          'CALL',
-          const Color(0xFFFBBF24),
-          Icons.drag_handle_rounded,
-        ),
+        'CALL',
+        const Color(0xFFFBBF24),
+        Icons.drag_handle_rounded,
+      ),
       PlayerAction.raise => (
-          'RAISE',
-          const Color(0xFF34D399),
-          Icons.arrow_upward_rounded,
-        ),
+        'RAISE',
+        const Color(0xFF34D399),
+        Icons.arrow_upward_rounded,
+      ),
     };
 
     return Semantics(
@@ -48,8 +45,7 @@ class SuggestionCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,

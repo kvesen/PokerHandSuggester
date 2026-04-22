@@ -26,8 +26,9 @@ class CrashReportingService {
       await Firebase.initializeApp();
       // Disable automatic crash collection in debug mode so devs see
       // full stack traces in the console instead of Crashlytics.
-      await FirebaseCrashlytics.instance
-          .setCrashlyticsCollectionEnabled(!kDebugMode);
+      await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(
+        !kDebugMode,
+      );
       _initialized = true;
     } catch (e, st) {
       // Firebase config files (google-services.json / GoogleService-Info.plist)

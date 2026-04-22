@@ -68,7 +68,10 @@ class HandEvaluator {
   /// Evaluate a partial hand (< 5 cards) by rank only.
   static HandResult _evaluatePartial(List<PokerCard> cards) {
     final sorted = [...cards]..sort((a, b) => b.value.compareTo(a.value));
-    final score = _tierScore(HandRanking.highCard, sorted.map((c) => c.value).toList());
+    final score = _tierScore(
+      HandRanking.highCard,
+      sorted.map((c) => c.value).toList(),
+    );
     return HandResult(ranking: HandRanking.highCard, score: score);
   }
 
@@ -80,8 +83,9 @@ class HandEvaluator {
     final straightHighCard = _straightHighCard(values);
 
     if (isFlush && straightHighCard != null) {
-      final ranking =
-          straightHighCard == 14 ? HandRanking.royalFlush : HandRanking.straightFlush;
+      final ranking = straightHighCard == 14
+          ? HandRanking.royalFlush
+          : HandRanking.straightFlush;
       return HandResult(
         ranking: ranking,
         score: _tierScore(ranking, [straightHighCard]),
@@ -90,7 +94,9 @@ class HandEvaluator {
 
     final groups = _groupByRank(values);
     // groups sorted descending by count, then by rank value
-    groups.sort((a, b) => a[0] != b[0] ? b[0].compareTo(a[0]) : b[1].compareTo(a[1]));
+    groups.sort(
+      (a, b) => a[0] != b[0] ? b[0].compareTo(a[0]) : b[1].compareTo(a[1]),
+    );
 
     final counts = groups.map((g) => g[0]).toList(); // e.g. [4,1] or [3,2]
 

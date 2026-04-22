@@ -113,7 +113,9 @@ class HandRecord {
         (a) => a.name == json['action'] as String,
       ),
       equity: (json['equity'] as num).toDouble(),
-      winProbability: (json['winProbability'] as num?)?.toDouble() ?? (json['equity'] as num).toDouble(),
+      winProbability:
+          (json['winProbability'] as num?)?.toDouble() ??
+          (json['equity'] as num).toDouble(),
       tieProbability: (json['tieProbability'] as num?)?.toDouble() ?? 0.0,
       potOdds: (json['potOdds'] as num).toDouble(),
       expectedValue: (json['expectedValue'] as num).toDouble(),
@@ -136,11 +138,11 @@ class HandRecord {
 }
 
 Map<String, dynamic> _cardToJson(PokerCard card) => {
-      'suit': card.suit.name,
-      'rank': card.rank.name,
-    };
+  'suit': card.suit.name,
+  'rank': card.rank.name,
+};
 
 PokerCard _cardFromJson(Map<String, dynamic> json) => PokerCard(
-      suit: Suit.values.firstWhere((s) => s.name == json['suit'] as String),
-      rank: Rank.values.firstWhere((r) => r.name == json['rank'] as String),
-    );
+  suit: Suit.values.firstWhere((s) => s.name == json['suit'] as String),
+  rank: Rank.values.firstWhere((r) => r.name == json['rank'] as String),
+);

@@ -115,7 +115,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final isDark = switch (widget.themeService.themeMode) {
       ThemeMode.dark => true,
       ThemeMode.light => false,
-      ThemeMode.system => MediaQuery.platformBrightnessOf(context) == Brightness.dark,
+      ThemeMode.system =>
+        MediaQuery.platformBrightnessOf(context) == Brightness.dark,
     };
     final theme = Theme.of(context);
 
@@ -152,7 +153,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 200,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: (isDark ? Colors.greenAccent : Colors.green).withValues(alpha: 0.15),
+                    color: (isDark ? Colors.greenAccent : Colors.green)
+                        .withValues(alpha: 0.15),
                   ),
                 ),
               ),
@@ -178,15 +180,21 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 100,
                         height: 100,
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.surface.withValues(alpha: isDark ? 0.1 : 0.5),
+                          color: theme.colorScheme.surface.withValues(
+                            alpha: isDark ? 0.1 : 0.5,
+                          ),
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                            color: theme.colorScheme.primary.withValues(
+                              alpha: 0.3,
+                            ),
                             width: 1.5,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                              color: theme.colorScheme.primary.withValues(
+                                alpha: 0.2,
+                              ),
                               blurRadius: 30,
                               offset: const Offset(0, 10),
                             ),
@@ -196,7 +204,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Icon(
                             Icons.style_rounded,
                             size: 48,
-                            color: isDark ? Colors.white : theme.colorScheme.primary,
+                            color: isDark
+                                ? Colors.white
+                                : theme.colorScheme.primary,
                           ),
                         ),
                       ),
@@ -235,11 +245,26 @@ class _HomeScreenState extends State<HomeScreen> {
                         runSpacing: 10,
                         alignment: WrapAlignment.center,
                         children: [
-                          _FeatureChip(icon: Icons.calculate_outlined, label: 'Equity'),
-                          _FeatureChip(icon: Icons.pie_chart_outline, label: 'Pot Odds'),
-                          _FeatureChip(icon: Icons.auto_graph_rounded, label: 'EV Math'),
-                          _FeatureChip(icon: Icons.lightbulb_outline, label: 'Advice'),
-                          _FeatureChip(icon: Icons.grid_on_rounded, label: 'Ranges'),
+                          _FeatureChip(
+                            icon: Icons.calculate_outlined,
+                            label: 'Equity',
+                          ),
+                          _FeatureChip(
+                            icon: Icons.pie_chart_outline,
+                            label: 'Pot Odds',
+                          ),
+                          _FeatureChip(
+                            icon: Icons.auto_graph_rounded,
+                            label: 'EV Math',
+                          ),
+                          _FeatureChip(
+                            icon: Icons.lightbulb_outline,
+                            label: 'Advice',
+                          ),
+                          _FeatureChip(
+                            icon: Icons.grid_on_rounded,
+                            label: 'Ranges',
+                          ),
                         ],
                       ),
                       const SizedBox(height: 48),
@@ -249,7 +274,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: Icons.grid_view_rounded,
                         title: 'Manual Input',
                         description: 'Select cards and get your optimal move',
-                        gradientColors: const [Color(0xFF10B981), Color(0xFF059669)],
+                        gradientColors: const [
+                          Color(0xFF10B981),
+                          Color(0xFF059669),
+                        ],
                         fullWidth: true,
                         onTap: () => Navigator.of(context)
                             .push(
@@ -266,7 +294,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: Icons.grid_on_rounded,
                         title: 'Hand Ranges',
                         description: 'Position-based charts',
-                        gradientColors: const [Color(0xFF8B5CF6), Color(0xFF7C3AED)],
+                        gradientColors: const [
+                          Color(0xFF8B5CF6),
+                          Color(0xFF7C3AED),
+                        ],
                         fullWidth: true,
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute<void>(
@@ -313,7 +344,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   label: 'Hand History',
                   button: true,
                   child: IconButton(
-                    icon: Icon(Icons.history_rounded, color: isDark ? Colors.white : Colors.black87),
+                    icon: Icon(
+                      Icons.history_rounded,
+                      color: isDark ? Colors.white : Colors.black87,
+                    ),
                     tooltip: 'Hand History',
                     onPressed: _openHistory,
                   ),
@@ -328,14 +362,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   label: 'Change appearance',
                   button: true,
                   child: IconButton(
-                    icon: Icon(
-                      switch (widget.themeService.themeMode) {
-                        ThemeMode.system => Icons.brightness_auto_rounded,
-                        ThemeMode.light => Icons.light_mode_rounded,
-                        ThemeMode.dark => Icons.dark_mode_rounded,
-                      },
-                      color: isDark ? Colors.white : Colors.black87,
-                    ),
+                    icon: Icon(switch (widget.themeService.themeMode) {
+                      ThemeMode.system => Icons.brightness_auto_rounded,
+                      ThemeMode.light => Icons.light_mode_rounded,
+                      ThemeMode.dark => Icons.dark_mode_rounded,
+                    }, color: isDark ? Colors.white : Colors.black87),
                     tooltip: 'Appearance',
                     onPressed: () => _showAppearanceSheet(context),
                   ),
@@ -408,9 +439,7 @@ class _RecentActivity extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.red.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: Colors.red.withValues(alpha: 0.2),
-              ),
+              border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
             ),
             child: Column(
               children: [
@@ -435,10 +464,14 @@ class _RecentActivity extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 32),
             decoration: BoxDecoration(
-              color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.03),
+              color: (isDark ? Colors.white : Colors.black).withValues(
+                alpha: 0.03,
+              ),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
+                color: (isDark ? Colors.white : Colors.black).withValues(
+                  alpha: 0.05,
+                ),
               ),
             ),
             child: Column(
@@ -446,7 +479,9 @@ class _RecentActivity extends StatelessWidget {
                 Icon(
                   Icons.receipt_long_rounded,
                   size: 32,
-                  color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.2),
+                  color: (isDark ? Colors.white : Colors.black).withValues(
+                    alpha: 0.2,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -487,9 +522,10 @@ class _ShimmerPlaceholderState extends State<_ShimmerPlaceholder>
       vsync: this,
       duration: const Duration(milliseconds: 900),
     )..repeat(reverse: true);
-    _opacity = Tween<double>(begin: 0.3, end: 0.7).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _opacity = Tween<double>(
+      begin: 0.3,
+      end: 0.7,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -508,7 +544,9 @@ class _ShimmerPlaceholderState extends State<_ShimmerPlaceholder>
           height: 64,
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
-            color: (widget.isDark ? Colors.white : Colors.black).withValues(alpha: 0.08),
+            color: (widget.isDark ? Colors.white : Colors.black).withValues(
+              alpha: 0.08,
+            ),
             borderRadius: BorderRadius.circular(16),
           ),
         ),
@@ -526,99 +564,116 @@ class _RecentHandTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (label, color, actionIcon) = switch (record.action) {
-      PlayerAction.fold => ('FOLD', const Color(0xFFEF4444), Icons.block_rounded),
-      PlayerAction.call => ('CALL', const Color(0xFFF59E0B), Icons.pan_tool_alt_rounded),
-      PlayerAction.raise => ('RAISE', const Color(0xFF10B981), Icons.trending_up_rounded),
+      PlayerAction.fold => (
+        'FOLD',
+        const Color(0xFFEF4444),
+        Icons.block_rounded,
+      ),
+      PlayerAction.call => (
+        'CALL',
+        const Color(0xFFF59E0B),
+        Icons.pan_tool_alt_rounded,
+      ),
+      PlayerAction.raise => (
+        'RAISE',
+        const Color(0xFF10B981),
+        Icons.trending_up_rounded,
+      ),
     };
 
-    final badgeColor = isDark ? color : HSLColor.fromColor(color)
-        .withLightness((HSLColor.fromColor(color).lightness * 0.8).clamp(0.0, 1.0))
-        .toColor();
+    final badgeColor = isDark
+        ? color
+        : HSLColor.fromColor(color)
+              .withLightness(
+                (HSLColor.fromColor(color).lightness * 0.8).clamp(0.0, 1.0),
+              )
+              .toColor();
 
     final cardLabels = record.holeCards
         .map((c) => '${c.rank.name} of ${c.suit.name}')
         .join(', ');
 
     return Semantics(
-      label: 'Recent hand: $cardLabels — $label — ${_formatRelative(record.timestamp)}',
+      label:
+          'Recent hand: $cardLabels — $label — ${_formatRelative(record.timestamp)}',
       child: Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withValues(alpha: isDark ? 0.4 : 0.8),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Theme.of(
+            context,
+          ).colorScheme.surface.withValues(alpha: isDark ? 0.4 : 0.8),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: (isDark ? Colors.white : Colors.black).withValues(
+              alpha: 0.05,
+            ),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          // Activity Indicator line
-          Container(
-            width: 4,
-            height: 36,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(2),
+        child: Row(
+          children: [
+            // Activity Indicator line
+            Container(
+              width: 4,
+              height: 36,
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-          ),
-          const SizedBox(width: 12),
-          // Hole cards
-          ...record.holeCards.map(
-            (c) => Padding(
-              padding: const EdgeInsets.only(right: 6),
-              child: CardWidget(card: c, size: CardSize.small),
+            const SizedBox(width: 12),
+            // Hole cards
+            ...record.holeCards.map(
+              (c) => Padding(
+                padding: const EdgeInsets.only(right: 6),
+                child: CardWidget(card: c, size: CardSize.small),
+              ),
             ),
-          ),
-          const SizedBox(width: 12),
-          // Decision badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: color.withValues(alpha: 0.3)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  actionIcon,
-                  size: 11,
-                  color: badgeColor,
-                ),
-                const SizedBox(width: 3),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: badgeColor,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.5,
+            const SizedBox(width: 12),
+            // Decision badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: color.withValues(alpha: 0.3)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(actionIcon, size: 11, color: badgeColor),
+                  const SizedBox(width: 3),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      color: badgeColor,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.5,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const Spacer(),
-          // Timestamp
-          Text(
-            _formatRelative(record.timestamp),
-            style: TextStyle(
-              color: isDark ? Colors.white54 : Colors.black54,
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
+            const Spacer(),
+            // Timestamp
+            Text(
+              _formatRelative(record.timestamp),
+              style: TextStyle(
+                color: isDark ? Colors.white54 : Colors.black54,
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
@@ -648,35 +703,43 @@ class _FeatureChip extends StatelessWidget {
     return Semantics(
       label: label,
       child: ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, color: isDark ? Colors.white70 : Colors.black87, size: 16),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: TextStyle(
-                  color: isDark ? Colors.white : Colors.black87,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: (isDark ? Colors.white : Colors.black).withValues(
+                alpha: 0.05,
+              ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: (isDark ? Colors.white : Colors.black).withValues(
+                  alpha: 0.1,
                 ),
               ),
-            ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  color: isDark ? Colors.white70 : Colors.black87,
+                  size: 16,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black87,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }
@@ -715,10 +778,14 @@ class _ActionCard extends StatelessWidget {
             filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
             child: Container(
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface.withValues(alpha: isDark ? 0.3 : 0.8),
+                color: Theme.of(
+                  context,
+                ).colorScheme.surface.withValues(alpha: isDark ? 0.3 : 0.8),
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.08),
+                  color: (isDark ? Colors.white : Colors.black).withValues(
+                    alpha: 0.08,
+                  ),
                   width: 1.5,
                 ),
                 boxShadow: [
@@ -733,7 +800,9 @@ class _ActionCard extends StatelessWidget {
                 children: [
                   // Top gradient accent line
                   Positioned(
-                    top: 0, left: 0, right: 0,
+                    top: 0,
+                    left: 0,
+                    right: 0,
                     child: Container(
                       height: 4,
                       decoration: BoxDecoration(
@@ -750,7 +819,9 @@ class _ActionCard extends StatelessWidget {
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
-                                    colors: gradientColors.map((c) => c.withValues(alpha: 0.15)).toList(),
+                                    colors: gradientColors
+                                        .map((c) => c.withValues(alpha: 0.15))
+                                        .toList(),
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
@@ -773,7 +844,9 @@ class _ActionCard extends StatelessWidget {
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
-                                        color: isDark ? Colors.white : Colors.black87,
+                                        color: isDark
+                                            ? Colors.white
+                                            : Colors.black87,
                                         letterSpacing: -0.2,
                                       ),
                                     ),
@@ -782,7 +855,9 @@ class _ActionCard extends StatelessWidget {
                                       description,
                                       style: TextStyle(
                                         fontSize: 12,
-                                        color: isDark ? Colors.white60 : Colors.black54,
+                                        color: isDark
+                                            ? Colors.white60
+                                            : Colors.black54,
                                         height: 1.3,
                                       ),
                                     ),
@@ -791,7 +866,9 @@ class _ActionCard extends StatelessWidget {
                               ),
                               Icon(
                                 Icons.chevron_right_rounded,
-                                color: gradientColors.last.withValues(alpha: 0.7),
+                                color: gradientColors.last.withValues(
+                                  alpha: 0.7,
+                                ),
                                 size: 24,
                               ),
                             ],
@@ -804,7 +881,9 @@ class _ActionCard extends StatelessWidget {
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
-                                    colors: gradientColors.map((c) => c.withValues(alpha: 0.15)).toList(),
+                                    colors: gradientColors
+                                        .map((c) => c.withValues(alpha: 0.15))
+                                        .toList(),
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
@@ -832,7 +911,9 @@ class _ActionCard extends StatelessWidget {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: isDark ? Colors.white60 : Colors.black54,
+                                  color: isDark
+                                      ? Colors.white60
+                                      : Colors.black54,
                                   height: 1.3,
                                 ),
                               ),
@@ -911,12 +992,17 @@ class _AppearanceSheetState extends State<_AppearanceSheet> {
                 for (final (mode, icon, label) in options)
                   RadioListTile<ThemeMode>(
                     value: mode,
-                    secondary: Icon(icon, color: isDark ? Colors.white70 : Colors.black54),
+                    secondary: Icon(
+                      icon,
+                      color: isDark ? Colors.white70 : Colors.black54,
+                    ),
                     title: Text(
                       label,
                       style: TextStyle(
                         color: isDark ? Colors.white : Colors.black87,
-                        fontWeight: current == mode ? FontWeight.bold : FontWeight.normal,
+                        fontWeight: current == mode
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                       ),
                     ),
                     activeColor: const Color(0xFF10B981),

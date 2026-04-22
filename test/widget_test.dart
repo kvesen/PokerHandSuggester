@@ -47,8 +47,9 @@ void main() {
       expect(find.text('Manual Input'), findsOneWidget);
     });
 
-    testWidgets('home screen meets android tap target guideline',
-        (tester) async {
+    testWidgets('home screen meets android tap target guideline', (
+      tester,
+    ) async {
       final handle = tester.ensureSemantics();
       addTearDown(handle.dispose);
       final themeService = await ThemeService.create();
@@ -58,10 +59,7 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(seconds: 2));
 
-      await expectLater(
-        tester,
-        meetsGuideline(androidTapTargetGuideline),
-      );
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
     });
 
     testWidgets('home screen meets iOS tap target guideline', (tester) async {
@@ -74,14 +72,12 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(seconds: 2));
 
-      await expectLater(
-        tester,
-        meetsGuideline(iOSTapTargetGuideline),
-      );
+      await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
     });
 
-    testWidgets('home screen meets labeled tap target guideline',
-        (tester) async {
+    testWidgets('home screen meets labeled tap target guideline', (
+      tester,
+    ) async {
       final handle = tester.ensureSemantics();
       addTearDown(handle.dispose);
       final themeService = await ThemeService.create();
@@ -91,10 +87,7 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(seconds: 2));
 
-      await expectLater(
-        tester,
-        meetsGuideline(labeledTapTargetGuideline),
-      );
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
     });
   });
 
@@ -117,8 +110,9 @@ void main() {
       expect(tester.widgetList<CardWidget>(find.byType(CardWidget)).length, 52);
     });
 
-    testWidgets('selecting a card triggers onCardToggled callback',
-        (tester) async {
+    testWidgets('selecting a card triggers onCardToggled callback', (
+      tester,
+    ) async {
       PokerCard? selected;
       await tester.pumpWidget(
         MaterialApp(
@@ -159,14 +153,16 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final cardWidgets =
-          tester.widgetList<CardWidget>(find.byType(CardWidget)).toList();
+      final cardWidgets = tester
+          .widgetList<CardWidget>(find.byType(CardWidget))
+          .toList();
       final ace = cardWidgets.firstWhere((w) => w.card == card);
       expect(ace.selected, isTrue);
     });
 
-    testWidgets('duplicate cards are disabled — disabled card has no onTap',
-        (tester) async {
+    testWidgets('duplicate cards are disabled — disabled card has no onTap', (
+      tester,
+    ) async {
       // Put Ace of Spades in disabled list (already used elsewhere).
       const usedCard = PokerCard(suit: Suit.spades, rank: Rank.ace);
       await tester.pumpWidget(
@@ -184,21 +180,21 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final cardWidgets =
-          tester.widgetList<CardWidget>(find.byType(CardWidget)).toList();
+      final cardWidgets = tester
+          .widgetList<CardWidget>(find.byType(CardWidget))
+          .toList();
       final disabled = cardWidgets.firstWhere((w) => w.card == usedCard);
       // Disabled card must not have an onTap handler.
       expect(disabled.onTap, isNull);
     });
 
-    testWidgets('ManualInputScreen shows card selector on launch',
-        (tester) async {
+    testWidgets('ManualInputScreen shows card selector on launch', (
+      tester,
+    ) async {
       SharedPreferences.setMockInitialValues({});
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
-      await tester.pumpWidget(
-        const MaterialApp(home: ManualInputScreen()),
-      );
+      await tester.pumpWidget(const MaterialApp(home: ManualInputScreen()));
       await tester.pumpAndSettle();
 
       expect(find.byType(CardSelector), findsOneWidget);
@@ -206,8 +202,9 @@ void main() {
   });
 
   group('Suggestion card', () {
-    testWidgets('SuggestionCard shows RAISE label for raise decision',
-        (tester) async {
+    testWidgets('SuggestionCard shows RAISE label for raise decision', (
+      tester,
+    ) async {
       const decision = Decision(
         action: PlayerAction.raise,
         equity: 0.65,
@@ -218,9 +215,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: SuggestionCard(decision: decision),
-          ),
+          home: Scaffold(body: SuggestionCard(decision: decision)),
         ),
       );
       await tester.pumpAndSettle();
@@ -228,8 +223,9 @@ void main() {
       expect(find.text('RAISE'), findsOneWidget);
     });
 
-    testWidgets('SuggestionCard shows FOLD label for fold decision',
-        (tester) async {
+    testWidgets('SuggestionCard shows FOLD label for fold decision', (
+      tester,
+    ) async {
       const decision = Decision(
         action: PlayerAction.fold,
         equity: 0.20,
@@ -240,9 +236,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: SuggestionCard(decision: decision),
-          ),
+          home: Scaffold(body: SuggestionCard(decision: decision)),
         ),
       );
       await tester.pumpAndSettle();
@@ -250,8 +244,9 @@ void main() {
       expect(find.text('FOLD'), findsOneWidget);
     });
 
-    testWidgets('suggestion updates (AnimatedSwitcher) when decision changes',
-        (tester) async {
+    testWidgets('suggestion updates (AnimatedSwitcher) when decision changes', (
+      tester,
+    ) async {
       // Start with FOLD decision on ResultsScreen.
       const holeCards = [
         PokerCard(suit: Suit.spades, rank: Rank.two),
@@ -321,9 +316,7 @@ void main() {
     testWidgets('empty slot renders add icon', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: CardTile(onTap: () {}),
-          ),
+          home: Scaffold(body: CardTile(onTap: () {})),
         ),
       );
       await tester.pumpAndSettle();
@@ -349,9 +342,7 @@ void main() {
       var tapped = false;
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            body: CardTile(onTap: () => tapped = true),
-          ),
+          home: Scaffold(body: CardTile(onTap: () => tapped = true)),
         ),
       );
       await tester.pumpAndSettle();

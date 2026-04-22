@@ -33,21 +33,21 @@ class PositionSelector extends StatelessWidget {
 
   // Seats arranged clockwise from the Button
   static const List<(TablePosition, double, double)> _seats = [
-    (TablePosition.button,     0.08, 0.50),
+    (TablePosition.button, 0.08, 0.50),
     (TablePosition.smallBlind, 0.32, 0.04),
-    (TablePosition.bigBlind,   0.50, 0.00),
-    (TablePosition.utg,        0.68, 0.04),
-    (TablePosition.utg1,       0.88, 0.22),
-    (TablePosition.mp,         0.92, 0.50),
-    (TablePosition.mp1,        0.80, 0.78),
-    (TablePosition.hijack,     0.56, 0.92),
-    (TablePosition.cutoff,     0.20, 0.78),
+    (TablePosition.bigBlind, 0.50, 0.00),
+    (TablePosition.utg, 0.68, 0.04),
+    (TablePosition.utg1, 0.88, 0.22),
+    (TablePosition.mp, 0.92, 0.50),
+    (TablePosition.mp1, 0.80, 0.78),
+    (TablePosition.hijack, 0.56, 0.92),
+    (TablePosition.cutoff, 0.20, 0.78),
   ];
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return AspectRatio(
       aspectRatio: 2.0,
       child: LayoutBuilder(
@@ -58,7 +58,9 @@ class PositionSelector extends StatelessWidget {
             children: [
               // Premium Table Background
               Positioned.fill(
-                child: CustomPaint(painter: _TableOutlinePainter(isDark: isDark)),
+                child: CustomPaint(
+                  painter: _TableOutlinePainter(isDark: isDark),
+                ),
               ),
               // Interactive Seats
               for (final (pos, fx, fy) in _seats)
@@ -70,7 +72,14 @@ class PositionSelector extends StatelessWidget {
     );
   }
 
-  Widget _buildSeat(BuildContext context, TablePosition pos, double cx, double cy, bool isDark, double w) {
+  Widget _buildSeat(
+    BuildContext context,
+    TablePosition pos,
+    double cx,
+    double cy,
+    bool isDark,
+    double w,
+  ) {
     final seatSize = (w * 0.12).clamp(36.0, 48.0);
     final isHero = selectedPosition == pos;
     final isVillain = villainPositions.contains(pos);
@@ -79,7 +88,7 @@ class PositionSelector extends StatelessWidget {
     final Color borderColor;
     final Color shadowColor;
     final Color textColor;
-    
+
     if (isHero) {
       borderColor = const Color(0xFF10B981); // Emerald glow
       shadowColor = const Color(0xFF10B981);
@@ -98,7 +107,12 @@ class PositionSelector extends StatelessWidget {
       left: cx - seatSize / 2,
       top: cy - seatSize / 2,
       child: Semantics(
-        label: '${positionLabel(pos)} seat${isHero ? ", your position" : isVillain ? ", opponent position" : ""}',
+        label:
+            '${positionLabel(pos)} seat${isHero
+                ? ", your position"
+                : isVillain
+                ? ", opponent position"
+                : ""}',
         button: true,
         selected: isHero || isVillain,
         child: GestureDetector(
@@ -108,14 +122,17 @@ class PositionSelector extends StatelessWidget {
               onPositionChanged(null);
             } else if (isVillain) {
               if (onVillainPositionsChanged != null) {
-                final updated = List<TablePosition>.from(villainPositions)..remove(pos);
+                final updated = List<TablePosition>.from(villainPositions)
+                  ..remove(pos);
                 onVillainPositionsChanged!(updated);
               }
             } else {
               if (selectedPosition == null) {
                 onPositionChanged(pos);
-              } else if (onVillainPositionsChanged != null && villainPositions.length < maxVillains) {
-                final updated = List<TablePosition>.from(villainPositions)..add(pos);
+              } else if (onVillainPositionsChanged != null &&
+                  villainPositions.length < maxVillains) {
+                final updated = List<TablePosition>.from(villainPositions)
+                  ..add(pos);
                 onVillainPositionsChanged!(updated);
               } else if (onVillainPositionsChanged == null) {
                 onPositionChanged(pos);
@@ -130,7 +147,9 @@ class PositionSelector extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               // Glassmorphism base
-              color: isDark ? Colors.black54 : Colors.white.withValues(alpha: 0.8),
+              color: isDark
+                  ? Colors.black54
+                  : Colors.white.withValues(alpha: 0.8),
               border: Border.all(
                 color: borderColor,
                 width: (isHero || isVillain) ? 2.5 : 1.5,
@@ -222,8 +241,8 @@ class _TableOutlinePainter extends CustomPainter {
     // Rich dark felt fill
     final feltPaint = Paint()
       ..shader = RadialGradient(
-        colors: isDark 
-            ? [const Color(0xFF1B3B2B), const Color(0xFF0D1C15)] 
+        colors: isDark
+            ? [const Color(0xFF1B3B2B), const Color(0xFF0D1C15)]
             : [const Color(0xFFE8F5E9), const Color(0xFFC8E6C9)],
         center: Alignment.center,
         radius: 0.8,
@@ -239,8 +258,7 @@ class _TableOutlinePainter extends CustomPainter {
     canvas.drawOval(rect, borderPaint);
 
     // Subtle inner felt ring
-    final innerRect = Rect.fromLTWH(
-        w * 0.12, h * 0.16, w * 0.76, h * 0.68);
+    final innerRect = Rect.fromLTWH(w * 0.12, h * 0.16, w * 0.76, h * 0.68);
     final innerPaint = Paint()
       ..color = (isDark ? Colors.white : Colors.black).withValues(alpha: 0.08)
       ..style = PaintingStyle.stroke
@@ -263,10 +281,7 @@ class _TableOutlinePainter extends CustomPainter {
       textAlign: TextAlign.center,
       textDirection: TextDirection.ltr,
     )..layout();
-    tp.paint(
-      canvas,
-      Offset(w / 2 - tp.width / 2, h / 2 - tp.height / 2),
-    );
+    tp.paint(canvas, Offset(w / 2 - tp.width / 2, h / 2 - tp.height / 2));
   }
 
   @override

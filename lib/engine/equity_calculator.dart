@@ -67,12 +67,14 @@ class EquityCalculator {
 
     // Build the remaining deck (exclude known cards).
     final knownCards = {...holeCards, ...communityCards};
-    final deck =
-        PokerCard.fullDeck().where((c) => !knownCards.contains(c)).toList();
+    final deck = PokerCard.fullDeck()
+        .where((c) => !knownCards.contains(c))
+        .toList();
 
     final int communityNeeded = 5 - communityCards.length;
     const int cardsPerOpponent = 2;
-    final int totalCardsNeeded = communityNeeded + numOpponents * cardsPerOpponent;
+    final int totalCardsNeeded =
+        communityNeeded + numOpponents * cardsPerOpponent;
 
     // Guard: not enough cards to run simulation (degenerate state).
     if (deck.length < totalCardsNeeded) {
@@ -150,8 +152,9 @@ class EquityCalculator {
 
       final playerResult = HandEvaluator.evaluate(playerHand);
 
-      final bestOpponent =
-          opponentResults.reduce((a, b) => a.compareTo(b) >= 0 ? a : b);
+      final bestOpponent = opponentResults.reduce(
+        (a, b) => a.compareTo(b) >= 0 ? a : b,
+      );
 
       final cmp = playerResult.compareTo(bestOpponent);
       if (cmp > 0) {

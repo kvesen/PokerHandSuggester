@@ -26,7 +26,9 @@ void main() {
         seed: 42,
       );
       final sum =
-          result.winProbability + result.tieProbability + result.lossProbability;
+          result.winProbability +
+          result.tieProbability +
+          result.lossProbability;
       expect(sum, closeTo(1.0, 0.0001));
     });
 
@@ -74,7 +76,9 @@ void main() {
       );
       expect(result.iterations, 500);
       final sum =
-          result.winProbability + result.tieProbability + result.lossProbability;
+          result.winProbability +
+          result.tieProbability +
+          result.lossProbability;
       expect(sum, closeTo(1.0, 0.0001));
     });
 
@@ -130,28 +134,31 @@ void main() {
       expect(oneOpponent.equity, greaterThan(fourOpponents.equity));
     });
 
-    test('river (5 community cards) — result is determined (win or loss or tie)', () {
-      // With all 5 community cards known, every simulation should yield the
-      // same outcome, so one of the probabilities should be 1.0.
-      final result = EquityCalculator.calculate(
-        holeCards: [
-          const PokerCard(suit: Suit.spades, rank: Rank.ace),
-          const PokerCard(suit: Suit.spades, rank: Rank.king),
-        ],
-        communityCards: [
-          const PokerCard(suit: Suit.spades, rank: Rank.queen),
-          const PokerCard(suit: Suit.spades, rank: Rank.jack),
-          const PokerCard(suit: Suit.spades, rank: Rank.ten),
-          const PokerCard(suit: Suit.hearts, rank: Rank.two),
-          const PokerCard(suit: Suit.hearts, rank: Rank.three),
-        ],
-        numOpponents: 1,
-        iterations: 100,
-        seed: 7,
-      );
-      // Win probability should be 1.0 (royal flush beats everything)
-      expect(result.winProbability, closeTo(1.0, 0.0001));
-    });
+    test(
+      'river (5 community cards) — result is determined (win or loss or tie)',
+      () {
+        // With all 5 community cards known, every simulation should yield the
+        // same outcome, so one of the probabilities should be 1.0.
+        final result = EquityCalculator.calculate(
+          holeCards: [
+            const PokerCard(suit: Suit.spades, rank: Rank.ace),
+            const PokerCard(suit: Suit.spades, rank: Rank.king),
+          ],
+          communityCards: [
+            const PokerCard(suit: Suit.spades, rank: Rank.queen),
+            const PokerCard(suit: Suit.spades, rank: Rank.jack),
+            const PokerCard(suit: Suit.spades, rank: Rank.ten),
+            const PokerCard(suit: Suit.hearts, rank: Rank.two),
+            const PokerCard(suit: Suit.hearts, rank: Rank.three),
+          ],
+          numOpponents: 1,
+          iterations: 100,
+          seed: 7,
+        );
+        // Win probability should be 1.0 (royal flush beats everything)
+        expect(result.winProbability, closeTo(1.0, 0.0001));
+      },
+    );
 
     test('pocket pair vs overcards — pair is roughly 50-50', () {
       // 2-2 vs A-K offsuit is a classic "coin flip" (pair is slight favourite)
@@ -195,38 +202,44 @@ void main() {
     });
 
     group('adaptive early termination', () {
-      test('targetStandardError: null runs all iterations (current behavior)', () {
-        final result = EquityCalculator.calculate(
-          holeCards: [
-            const PokerCard(suit: Suit.spades, rank: Rank.ace),
-            const PokerCard(suit: Suit.hearts, rank: Rank.ace),
-          ],
-          communityCards: [],
-          numOpponents: 1,
-          iterations: 1000,
-          seed: 42,
-          targetStandardError: null,
-        );
-        expect(result.iterations, 1000);
-      });
+      test(
+        'targetStandardError: null runs all iterations (current behavior)',
+        () {
+          final result = EquityCalculator.calculate(
+            holeCards: [
+              const PokerCard(suit: Suit.spades, rank: Rank.ace),
+              const PokerCard(suit: Suit.hearts, rank: Rank.ace),
+            ],
+            communityCards: [],
+            numOpponents: 1,
+            iterations: 1000,
+            seed: 42,
+            targetStandardError: null,
+          );
+          expect(result.iterations, 1000);
+        },
+      );
 
-      test('loose targetStandardError stops early for obvious hand (pocket aces)', () {
-        final result = EquityCalculator.calculate(
-          holeCards: [
-            const PokerCard(suit: Suit.spades, rank: Rank.ace),
-            const PokerCard(suit: Suit.hearts, rank: Rank.ace),
-          ],
-          communityCards: [],
-          numOpponents: 1,
-          iterations: 10000,
-          seed: 42,
-          targetStandardError: 0.02,
-        );
-        // Pocket aces converges quickly; should stop well before 10000
-        expect(result.iterations, lessThan(10000));
-        // Equity should still be reasonable
-        expect(result.equity, greaterThan(0.75));
-      });
+      test(
+        'loose targetStandardError stops early for obvious hand (pocket aces)',
+        () {
+          final result = EquityCalculator.calculate(
+            holeCards: [
+              const PokerCard(suit: Suit.spades, rank: Rank.ace),
+              const PokerCard(suit: Suit.hearts, rank: Rank.ace),
+            ],
+            communityCards: [],
+            numOpponents: 1,
+            iterations: 10000,
+            seed: 42,
+            targetStandardError: 0.02,
+          );
+          // Pocket aces converges quickly; should stop well before 10000
+          expect(result.iterations, lessThan(10000));
+          // Equity should still be reasonable
+          expect(result.equity, greaterThan(0.75));
+        },
+      );
 
       test('tight targetStandardError runs near ceiling for marginal hand', () {
         // A marginal hand (2h-3h preflop) against one opponent should need

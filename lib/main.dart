@@ -11,48 +11,53 @@ import 'theme/app_theme.dart';
 import 'ui/screens/home_screen.dart';
 
 void main() {
-  runZonedGuarded(() async {
-    WidgetsFlutterBinding.ensureInitialized();
+  runZonedGuarded(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
 
-    // Initialize crash reporting (gracefully no-ops if Firebase config
-    // files are missing — see CrashReportingService for details).
-    await CrashReportingService.initialize();
+      // Initialize crash reporting (gracefully no-ops if Firebase config
+      // files are missing — see CrashReportingService for details).
+      await CrashReportingService.initialize();
 
-    FlutterError.onError = (FlutterErrorDetails details) {
-      FlutterError.presentError(details);
-      CrashReportingService.recordFlutterError(details);
-    };
+      FlutterError.onError = (FlutterErrorDetails details) {
+        FlutterError.presentError(details);
+        CrashReportingService.recordFlutterError(details);
+      };
 
-    PlatformDispatcher.instance.onError = (error, stack) {
+      PlatformDispatcher.instance.onError = (error, stack) {
+        CrashReportingService.recordError(error, stack, fatal: true);
+        return true;
+      };
+
+      try {
+        await Hive.initFlutter();
+      } catch (e, st) {
+        // History features will be unavailable but the app can still run.
+        debugPrint('Hive init failed — history features disabled.\n$e\n$st');
+        CrashReportingService.recordError(e, st);
+      }
+
+      // Make status bar transparent for a modern edge-to-edge look
+      SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+      );
+
+      ThemeService themeService;
+      try {
+        themeService = await ThemeService.create();
+      } catch (e, st) {
+        debugPrint(
+          'ThemeService init failed — using system defaults.\n$e\n$st',
+        );
+        CrashReportingService.recordError(e, st);
+        themeService = ThemeService.systemDefault();
+      }
+      runApp(PokerHandSuggesterApp(themeService: themeService));
+    },
+    (error, stack) {
       CrashReportingService.recordError(error, stack, fatal: true);
-      return true;
-    };
-
-    try {
-      await Hive.initFlutter();
-    } catch (e, st) {
-      // History features will be unavailable but the app can still run.
-      debugPrint('Hive init failed — history features disabled.\n$e\n$st');
-      CrashReportingService.recordError(e, st);
-    }
-
-    // Make status bar transparent for a modern edge-to-edge look
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
-    );
-
-    ThemeService themeService;
-    try {
-      themeService = await ThemeService.create();
-    } catch (e, st) {
-      debugPrint('ThemeService init failed — using system defaults.\n$e\n$st');
-      CrashReportingService.recordError(e, st);
-      themeService = ThemeService.systemDefault();
-    }
-    runApp(PokerHandSuggesterApp(themeService: themeService));
-  }, (error, stack) {
-    CrashReportingService.recordError(error, stack, fatal: true);
-  });
+    },
+  );
 }
 
 class PokerHandSuggesterApp extends StatefulWidget {

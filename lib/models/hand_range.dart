@@ -20,7 +20,19 @@ enum RangeAction {
 
 /// Rank labels in matrix order — highest (Ace) to lowest (Deuce).
 const List<String> _ranks = [
-  'A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2',
+  'A',
+  'K',
+  'Q',
+  'J',
+  'T',
+  '9',
+  '8',
+  '7',
+  '6',
+  '5',
+  '4',
+  '3',
+  '2',
 ];
 
 /// Returns the hand label for matrix cell ([row], [col]).

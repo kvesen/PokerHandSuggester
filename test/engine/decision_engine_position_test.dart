@@ -21,8 +21,11 @@ void main() {
         costToCall: call,
         heroPosition: TablePosition.button,
       );
-      expect(btnDecision.action, PlayerAction.raise,
-          reason: 'Button should raise with 45% equity');
+      expect(
+        btnDecision.action,
+        PlayerAction.raise,
+        reason: 'Button should raise with 45% equity',
+      );
 
       final utgDecision = DecisionEngine.decide(
         equity: equity,
@@ -30,8 +33,11 @@ void main() {
         costToCall: call,
         heroPosition: TablePosition.utg,
       );
-      expect(utgDecision.action, PlayerAction.call,
-          reason: 'UTG should only call with 45% equity');
+      expect(
+        utgDecision.action,
+        PlayerAction.call,
+        reason: 'UTG should only call with 45% equity',
+      );
     });
 
     test('null position produces same result as before (backward compat)', () {
@@ -68,15 +74,18 @@ void main() {
     });
 
     // Free check: equity = 55%, UTG threshold = 0.6/0.80 = 0.75 → NOT >= 0.75 → call
-    test('Free check — 55% equity UTG → call (threshold raised by position)', () {
-      final decision = DecisionEngine.decide(
-        equity: 0.55,
-        pot: 100,
-        costToCall: 0,
-        heroPosition: TablePosition.utg,
-      );
-      expect(decision.action, PlayerAction.call);
-    });
+    test(
+      'Free check — 55% equity UTG → call (threshold raised by position)',
+      () {
+        final decision = DecisionEngine.decide(
+          equity: 0.55,
+          pot: 100,
+          costToCall: 0,
+          heroPosition: TablePosition.utg,
+        );
+        expect(decision.action, PlayerAction.call);
+      },
+    );
 
     // Free check: equity = 55%, no position, threshold = 0.6 → 55% < 60% → call
     test('Free check — 55% equity no position → call', () {
@@ -100,15 +109,18 @@ void main() {
     });
 
     // Free check: equity = 75%, UTG threshold = 0.75 → borderline (not strictly < 0.75) → raise
-    test('Free check — strong hand UTG (75%) → raise (equity meets threshold)', () {
-      final decision = DecisionEngine.decide(
-        equity: 0.75,
-        pot: 100,
-        costToCall: 0,
-        heroPosition: TablePosition.utg,
-      );
-      expect(decision.action, PlayerAction.raise);
-    });
+    test(
+      'Free check — strong hand UTG (75%) → raise (equity meets threshold)',
+      () {
+        final decision = DecisionEngine.decide(
+          equity: 0.75,
+          pot: 100,
+          costToCall: 0,
+          heroPosition: TablePosition.utg,
+        );
+        expect(decision.action, PlayerAction.raise);
+      },
+    );
 
     test('Explanation includes position note when position provided', () {
       final decision = DecisionEngine.decide(
@@ -120,23 +132,29 @@ void main() {
       expect(decision.explanation, contains('BTN'));
     });
 
-    test('Explanation does NOT include position note when position is null', () {
-      final decision = DecisionEngine.decide(
-        equity: 0.70,
-        pot: 100,
-        costToCall: 50,
-      );
-      // Should not mention any position abbreviations
-      expect(decision.explanation, isNot(contains('BTN')));
-      expect(decision.explanation, isNot(contains('UTG')));
-      expect(decision.explanation, isNot(contains('position')));
-    });
+    test(
+      'Explanation does NOT include position note when position is null',
+      () {
+        final decision = DecisionEngine.decide(
+          equity: 0.70,
+          pot: 100,
+          costToCall: 50,
+        );
+        // Should not mention any position abbreviations
+        expect(decision.explanation, isNot(contains('BTN')));
+        expect(decision.explanation, isNot(contains('UTG')));
+        expect(decision.explanation, isNot(contains('position')));
+      },
+    );
 
     test('positionMultiplier returns correct values', () {
       expect(positionMultiplier(TablePosition.utg), closeTo(0.80, 0.001));
       expect(positionMultiplier(TablePosition.button), closeTo(1.15, 0.001));
       expect(positionMultiplier(TablePosition.hijack), closeTo(1.00, 0.001));
-      expect(positionMultiplier(TablePosition.smallBlind), closeTo(0.90, 0.001));
+      expect(
+        positionMultiplier(TablePosition.smallBlind),
+        closeTo(0.90, 0.001),
+      );
     });
 
     test('positionLabel returns short readable strings', () {
@@ -149,8 +167,11 @@ void main() {
 
     test('positionDescription returns non-empty strings for all positions', () {
       for (final pos in TablePosition.values) {
-        expect(positionDescription(pos), isNotEmpty,
-            reason: 'positionDescription($pos) should not be empty');
+        expect(
+          positionDescription(pos),
+          isNotEmpty,
+          reason: 'positionDescription($pos) should not be empty',
+        );
       }
     });
 

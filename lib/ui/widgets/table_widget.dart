@@ -137,7 +137,11 @@ class PokerTableWidget extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.toll_rounded, color: Color(0xFFFFC107), size: 16),
+                  const Icon(
+                    Icons.toll_rounded,
+                    color: Color(0xFFFFC107),
+                    size: 16,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     potSize > 0 ? potSize.toStringAsFixed(0) : '0',
@@ -178,13 +182,13 @@ class PokerTableWidget extends StatelessWidget {
                     _EmptyCardSlot(isDark: isDark),
                   ]
                 : holeCards
-                    .map(
-                      (c) => Padding(
-                        padding: const EdgeInsets.only(right: cardSpacing),
-                        child: CardWidget(card: c, size: CardSize.small),
-                      ),
-                    )
-                    .toList(),
+                      .map(
+                        (c) => Padding(
+                          padding: const EdgeInsets.only(right: cardSpacing),
+                          child: CardWidget(card: c, size: CardSize.small),
+                        ),
+                      )
+                      .toList(),
           ),
           const SizedBox(height: 6),
           Container(
@@ -234,7 +238,10 @@ class _OpponentSeat extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.black.withValues(alpha: 0.4),
             shape: BoxShape.circle,
-            border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.6), width: 1.5),
+            border: Border.all(
+              color: const Color(0xFFEF4444).withValues(alpha: 0.6),
+              width: 1.5,
+            ),
             boxShadow: [
               BoxShadow(
                 color: const Color(0xFFEF4444).withValues(alpha: 0.2),
@@ -263,7 +270,7 @@ class _OpponentSeat extends StatelessWidget {
 
 class _EmptyCardSlot extends StatelessWidget {
   const _EmptyCardSlot({required this.isDark});
-  
+
   final bool isDark;
 
   @override
@@ -275,7 +282,7 @@ class _EmptyCardSlot extends StatelessWidget {
         color: (isDark ? Colors.black : Colors.white).withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(6),
         border: Border.all(
-          color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.2), 
+          color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.2),
           width: 1.5,
           style: BorderStyle.solid,
         ),
@@ -314,8 +321,8 @@ class _TablePainter extends CustomPainter {
     // Deep Felt fill
     final feltPaint = Paint()
       ..shader = RadialGradient(
-        colors: isDark 
-            ? [const Color(0xFF1B3B2B), const Color(0xFF0D1C15)] 
+        colors: isDark
+            ? [const Color(0xFF1B3B2B), const Color(0xFF0D1C15)]
             : [const Color(0xFFE8F5E9), const Color(0xFFC8E6C9)],
         center: Alignment.center,
         radius: 0.8,
