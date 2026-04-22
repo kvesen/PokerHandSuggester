@@ -31,7 +31,8 @@ void main() {
           home: HomeScreen(themeService: themeService),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 2));
 
       expect(find.text('Poker\nBuddy'), findsOneWidget);
     });
@@ -44,7 +45,8 @@ void main() {
           home: HomeScreen(themeService: themeService),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 2));
 
       expect(find.text('Manual Input'), findsOneWidget);
     });
@@ -57,7 +59,8 @@ void main() {
           home: HomeScreen(themeService: themeService),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 2));
 
       // Before PackageInfo resolves, the footer shows just 'Texas Hold\'em'
       expect(find.text('Texas Hold\'em'), findsOneWidget);
