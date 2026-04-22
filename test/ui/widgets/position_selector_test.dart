@@ -26,7 +26,7 @@ void main() {
   group('PositionSelector', () {
     testWidgets('renders 9 seat position labels', (tester) async {
       await tester.pumpWidget(buildSelector());
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // All 9 seat labels should appear.
       for (final pos in TablePosition.values) {
@@ -54,7 +54,7 @@ void main() {
           ),
         ),
       );
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // Tap the Button seat label.
       await tester.tap(find.text(positionLabel(TablePosition.button)));
@@ -83,7 +83,7 @@ void main() {
           ),
         ),
       );
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // Tapping the already-selected seat should deselect (null).
       await tester.tap(find.text(positionLabel(TablePosition.button)));
@@ -94,7 +94,7 @@ void main() {
 
     testWidgets('seats have Semantics labels', (tester) async {
       await tester.pumpWidget(buildSelector());
-      await tester.pump();
+      await tester.pumpAndSettle();
 
       // Each seat should have a Semantics node with '<LABEL> seat'.
       expect(

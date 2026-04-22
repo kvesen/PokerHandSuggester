@@ -42,20 +42,20 @@ void main() {
   group('PokerTableWidget', () {
     testWidgets('renders without errors', (tester) async {
       await tester.pumpWidget(buildTable());
-      await tester.pump();
+      await tester.pumpAndSettle();
       expect(find.byType(PokerTableWidget), findsOneWidget);
     });
 
     testWidgets('displays hole cards', (tester) async {
       await tester.pumpWidget(buildTable());
-      await tester.pump();
+      await tester.pumpAndSettle();
       // The hole cards are rendered as CardWidgets.
       expect(find.byType(CardWidget), findsWidgets);
     });
 
     testWidgets('displays community cards when provided', (tester) async {
       await tester.pumpWidget(buildTable(community: communityCards));
-      await tester.pump();
+      await tester.pumpAndSettle();
       // With community cards there are more CardWidgets (hole + community).
       final cardWidgets = tester.widgetList<CardWidget>(find.byType(CardWidget));
       expect(cardWidgets.length, greaterThanOrEqualTo(communityCards.length));
@@ -63,19 +63,19 @@ void main() {
 
     testWidgets('displays pot size', (tester) async {
       await tester.pumpWidget(buildTable(pot: 250));
-      await tester.pump();
+      await tester.pumpAndSettle();
       expect(find.text('250'), findsOneWidget);
     });
 
     testWidgets('displays zero pot size', (tester) async {
       await tester.pumpWidget(buildTable(pot: 0));
-      await tester.pump();
+      await tester.pumpAndSettle();
       expect(find.text('0'), findsOneWidget);
     });
 
     testWidgets('renders opponent seat labels', (tester) async {
       await tester.pumpWidget(buildTable(opponents: 3));
-      await tester.pump();
+      await tester.pumpAndSettle();
       // Each opponent is shown as an OPP seat.
       expect(find.textContaining('OPP'), findsWidgets);
     });
