@@ -54,9 +54,12 @@ void main() {
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(find.text('Calculate Best Move'), 200.0);
+      await tester.scrollUntilVisible(
+        find.text('Calculate Best Move').last,
+        200.0,
+      );
       await tester.pumpAndSettle();
-      expect(find.text('Calculate Best Move'), findsOneWidget);
+      expect(find.text('Calculate Best Move').last, findsOneWidget);
     });
 
     testWidgets('pot size field validates that value must be > 0', (
@@ -80,9 +83,12 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap the calculate button — form should fail validation.
-      await tester.scrollUntilVisible(find.text('Calculate Best Move'), 200.0);
+      await tester.scrollUntilVisible(
+        find.text('Calculate Best Move').last,
+        200.0,
+      );
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Calculate Best Move'));
+      await tester.tap(find.text('Calculate Best Move').last);
       await tester.pumpAndSettle();
 
       // The validator returns '>0' for non-positive values.
@@ -105,9 +111,12 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.scrollUntilVisible(find.text('Calculate Best Move'), 200.0);
+      await tester.scrollUntilVisible(
+        find.text('Calculate Best Move').last,
+        200.0,
+      );
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Calculate Best Move'));
+      await tester.tap(find.text('Calculate Best Move').last);
       await tester.pumpAndSettle();
 
       expect(
@@ -123,9 +132,12 @@ void main() {
       await tester.pumpAndSettle();
 
       // Default pot is valid; no hole cards selected — validation should fail.
-      await tester.scrollUntilVisible(find.text('Calculate Best Move'), 200.0);
+      await tester.scrollUntilVisible(
+        find.text('Calculate Best Move').last,
+        200.0,
+      );
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Calculate Best Move'));
+      await tester.tap(find.text('Calculate Best Move').last);
       await tester.pumpAndSettle();
 
       expect(
@@ -221,12 +233,12 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.scrollUntilVisible(
-        find.bySemanticsLabel('Change game mode, currently Cash Game'),
+        find.bySemanticsLabel('Change game mode, currently Cash Game').last,
         200.0,
       );
       await tester.pumpAndSettle();
       await tester.tap(
-        find.bySemanticsLabel('Change game mode, currently Cash Game'),
+        find.bySemanticsLabel('Change game mode, currently Cash Game').last,
       );
       await tester.pumpAndSettle();
 
@@ -245,12 +257,12 @@ void main() {
 
       // Open the bottom sheet.
       await tester.scrollUntilVisible(
-        find.bySemanticsLabel('Change game mode, currently Cash Game'),
+        find.bySemanticsLabel('Change game mode, currently Cash Game').last,
         200.0,
       );
       await tester.pumpAndSettle();
       await tester.tap(
-        find.bySemanticsLabel('Change game mode, currently Cash Game'),
+        find.bySemanticsLabel('Change game mode, currently Cash Game').last,
       );
       await tester.pumpAndSettle();
 
