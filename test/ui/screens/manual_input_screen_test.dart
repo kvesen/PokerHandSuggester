@@ -57,7 +57,7 @@ void main() {
       final calculateButton = find.byKey(const Key('calculate_best_move_button'));
       await tester.ensureVisible(calculateButton);
       await tester.pumpAndSettle();
-      expect(find.byKey(const Key('calculate_best_move_button')), findsOneWidget);
+      expect(calculateButton, findsOneWidget);
     });
 
     testWidgets('pot size field validates that value must be > 0', (
