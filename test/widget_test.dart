@@ -51,43 +51,49 @@ void main() {
       tester,
     ) async {
       final handle = tester.ensureSemantics();
-      addTearDown(handle.dispose);
       final themeService = await ThemeService.create();
       await tester.pumpWidget(
         MaterialApp(home: HomeScreen(themeService: themeService)),
       );
       await tester.pump();
       await tester.pump(const Duration(seconds: 2));
-
-      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      try {
+        await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      } finally {
+        handle.dispose();
+      }
     });
 
     testWidgets('home screen meets iOS tap target guideline', (tester) async {
       final handle = tester.ensureSemantics();
-      addTearDown(handle.dispose);
       final themeService = await ThemeService.create();
       await tester.pumpWidget(
         MaterialApp(home: HomeScreen(themeService: themeService)),
       );
       await tester.pump();
       await tester.pump(const Duration(seconds: 2));
-
-      await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
+      try {
+        await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
+      } finally {
+        handle.dispose();
+      }
     });
 
     testWidgets('home screen meets labeled tap target guideline', (
       tester,
     ) async {
       final handle = tester.ensureSemantics();
-      addTearDown(handle.dispose);
       final themeService = await ThemeService.create();
       await tester.pumpWidget(
         MaterialApp(home: HomeScreen(themeService: themeService)),
       );
       await tester.pump();
       await tester.pump(const Duration(seconds: 2));
-
-      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      try {
+        await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      } finally {
+        handle.dispose();
+      }
     });
   });
 

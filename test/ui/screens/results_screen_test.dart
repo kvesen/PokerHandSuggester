@@ -133,23 +133,27 @@ void main() {
     });
 
     testWidgets('decision badge has Semantics liveRegion', (tester) async {
-      final semanticsHandle = tester.ensureSemantics();
-      addTearDown(semanticsHandle.dispose);
+      final handle = tester.ensureSemantics();
       await tester.pumpWidget(buildScreen(action: PlayerAction.raise));
       await tester.pumpAndSettle();
-
-      expect(find.bySemanticsLabel('Decision: RAISE'), findsOneWidget);
+      try {
+        expect(find.bySemanticsLabel('Decision: RAISE'), findsOneWidget);
+      } finally {
+        handle.dispose();
+      }
     });
 
     testWidgets('stats have Semantics labels', (tester) async {
-      final semanticsHandle = tester.ensureSemantics();
-      addTearDown(semanticsHandle.dispose);
+      final handle = tester.ensureSemantics();
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
-
-      expect(find.bySemanticsLabel(RegExp(r'^Equity:')), findsOneWidget);
-      expect(find.bySemanticsLabel(RegExp(r'^Pot Odds:')), findsOneWidget);
-      expect(find.bySemanticsLabel(RegExp(r'^EV:')), findsOneWidget);
+      try {
+        expect(find.bySemanticsLabel(RegExp(r'^Equity:')), findsOneWidget);
+        expect(find.bySemanticsLabel(RegExp(r'^Pot Odds:')), findsOneWidget);
+        expect(find.bySemanticsLabel(RegExp(r'^EV:')), findsOneWidget);
+      } finally {
+        handle.dispose();
+      }
     });
 
     testWidgets('shows position info when hero position is in game state', (
