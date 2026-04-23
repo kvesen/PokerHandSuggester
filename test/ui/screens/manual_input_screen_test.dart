@@ -55,7 +55,11 @@ void main() {
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
       final calculateButton = find.byKey(const Key('calculate_best_move_button'));
-      await tester.ensureVisible(calculateButton);
+      await tester.scrollUntilVisible(
+        calculateButton,
+        300.0,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.pumpAndSettle();
       expect(calculateButton, findsOneWidget);
     });
@@ -82,7 +86,11 @@ void main() {
 
       // Tap the calculate button — form should fail validation.
       final calculateButton = find.byKey(const Key('calculate_best_move_button'));
-      await tester.ensureVisible(calculateButton);
+      await tester.scrollUntilVisible(
+        calculateButton,
+        300.0,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.pumpAndSettle();
       await tester.tap(calculateButton);
       await tester.pump(); // dispatch _calculate's microtasks
@@ -110,7 +118,11 @@ void main() {
       await tester.pumpAndSettle();
 
       final calculateButton = find.byKey(const Key('calculate_best_move_button'));
-      await tester.ensureVisible(calculateButton);
+      await tester.scrollUntilVisible(
+        calculateButton,
+        300.0,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.pumpAndSettle();
       await tester.tap(calculateButton);
       await tester.pump(); // dispatch _calculate's microtasks
@@ -131,7 +143,11 @@ void main() {
 
       // Default pot is valid; no hole cards selected — validation should fail.
       final calculateButton = find.byKey(const Key('calculate_best_move_button'));
-      await tester.ensureVisible(calculateButton);
+      await tester.scrollUntilVisible(
+        calculateButton,
+        300.0,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.pumpAndSettle();
       await tester.tap(calculateButton);
       await tester.pump(); // dispatch _calculate's microtasks
