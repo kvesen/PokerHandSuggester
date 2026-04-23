@@ -55,7 +55,7 @@ void main() {
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
       await tester.scrollUntilVisible(
-        find.text('Calculate Best Move').last,
+        find.text('Calculate Best Move'),
         200.0,
         scrollable: find.byType(Scrollable).first,
       );
@@ -85,7 +85,7 @@ void main() {
 
       // Tap the calculate button — form should fail validation.
       await tester.scrollUntilVisible(
-        find.text('Calculate Best Move').last,
+        find.text('Calculate Best Move'),
         200.0,
         scrollable: find.byType(Scrollable).first,
       );
@@ -114,7 +114,7 @@ void main() {
       await tester.pumpAndSettle();
 
       await tester.scrollUntilVisible(
-        find.text('Calculate Best Move').last,
+        find.text('Calculate Best Move'),
         200.0,
         scrollable: find.byType(Scrollable).first,
       );
@@ -136,7 +136,7 @@ void main() {
 
       // Default pot is valid; no hole cards selected — validation should fail.
       await tester.scrollUntilVisible(
-        find.text('Calculate Best Move').last,
+        find.text('Calculate Best Move'),
         200.0,
         scrollable: find.byType(Scrollable).first,
       );
@@ -239,7 +239,7 @@ void main() {
 
       try {
         await tester.scrollUntilVisible(
-          find.bySemanticsLabel('Change game mode, currently Cash Game').last,
+          find.bySemanticsLabel('Change game mode, currently Cash Game'),
           200.0,
           scrollable: find.byType(Scrollable).first,
         );
@@ -269,7 +269,7 @@ void main() {
       try {
         // Open the bottom sheet.
         await tester.scrollUntilVisible(
-          find.bySemanticsLabel('Change game mode, currently Cash Game').last,
+          find.bySemanticsLabel('Change game mode, currently Cash Game'),
           200.0,
           scrollable: find.byType(Scrollable).first,
         );
