@@ -752,12 +752,15 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                 const SizedBox(height: 24),
                 Row(
                   children: [
-                    Text(
-                      'Opponents:',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.onSurface,
+                    Flexible(
+                      child: Text(
+                        'Opponents:',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.onSurface,
+                        ),
                       ),
                     ),
                     const Spacer(),
@@ -950,22 +953,25 @@ class _ManualInputScreenState extends State<ManualInputScreen>
                     strokeWidth: 2.5,
                   ),
                 )
-              : const Row(
+              : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.auto_awesome_rounded,
                       size: 22,
                       color: Colors.white,
                     ),
-                    SizedBox(width: 10),
-                    Text(
-                      'Calculate Best Move',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
-                        color: Colors.white,
+                    const SizedBox(width: 10),
+                    Flexible(
+                      child: Text(
+                        'Calculate Best Move',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ],

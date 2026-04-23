@@ -1,0 +1,21 @@
+name: Format Debug (Temporary)
+on:
+  push:
+    branches: ['copilot/fix-all-failing-flutter-tests']
+jobs:
+  show-format-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter pub get
+      - name: Run dart format and show diff
+        run: |
+          dart format .
+          echo "=== Files changed by dart format ==="
+          git diff --name-only
+          echo "=== Full diff ==="
+          git diff
+        continue-on-error: true
