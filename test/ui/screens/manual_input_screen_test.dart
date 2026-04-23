@@ -54,13 +54,10 @@ void main() {
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(
-        find.text('Calculate Best Move'),
-        200.0,
-        scrollable: find.byType(Scrollable).first,
-      );
+      final calculateButton = find.byKey(const Key('calculate_best_move_button'));
+      await tester.ensureVisible(calculateButton);
       await tester.pumpAndSettle();
-      expect(find.text('Calculate Best Move').last, findsOneWidget);
+      expect(find.byKey(const Key('calculate_best_move_button')), findsOneWidget);
     });
 
     testWidgets('pot size field validates that value must be > 0', (
@@ -84,14 +81,13 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap the calculate button — form should fail validation.
-      await tester.scrollUntilVisible(
-        find.text('Calculate Best Move'),
-        200.0,
-        scrollable: find.byType(Scrollable).first,
-      );
+      final calculateButton = find.byKey(const Key('calculate_best_move_button'));
+      await tester.ensureVisible(calculateButton);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Calculate Best Move').last);
-      await tester.pumpAndSettle();
+      await tester.tap(calculateButton);
+      await tester.pump(); // dispatch _calculate's microtasks
+      await tester.pump(const Duration(milliseconds: 100)); // let _showError run
+      await tester.pump(const Duration(seconds: 1)); // let SnackBar finish entering
 
       // The validator returns '>0' for non-positive values.
       expect(find.text('>0'), findsOneWidget);
@@ -113,15 +109,12 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.scrollUntilVisible(
-        find.text('Calculate Best Move'),
-        200.0,
-        scrollable: find.byType(Scrollable).first,
-      );
+      final calculateButton = find.byKey(const Key('calculate_best_move_button'));
+      await tester.ensureVisible(calculateButton);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Calculate Best Move').last);
-      await tester.pump(); // start the async _calculate Future
-      await tester.pump(const Duration(milliseconds: 100)); // let HapticFeedback's platform reply land + _showError run
+      await tester.tap(calculateButton);
+      await tester.pump(); // dispatch _calculate's microtasks
+      await tester.pump(const Duration(milliseconds: 100)); // let _showError run
       await tester.pump(const Duration(seconds: 1)); // let the SnackBar's entrance animation complete
 
       expect(
@@ -137,15 +130,12 @@ void main() {
       await tester.pumpAndSettle();
 
       // Default pot is valid; no hole cards selected — validation should fail.
-      await tester.scrollUntilVisible(
-        find.text('Calculate Best Move'),
-        200.0,
-        scrollable: find.byType(Scrollable).first,
-      );
+      final calculateButton = find.byKey(const Key('calculate_best_move_button'));
+      await tester.ensureVisible(calculateButton);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Calculate Best Move').last);
-      await tester.pump(); // start the async _calculate Future
-      await tester.pump(const Duration(milliseconds: 100)); // let HapticFeedback's platform reply land + _showError run
+      await tester.tap(calculateButton);
+      await tester.pump(); // dispatch _calculate's microtasks
+      await tester.pump(const Duration(milliseconds: 100)); // let _showError run
       await tester.pump(const Duration(seconds: 1)); // let the SnackBar's entrance animation complete
 
       expect(
@@ -237,26 +227,18 @@ void main() {
     ) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
-      final handle = tester.ensureSemantics();
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
 
-      try {
-        await tester.ensureVisible(
-          find.bySemanticsLabel('Change game mode, currently Cash Game').first,
-        );
-        await tester.pumpAndSettle();
-        await tester.tap(
-          find.bySemanticsLabel('Change game mode, currently Cash Game').first,
-        );
-        await tester.pumpAndSettle();
+      final gameModeSelector = find.byKey(const Key('game_mode_selector'));
+      await tester.ensureVisible(gameModeSelector);
+      await tester.pumpAndSettle();
+      await tester.tap(gameModeSelector);
+      await tester.pumpAndSettle();
 
-        // Bottom sheet should list all game modes.
-        expect(find.text('Game Mode'), findsOneWidget);
-        expect(find.byType(RadioListTile<GameMode>), findsNWidgets(6));
-      } finally {
-        handle.dispose();
-      }
+      // Bottom sheet should list all game modes.
+      expect(find.text('Game Mode'), findsOneWidget);
+      expect(find.byType(RadioListTile<GameMode>), findsNWidgets(6));
     });
 
     testWidgets('selecting a mode in the sheet updates the compact row', (
@@ -264,30 +246,22 @@ void main() {
     ) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
-      final handle = tester.ensureSemantics();
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
 
-      try {
-        // Open the bottom sheet.
-        await tester.ensureVisible(
-          find.bySemanticsLabel('Change game mode, currently Cash Game').first,
-        );
-        await tester.pumpAndSettle();
-        await tester.tap(
-          find.bySemanticsLabel('Change game mode, currently Cash Game').first,
-        );
-        await tester.pumpAndSettle();
+      // Open the bottom sheet.
+      final gameModeSelector = find.byKey(const Key('game_mode_selector'));
+      await tester.ensureVisible(gameModeSelector);
+      await tester.pumpAndSettle();
+      await tester.tap(gameModeSelector);
+      await tester.pumpAndSettle();
 
-        // Pick "Heads-Up".
-        await tester.tap(find.text('Heads-Up'));
-        await tester.pumpAndSettle();
+      // Pick "Heads-Up".
+      await tester.tap(find.text('Heads-Up'));
+      await tester.pumpAndSettle();
 
-        // Row should now reflect the new selection.
-        expect(find.textContaining('Heads-Up'), findsOneWidget);
-      } finally {
-        handle.dispose();
-      }
+      // Row should now reflect the new selection.
+      expect(find.textContaining('Heads-Up'), findsOneWidget);
     });
 
     testWidgets('preSelectedGameMode overrides persisted preference', (

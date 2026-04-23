@@ -1,6 +1,7 @@
 /// Manual input screen: card selection, pot/bet inputs, calculate button.
 library;
 
+import 'dart:async';
 import 'dart:isolate';
 import 'dart:ui';
 
@@ -265,7 +266,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
   Future<void> _calculate() async {
     if (_isCalculating) return; // Prevent multiple simultaneous calculations
     if (!_formKey.currentState!.validate()) return;
-    await HapticFeedback.mediumImpact();
+    unawaited(HapticFeedback.mediumImpact());
     if (_holeCards.length < kMaxHoleCards) {
       _showError('Please select exactly 2 hole cards.');
       return;
@@ -428,7 +429,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
         actions: [
           TextButton.icon(
             onPressed: () {
-              HapticFeedback.lightImpact();
+              unawaited(HapticFeedback.lightImpact());
               _resetToNewHand();
             },
             icon: const Icon(Icons.refresh_rounded, size: 18),
@@ -882,6 +883,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
       label: 'Change game mode, currently ${gameModeLabel(_gameMode)}',
       button: true,
       child: InkWell(
+        key: const Key('game_mode_selector'),
         onTap: () => _showGameModeSheet(context),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
@@ -936,6 +938,7 @@ class _ManualInputScreenState extends State<ManualInputScreen>
           ],
         ),
         child: FilledButton(
+          key: const Key('calculate_best_move_button'),
           style: FilledButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 20),
             backgroundColor: Theme.of(context).colorScheme.primary,
