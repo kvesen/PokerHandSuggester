@@ -1,0 +1,37 @@
+name: Auto-fix Dart Formatting
+on:
+  workflow_dispatch:
+  push:
+    branches: ['copilot/fix-all-failing-flutter-tests']
+permissions:
+  contents: write
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Run dart format
+        run: dart format .
+
+      - name: Commit formatted files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "No formatting changes needed."
+          else
+            git add .
+            git commit -m "Auto: apply dart format"
+            git push
+          fi
