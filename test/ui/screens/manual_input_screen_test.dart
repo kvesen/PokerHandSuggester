@@ -57,6 +57,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Calculate Best Move').last,
         200.0,
+        scrollable: find.byType(ListView).first,
       );
       await tester.pumpAndSettle();
       expect(find.text('Calculate Best Move').last, findsOneWidget);
@@ -86,6 +87,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Calculate Best Move').last,
         200.0,
+        scrollable: find.byType(ListView).first,
       );
       await tester.pumpAndSettle();
       await tester.tap(find.text('Calculate Best Move').last);
@@ -114,6 +116,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Calculate Best Move').last,
         200.0,
+        scrollable: find.byType(ListView).first,
       );
       await tester.pumpAndSettle();
       await tester.tap(find.text('Calculate Best Move').last);
@@ -135,6 +138,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Calculate Best Move').last,
         200.0,
+        scrollable: find.byType(ListView).first,
       );
       await tester.pumpAndSettle();
       await tester.tap(find.text('Calculate Best Move').last);
@@ -229,22 +233,28 @@ void main() {
     ) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
+      final handle = tester.ensureSemantics();
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
 
-      await tester.scrollUntilVisible(
-        find.bySemanticsLabel('Change game mode, currently Cash Game').last,
-        200.0,
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(
-        find.bySemanticsLabel('Change game mode, currently Cash Game').last,
-      );
-      await tester.pumpAndSettle();
+      try {
+        await tester.scrollUntilVisible(
+          find.bySemanticsLabel('Change game mode, currently Cash Game').last,
+          200.0,
+          scrollable: find.byType(ListView).first,
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.bySemanticsLabel('Change game mode, currently Cash Game').last,
+        );
+        await tester.pumpAndSettle();
 
-      // Bottom sheet should list all game modes.
-      expect(find.text('Game Mode'), findsOneWidget);
-      expect(find.byType(RadioListTile<GameMode>), findsNWidgets(6));
+        // Bottom sheet should list all game modes.
+        expect(find.text('Game Mode'), findsOneWidget);
+        expect(find.byType(RadioListTile<GameMode>), findsNWidgets(6));
+      } finally {
+        handle.dispose();
+      }
     });
 
     testWidgets('selecting a mode in the sheet updates the compact row', (
@@ -252,26 +262,32 @@ void main() {
     ) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
+      final handle = tester.ensureSemantics();
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
 
-      // Open the bottom sheet.
-      await tester.scrollUntilVisible(
-        find.bySemanticsLabel('Change game mode, currently Cash Game').last,
-        200.0,
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(
-        find.bySemanticsLabel('Change game mode, currently Cash Game').last,
-      );
-      await tester.pumpAndSettle();
+      try {
+        // Open the bottom sheet.
+        await tester.scrollUntilVisible(
+          find.bySemanticsLabel('Change game mode, currently Cash Game').last,
+          200.0,
+          scrollable: find.byType(ListView).first,
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.bySemanticsLabel('Change game mode, currently Cash Game').last,
+        );
+        await tester.pumpAndSettle();
 
-      // Pick "Heads-Up".
-      await tester.tap(find.text('Heads-Up'));
-      await tester.pumpAndSettle();
+        // Pick "Heads-Up".
+        await tester.tap(find.text('Heads-Up'));
+        await tester.pumpAndSettle();
 
-      // Row should now reflect the new selection.
-      expect(find.textContaining('Heads-Up'), findsOneWidget);
+        // Row should now reflect the new selection.
+        expect(find.textContaining('Heads-Up'), findsOneWidget);
+      } finally {
+        handle.dispose();
+      }
     });
 
     testWidgets('preSelectedGameMode overrides persisted preference', (
