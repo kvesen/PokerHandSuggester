@@ -135,9 +135,16 @@ void main() {
     testWidgets('decision badge has Semantics liveRegion', (tester) async {
       final handle = tester.ensureSemantics();
       await tester.pumpWidget(buildScreen(action: PlayerAction.raise));
+      // Pump enough time for staggered fade animations (section 0 delay=0ms,
+      // fade=400ms, plus DecisionBadge scale animation elastic=650ms) to
+      // complete. Last section fires at 500ms delay + 400ms duration = 900ms.
+      await tester.pump(const Duration(milliseconds: 1000));
       await tester.pumpAndSettle();
       try {
-        expect(find.bySemanticsLabel('Decision: RAISE'), findsOneWidget);
+        expect(
+          find.bySemanticsLabel(RegExp(r'Decision: RAISE')),
+          findsOneWidget,
+        );
       } finally {
         handle.dispose();
       }
