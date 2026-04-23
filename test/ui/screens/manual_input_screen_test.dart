@@ -54,6 +54,8 @@ void main() {
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(find.text('Calculate Best Move'), 200.0);
+      await tester.pumpAndSettle();
       expect(find.text('Calculate Best Move'), findsOneWidget);
     });
 
@@ -78,6 +80,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap the calculate button — form should fail validation.
+      await tester.scrollUntilVisible(find.text('Calculate Best Move'), 200.0);
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Calculate Best Move'));
       await tester.pumpAndSettle();
 
@@ -101,6 +105,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      await tester.scrollUntilVisible(find.text('Calculate Best Move'), 200.0);
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Calculate Best Move'));
       await tester.pumpAndSettle();
 
@@ -117,6 +123,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Default pot is valid; no hole cards selected — validation should fail.
+      await tester.scrollUntilVisible(find.text('Calculate Best Move'), 200.0);
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Calculate Best Move'));
       await tester.pumpAndSettle();
 
@@ -200,6 +208,11 @@ void main() {
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
 
+      await tester.scrollUntilVisible(
+        find.bySemanticsLabel('Change game mode, currently Cash Game'),
+        200.0,
+      );
+      await tester.pumpAndSettle();
       await tester.tap(
         find.bySemanticsLabel('Change game mode, currently Cash Game'),
       );
@@ -219,6 +232,11 @@ void main() {
       await tester.pumpAndSettle();
 
       // Open the bottom sheet.
+      await tester.scrollUntilVisible(
+        find.bySemanticsLabel('Change game mode, currently Cash Game'),
+        200.0,
+      );
+      await tester.pumpAndSettle();
       await tester.tap(
         find.bySemanticsLabel('Change game mode, currently Cash Game'),
       );
