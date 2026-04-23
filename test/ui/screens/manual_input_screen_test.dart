@@ -57,7 +57,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Calculate Best Move').last,
         200.0,
-        scrollable: find.byType(ListView).first,
+        scrollable: find.byType(Scrollable).first,
       );
       await tester.pumpAndSettle();
       expect(find.text('Calculate Best Move').last, findsOneWidget);
@@ -87,7 +87,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Calculate Best Move').last,
         200.0,
-        scrollable: find.byType(ListView).first,
+        scrollable: find.byType(Scrollable).first,
       );
       await tester.pumpAndSettle();
       await tester.tap(find.text('Calculate Best Move').last);
@@ -116,7 +116,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Calculate Best Move').last,
         200.0,
-        scrollable: find.byType(ListView).first,
+        scrollable: find.byType(Scrollable).first,
       );
       await tester.pumpAndSettle();
       await tester.tap(find.text('Calculate Best Move').last);
@@ -138,7 +138,7 @@ void main() {
       await tester.scrollUntilVisible(
         find.text('Calculate Best Move').last,
         200.0,
-        scrollable: find.byType(ListView).first,
+        scrollable: find.byType(Scrollable).first,
       );
       await tester.pumpAndSettle();
       await tester.tap(find.text('Calculate Best Move').last);
@@ -241,7 +241,7 @@ void main() {
         await tester.scrollUntilVisible(
           find.bySemanticsLabel('Change game mode, currently Cash Game').last,
           200.0,
-          scrollable: find.byType(ListView).first,
+          scrollable: find.byType(Scrollable).first,
         );
         await tester.pumpAndSettle();
         await tester.tap(
@@ -271,7 +271,7 @@ void main() {
         await tester.scrollUntilVisible(
           find.bySemanticsLabel('Change game mode, currently Cash Game').last,
           200.0,
-          scrollable: find.byType(ListView).first,
+          scrollable: find.byType(Scrollable).first,
         );
         await tester.pumpAndSettle();
         await tester.tap(
