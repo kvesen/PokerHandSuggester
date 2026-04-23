@@ -120,7 +120,9 @@ void main() {
       );
       await tester.pumpAndSettle();
       await tester.tap(find.text('Calculate Best Move').last);
-      await tester.pumpAndSettle();
+      await tester.pump(); // start the async _calculate Future
+      await tester.pump(const Duration(milliseconds: 100)); // let HapticFeedback's platform reply land + _showError run
+      await tester.pump(const Duration(seconds: 1)); // let the SnackBar's entrance animation complete
 
       expect(
         find.textContaining('Community cards must be 0, 3, 4, or 5'),
@@ -142,7 +144,9 @@ void main() {
       );
       await tester.pumpAndSettle();
       await tester.tap(find.text('Calculate Best Move').last);
-      await tester.pumpAndSettle();
+      await tester.pump(); // start the async _calculate Future
+      await tester.pump(const Duration(milliseconds: 100)); // let HapticFeedback's platform reply land + _showError run
+      await tester.pump(const Duration(seconds: 1)); // let the SnackBar's entrance animation complete
 
       expect(
         find.textContaining('Please select exactly 2 hole cards'),
@@ -238,14 +242,12 @@ void main() {
       await tester.pumpAndSettle();
 
       try {
-        await tester.scrollUntilVisible(
-          find.bySemanticsLabel('Change game mode, currently Cash Game'),
-          200.0,
-          scrollable: find.byType(Scrollable).first,
+        await tester.ensureVisible(
+          find.bySemanticsLabel('Change game mode, currently Cash Game').first,
         );
         await tester.pumpAndSettle();
         await tester.tap(
-          find.bySemanticsLabel('Change game mode, currently Cash Game').last,
+          find.bySemanticsLabel('Change game mode, currently Cash Game').first,
         );
         await tester.pumpAndSettle();
 
@@ -268,14 +270,12 @@ void main() {
 
       try {
         // Open the bottom sheet.
-        await tester.scrollUntilVisible(
-          find.bySemanticsLabel('Change game mode, currently Cash Game'),
-          200.0,
-          scrollable: find.byType(Scrollable).first,
+        await tester.ensureVisible(
+          find.bySemanticsLabel('Change game mode, currently Cash Game').first,
         );
         await tester.pumpAndSettle();
         await tester.tap(
-          find.bySemanticsLabel('Change game mode, currently Cash Game').last,
+          find.bySemanticsLabel('Change game mode, currently Cash Game').first,
         );
         await tester.pumpAndSettle();
 
