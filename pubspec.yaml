@@ -3,7 +3,7 @@
 name: poker_hand_suggester
 # App display name: Poker Buddy
 description: Poker Buddy - your pocket poker strategy partner for mathematically optimal Fold/Call/Raise decisions.
-version: 1.2.0+3
+version: 1.0.0+1    # format: <semver>+<versionCode>
 
 environment:
   sdk: ">=3.6.0 <4.0.0"
