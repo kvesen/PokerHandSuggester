@@ -139,39 +139,51 @@ void main() {
     ) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
+      final handle = tester.ensureSemantics();
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
-
-      expect(
-        find.bySemanticsLabel('Increase number of opponents'),
-        findsOneWidget,
-      );
-      expect(
-        find.bySemanticsLabel('Decrease number of opponents'),
-        findsOneWidget,
-      );
+      try {
+        expect(
+          find.bySemanticsLabel('Increase number of opponents'),
+          findsOneWidget,
+        );
+        expect(
+          find.bySemanticsLabel('Decrease number of opponents'),
+          findsOneWidget,
+        );
+      } finally {
+        handle.dispose();
+      }
     });
 
     testWidgets('opponents increment button is tappable', (tester) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
+      final handle = tester.ensureSemantics();
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
-
-      await tester.tap(find.bySemanticsLabel('Increase number of opponents'));
-      await tester.pumpAndSettle();
-      // No exception means the button works as expected.
+      try {
+        await tester.tap(find.bySemanticsLabel('Increase number of opponents'));
+        await tester.pumpAndSettle();
+        // No exception means the button works as expected.
+      } finally {
+        handle.dispose();
+      }
     });
 
     testWidgets('opponents decrement button is tappable', (tester) async {
       await tester.binding.setSurfaceSize(const Size(390, 844));
       addTearDown(() => tester.binding.setSurfaceSize(null));
+      final handle = tester.ensureSemantics();
       await tester.pumpWidget(buildScreen());
       await tester.pumpAndSettle();
-
-      await tester.tap(find.bySemanticsLabel('Decrease number of opponents'));
-      await tester.pumpAndSettle();
-      // No exception means the button works as expected.
+      try {
+        await tester.tap(find.bySemanticsLabel('Decrease number of opponents'));
+        await tester.pumpAndSettle();
+        // No exception means the button works as expected.
+      } finally {
+        handle.dispose();
+      }
     });
 
     testWidgets('two-column layout activates on wide screens', (tester) async {
