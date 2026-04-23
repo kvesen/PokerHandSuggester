@@ -70,6 +70,7 @@ class _DecisionBadgeState extends State<DecisionBadge>
     return Semantics(
       label: 'Decision: $label',
       liveRegion: true,
+      excludeSemantics: true,
       child: ScaleTransition(
         scale: _scale,
         child: Container(
