@@ -2,46 +2,53 @@
 
 > This policy is also available at https://kvesen.github.io/PokerHandSuggester/
 
-**Last updated: 2026**
+**Last updated: 2026-04-28**
 
-This Privacy Policy describes how the Poker Hand Suggester app ("the App") handles information.
+This Privacy Policy describes how the Poker Buddy app ("the App") handles information.
 
-## Camera Usage
+## What the App Does Not Collect
 
-The App uses your device's camera to scan playing cards. All image processing is performed **entirely on-device** using a TensorFlow Lite (TFLite) object detection model. No images or camera data are ever uploaded, transmitted, or stored beyond the immediate analysis session.
+The App does not require account registration. We do not collect names, email addresses, contacts, location data, payment information, or gameplay and hand-history data from users.
 
-## On-Device Processing
-
-All card recognition and poker hand calculations are performed locally on your device. The App does not communicate with any external servers or APIs during normal operation.
-
-## Data Collection
-
-**The App collects no personal data.** Specifically:
+Specifically:
 
 - No account registration or login is required
-- No personally identifiable information (PII) is collected
+- No personally identifiable information (PII) is collected or transmitted
 - No location data is accessed or stored
-- No device identifiers are collected or transmitted
+- No payment or financial information is collected
 
 ## Local Storage
 
-Hand history is stored **locally on your device only** using Hive (device-local database storage). Theme preferences are stored using SharedPreferences. This data never leaves your device and can be cleared at any time by uninstalling the app or clearing app data.
+Hand history and poker session data are stored **locally on your device only** using Hive (a device-local database). Theme and preference settings are stored using SharedPreferences. This data never leaves your device and can be cleared at any time by uninstalling the app or clearing app data.
 
-## Analytics and Tracking
+## Crash Reporting and Diagnostics
 
-The App currently includes **no analytics, tracking, or advertising** of any kind. No usage data is collected or transmitted.
+The App uses **Firebase Crashlytics** to collect crash reports and diagnostic information. This data may include:
+
+- Crash logs and stack traces
+- App version
+- Operating system version
+- Device model and type
+- Basic technical identifiers used for crash grouping
+
+This information is used **only to improve app stability and fix bugs**. It is processed by Google/Firebase in accordance with their privacy policy. No personally identifiable information is intentionally included in crash reports.
+
+For details, see the [Firebase Privacy Policy](https://firebase.google.com/support/privacy).
+
+## Camera Access
+
+The current public version of the App does not require camera access. A future version may add optional on-device card scanning. If that feature is released, this policy will be updated before the release.
 
 ## Third-Party Services
 
-The App uses the following on-device libraries:
+The App uses the following libraries and services:
 
-- **TensorFlow Lite (via tflite_flutter)** — Runs an object detection model entirely on-device for playing card recognition. No data is sent to any external server. See <a href="https://policies.google.com/privacy">TensorFlow's Privacy Policy</a> for general information.
 - **Hive** — Local on-device database for hand history persistence. All data stays on your device.
-- **Firebase Crashlytics** — If configured, collects anonymous crash reports to help improve app stability. No personally identifiable information is collected. Crashlytics can be disabled by the user via device settings. See <a href="https://firebase.google.com/support/privacy">Firebase's Privacy Policy</a> for details.
+- **Firebase Crashlytics** — Collects crash reports and diagnostic data to improve app stability. See [Firebase Privacy Policy](https://firebase.google.com/support/privacy).
 
 ## Data Sharing
 
-We do not share, sell, rent, or trade any user data with third parties because we do not collect any user data.
+We do not sell, rent, or trade user data with third parties. Crash and diagnostic data described above is shared with Google/Firebase solely for the purpose of crash reporting and app stability.
 
 ## Children's Privacy
 
