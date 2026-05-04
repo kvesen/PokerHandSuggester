@@ -8,7 +8,7 @@ This Privacy Policy describes how the Poker Hand Suggester app ("the App") handl
 
 ## Camera Usage
 
-The App uses your device's camera to scan playing cards. All image processing is performed **entirely on-device** using a TensorFlow Lite (TFLite) object detection model. No images or camera data are ever uploaded, transmitted, or stored beyond the immediate analysis session.
+> **Note:** Camera-based card scanning (using TensorFlow Lite) is a **planned future feature** and is **not currently active or shipped** in this version of the App. The current App does not access your device's camera.
 
 ## On-Device Processing
 
@@ -35,7 +35,6 @@ The App currently includes **no analytics, tracking, or advertising** of any kin
 
 The App uses the following on-device libraries:
 
-- **TensorFlow Lite (via tflite_flutter)** — Runs an object detection model entirely on-device for playing card recognition. No data is sent to any external server. See <a href="https://policies.google.com/privacy">TensorFlow's Privacy Policy</a> for general information.
 - **Hive** — Local on-device database for hand history persistence. All data stays on your device.
 
 ## Data Sharing
