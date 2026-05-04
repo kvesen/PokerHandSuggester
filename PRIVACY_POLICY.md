@@ -37,7 +37,6 @@ The App uses the following on-device libraries:
 
 - **TensorFlow Lite (via tflite_flutter)** — Runs an object detection model entirely on-device for playing card recognition. No data is sent to any external server. See <a href="https://policies.google.com/privacy">TensorFlow's Privacy Policy</a> for general information.
 - **Hive** — Local on-device database for hand history persistence. All data stays on your device.
-- **Firebase Crashlytics** — If configured, collects anonymous crash reports to help improve app stability. No personally identifiable information is collected. Crashlytics can be disabled by the user via device settings. See <a href="https://firebase.google.com/support/privacy">Firebase's Privacy Policy</a> for details.
 
 ## Data Sharing
 

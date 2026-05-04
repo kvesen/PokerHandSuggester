@@ -19,7 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2025
 
 ### Added
-- Firebase Crashlytics integration for crash reporting
 - "Coming Soon" ribbon badge on gated Scan Table feature
 - Hard UI gate preventing navigation to unfinished Camera screen
 - Table position awareness with 9-seat model (UTG through BB)

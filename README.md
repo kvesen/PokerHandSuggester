@@ -43,7 +43,6 @@ A Flutter mobile app (Android & iOS) that calculates the **mathematically optima
 | State | `StatefulWidget` + `ChangeNotifier` |
 | Poker math | Custom Dart engine (hand evaluator + Monte Carlo) |
 | Persistence | Hive |
-| Crash reporting | Firebase Crashlytics (graceful no-op if unconfigured) |
 | Date formatting | `intl` |
 | UI | Material Design 3 |
 | Tests | `flutter_test` |
@@ -66,7 +65,6 @@ lib/
 │   ├── pot_odds.dart                   # Pot odds math
 │   └── decision_engine.dart            # Fold / Call / Raise recommendation
 ├── services/
-│   ├── crash_reporting_service.dart    # Firebase Crashlytics wrapper
 │   ├── history_service.dart            # Hand history persistence
 │   └── theme_service.dart              # Theme mode persistence
 ├── ui/
@@ -129,19 +127,6 @@ flutter run
 ```bash
 flutter test
 ```
-
-## Firebase Setup
-
-Crash reporting via Firebase Crashlytics requires project-specific config files. The app includes placeholder stubs so it compiles and runs fine without them — crash reporting simply won't send data until you replace the stubs.
-
-### Steps
-
-1. Go to [https://console.firebase.google.com](https://console.firebase.google.com) and create a new Firebase project.
-2. **Android**: Register an Android app with package name `com.kvesen.pokerbuddy`. Download `google-services.json` and replace the placeholder at `android/app/google-services.json`.
-3. **iOS**: Register an iOS app with bundle ID `com.kvesen.pokerbuddy`. Download `GoogleService-Info.plist` and replace the placeholder at `ios/Runner/GoogleService-Info.plist`.
-4. Enable **Crashlytics** in the Firebase Console for your project.
-
-> **Note:** The app works fine without real Firebase config files — crash reporting is simply disabled (no-op) in that case.
 
 ## Release Signing (Android)
 
