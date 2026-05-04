@@ -7,12 +7,6 @@
 -keep class org.tensorflow.** { *; }
 -dontwarn org.tensorflow.**
 
-# Firebase Crashlytics
--keepattributes SourceFile,LineNumberTable
--keep public class * extends java.lang.Exception
--keep class com.google.firebase.crashlytics.** { *; }
--dontwarn com.google.firebase.crashlytics.**
-
 # Hive
 -keep class com.hivedb.** { *; }
 -keep class ** implements com.hivedb.** { *; }
