@@ -182,12 +182,6 @@ CI runs `flutter analyze && flutter test` on every pull request to `main`. Make 
 
 ## Privacy Policy
 
-The privacy policy is available at **https://kvesen.github.io/PokerHandSuggester/**
-
-To activate GitHub Pages hosting:
-1. Go to **Settings → Pages**
-2. Set **Source** to "Deploy from a branch"
-3. Select **Branch**: `main`, **Folder**: `/docs`
-4. Save — the policy will be live within a few minutes
+The privacy policy is published at **https://sites.google.com/view/pokerbuddy/home**
 
 The policy source is also available in [`PRIVACY_POLICY.md`](PRIVACY_POLICY.md).

@@ -1,6 +1,6 @@
 # Privacy Policy
 
-> This policy is also available at https://kvesen.github.io/PokerHandSuggester/
+> This policy is also available at https://sites.google.com/view/pokerbuddy/home
 
 **Last updated: May 2026**
 
@@ -47,5 +47,9 @@ If we make material changes to this Privacy Policy, we will update the "Last upd
 
 ## Contact
 
-If you have questions about this Privacy Policy, please open an issue on the GitHub repository:
+If you have questions about this Privacy Policy, you can contact us at:
+
+**Email:** kvesens@gmail.com
+
+You can also visit the GitHub repository:
 [https://github.com/kvesen/PokerHandSuggester](https://github.com/kvesen/PokerHandSuggester)
