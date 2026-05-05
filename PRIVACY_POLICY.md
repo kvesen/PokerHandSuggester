@@ -43,13 +43,10 @@ The App does not knowingly collect any information from children under 13.
 
 ## Changes to This Policy
 
-If we make material changes to this Privacy Policy, we will update the "Last updated" date above and post the revised policy in this repository.
+If we make material changes to this Privacy Policy, we will update the "Last updated" date above.
 
 ## Contact
 
 If you have questions about this Privacy Policy, you can contact us at:
 
 **Email:** kvesens@gmail.com
-
-You can also visit the GitHub repository:
-[https://github.com/kvesen/PokerHandSuggester](https://github.com/kvesen/PokerHandSuggester)
