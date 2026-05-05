@@ -7,10 +7,6 @@
 -keep class org.tensorflow.** { *; }
 -dontwarn org.tensorflow.**
 
-# Hive
--keep class com.hivedb.** { *; }
--keep class ** implements com.hivedb.** { *; }
-
 # Keep class names referenced by reflection
 -keepattributes *Annotation*
 -keepattributes Signature
