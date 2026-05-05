@@ -4,15 +4,11 @@
 
 **Last updated: May 2026**
 
-This Privacy Policy describes how the Poker Hand Suggester app ("the App") handles information.
-
-## Camera Usage
-
-> **Note:** Camera-based card scanning (using TensorFlow Lite) is a **planned future feature** and is **not currently active or shipped** in this version of the App. The current App does not access your device's camera.
+This Privacy Policy describes how the Poker Buddy app ("the App") handles information.
 
 ## On-Device Processing
 
-All card recognition and poker hand calculations are performed locally on your device. The App does not communicate with any external servers or APIs during normal operation.
+All poker hand calculations are performed locally on your device. The App does not communicate with any external servers or APIs during normal operation.
 
 ## Data Collection
 
