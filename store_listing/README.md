@@ -22,12 +22,10 @@
 ## Suggested Screenshots
 1. Home screen with feature chips
 2. Manual card selection screen
-3. Camera scan in action
-4. Results screen showing FOLD/CALL/RAISE decision
-5. Hand history screen
+3. Results screen showing FOLD/CALL/RAISE decision
+4. Hand history screen
 
 ## Description Draft
-Poker Hand Suggester uses advanced Monte Carlo equity calculations to give you
+Poker Buddy uses advanced Monte Carlo equity calculations to give you
 mathematically optimal Fold/Call/Raise decisions at the Texas Hold'em table.
-Scan your cards with your camera or enter them manually — get instant,
-data-driven advice.
+Enter your cards manually — get instant, data-driven advice.

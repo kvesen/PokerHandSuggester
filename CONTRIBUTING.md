@@ -1,4 +1,4 @@
-# Contributing to Poker Hand Suggester
+# Contributing to Poker Buddy
 
 Thank you for your interest in contributing! This guide explains how to get
 the project set up, run tests, submit changes, and follow our code conventions.

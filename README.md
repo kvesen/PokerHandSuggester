@@ -1,4 +1,4 @@
-# Poker Hand Suggester 🃏
+# Poker Buddy 🃏
 
 A Flutter mobile app (Android & iOS) that calculates the **mathematically optimal poker decision** — Fold, Call, or Raise — based on the current game state.
 

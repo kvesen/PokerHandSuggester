@@ -1,6 +1,6 @@
-Poker Hand Suggester — Your Pocket Texas Hold'em Strategy Partner
+Poker Buddy — Your Pocket Texas Hold'em Strategy Partner
 
-Stop guessing at the table. Poker Hand Suggester puts mathematically optimal Fold/Call/Raise decisions in your pocket, powered by real Monte Carlo equity simulation running entirely on your device.
+Stop guessing at the table. Poker Buddy puts mathematically optimal Fold/Call/Raise decisions in your pocket, powered by real Monte Carlo equity simulation running entirely on your device.
 
 ═══ HOW IT WORKS ═══
 
@@ -29,7 +29,7 @@ Combined with pot odds calculation and expected value (EV) math, the decision en
 
 ═══ WHO IS THIS FOR? ═══
 
-Whether you're a beginner learning pot odds for the first time or an experienced player who wants a second opinion in home games, Poker Hand Suggester gives you the mathematical edge — without requiring you to memorise equity charts or run mental arithmetic under pressure.
+Whether you're a beginner learning pot odds for the first time or an experienced player who wants a second opinion in home games, Poker Buddy gives you the mathematical edge — without requiring you to memorise equity charts or run mental arithmetic under pressure.
 
 ═══ TECHNICAL DETAILS ═══
 
@@ -41,4 +41,4 @@ Whether you're a beginner learning pot odds for the first time or an experienced
 
 ═══ PRIVACY ═══
 
-Poker Hand Suggester collects no personal data. No ads. No tracking. Full privacy policy: https://kvesen.github.io/PokerHandSuggester/
+Poker Buddy collects no personal data. No ads. No tracking. Full privacy policy: https://kvesen.github.io/PokerHandSuggester/
