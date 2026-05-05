@@ -4,7 +4,7 @@ Stop guessing at the table. Poker Hand Suggester puts mathematically optimal Fol
 
 ═══ HOW IT WORKS ═══
 
-Enter your hole cards and community cards manually, or scan them with your camera (coming soon — on-device ML). The app instantly runs thousands of Monte Carlo equity simulations to calculate your true winning probability against all opponent hand ranges.
+Enter your hole cards and community cards manually. The app instantly runs thousands of Monte Carlo equity simulations to calculate your true winning probability against all opponent hand ranges.
 
 Combined with pot odds calculation and expected value (EV) math, the decision engine tells you exactly what to do:
 • FOLD — when continuing costs more than your equity justifies
@@ -26,8 +26,6 @@ Combined with pot odds calculation and expected value (EV) math, the decision en
 🌙 Dark & Light Mode — Polished dark and light themes for comfortable use in any environment.
 
 🔒 Privacy-First Design — All processing happens on your device. No accounts, no data collection, no ads. Your hand history never leaves your phone.
-
-📷 On-Device ML Card Scanning (Coming Soon) — TensorFlow Lite-powered camera scanner will recognise cards automatically — no manual entry needed.
 
 ═══ WHO IS THIS FOR? ═══
 
